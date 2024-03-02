@@ -23,13 +23,6 @@ using System.Text;
 namespace MorMor.DB
 {
 
-    //public static class Extenions
-    //{
-    //    public static string SFormat(this string str, params object[] args)
-    //    {
-    //        return string.Format(str, args);
-    //    }
-    //}
     /// <summary>
     /// Interface for various SQL related utilities.
     /// </summary>
