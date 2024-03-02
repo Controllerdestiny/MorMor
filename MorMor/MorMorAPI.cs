@@ -34,6 +34,7 @@ public class MorMorAPI
 
     public static async Task Star()
     {
+
         if (!Directory.Exists(SAVE_PATH))
             Directory.CreateDirectory(SAVE_PATH);
         //读取Config
