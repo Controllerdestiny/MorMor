@@ -25,6 +25,13 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Build and NuGet
+      run: |
+        dotnet build
+          New-Item -ItemType Directory MomoAPI
+          Copy-Item **/bin/Debug/net6.0/* MomoAPI
+          Copy-Item LICENSE,README.md MomoAPI
+      
     - name: Prepare Release
       id: setenvo
       if: github.event_name == 'push' && github.ref == 'refs/heads/master'
