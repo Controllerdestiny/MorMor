@@ -30,7 +30,7 @@ jobs:
         dotnet build
           New-Item -ItemType Directory MomoAPI
           Copy-Item **/bin/Debug/net6.0/* MomoAPI
-          Copy-Item LICENSE,README.md MomoAPI
+          Copy-Item README.md MomoAPI
       
     - name: Prepare Release
       id: setenvo
