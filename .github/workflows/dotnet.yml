@@ -14,7 +14,7 @@ defaults:
 jobs:
   build:
 
-    runs-on: [ubuntu-latest, window-latest]
+    runs-on: window-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -28,7 +28,7 @@ jobs:
     - name: Build
       run: |
         dotnet build
-          New-Item -ItemType Directory TempDir
+          New-Item -ItemType Directory MomoAPI
           
       
     - name: Prepare Release
@@ -37,9 +37,9 @@ jobs:
       run: |
         echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
         dotnet build /p:GenerateDocumentationFile=true
-        Copy-Item **/bin/Debug/net6.0/* TempDir
-        tar cvf MomoAPI.tar TempDir
-        Compress-Archive -Path TempDir MomoAPI.zip
+        Copy-Item **/bin/Debug/net6.0/* MomoAPI
+        tar cvf MomoAPI.tar MomoAPI
+        Compress-Archive -Path MomoAPI MomoAPI.zip
       
     - name: Release
       uses: softprops/action-gh-release@v1
