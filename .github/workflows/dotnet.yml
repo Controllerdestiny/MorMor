@@ -26,7 +26,7 @@ jobs:
       - name: Build MorMor
         shell: powershell
         run: |
-          dotnet build MorMor/MorMor.csproj -p:PublishSingleFile=false -p:IncludeContentInSingleFile=false -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net6.0
+          dotnet build MorMor/MorMor.csproj p:self-contained=false -p:PublishSingleFile=false -p:IncludeContentInSingleFile=false -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net6.0
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 6.0
         uses: actions/upload-artifact@v3
