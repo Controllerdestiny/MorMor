@@ -52,14 +52,6 @@ public class MorMorAPI
         }).Start();
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
-        OperatHandler.OnCommand += async e =>
-        {
-            if (Setting.BanCommands.Contains(e.Name))
-            {
-                await e.EventArgs.Reply("该指令已被拦截禁用!");
-                e.Handler = true;
-            }
-        };
     }
 
     internal static void LoadConfig() => Setting = Config.LoadConfig<MorMorSetting>(ConfigPath);
