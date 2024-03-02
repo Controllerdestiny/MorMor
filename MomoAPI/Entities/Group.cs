@@ -73,7 +73,7 @@ public class Group
         return await ApiAdapter.SetAdmin(Id, userid, enable);
     }
 
-    public async Task<ApiStatus> SetGroupCard(long userid, string card)
+    public async Task<ApiStatus> SetMemberCard(long userid, string card)
     {
         return await ApiAdapter.SetGroupCard(Id, userid, card);
     }

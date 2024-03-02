@@ -22,4 +22,8 @@ internal class Permissions
     public const string SearchCommandPerm = "onebot.command.search";
 
     public const string Nbnhhsh = "onebot.nbnhhsh";
+
+    public const string Mute = "onebot.mute";
+
+    public const string ChangeGroupOption = "onebot.group.option";
 }

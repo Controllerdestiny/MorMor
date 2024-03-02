@@ -7,7 +7,6 @@ using MorMor.EventArgs;
 using MorMor.Exceptions;
 using MorMor.Permission;
 using MorMor.Utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace MorMor.Commands;
@@ -20,14 +19,14 @@ internal class OneBotCommand
     {
         void Show(List<string> line)
         {
-            if (PaginationTools.TryParsePageNumber(args.Parameters, 1, args.EventArgs, out int page)) ;
+            if (PaginationTools.TryParsePageNumber(args.Parameters, 0, args.EventArgs, out int page)) ;
             {
                 PaginationTools.SendPage(args.EventArgs, page, line, new PaginationTools.Settings()
                 {
-                    MaxLinesPerPage = 6,
+                    MaxLinesPerPage = 10,
                     NothingToDisplayString = "当前没有指令可用",
                     HeaderFormat = "指令列表 ({0}/{1})：",
-                    FooterFormat = $"输入 {args.CommamdPrefix}help list {{0}} 查看更多"
+                    FooterFormat = $"输入 {args.CommamdPrefix}help {{0}} 查看更多"
                 });
             }
         }
@@ -537,9 +536,177 @@ internal class OneBotCommand
     }
     #endregion
 
-    [CommandMatch("test")]
-    private async Task Testm(CommandArgs args)
-    { 
-        
+    #region 禁言
+    [CommandMatch("禁",Permissions.Mute)]
+    private async Task Mute(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            if (!int.TryParse(args.Parameters[0].ToString(), out var muted))
+            {
+                await args.EventArgs.Reply("请输入正确的禁言时长!");
+                return;
+            }
+            var atlist = args.EventArgs.MessageContext.GetAts();
+            if (atlist.Count == 0)
+            {
+                await args.EventArgs.Reply("未指令目标成员!");
+                return;
+            }
+            atlist.ForEach(async x => await args.EventArgs.Group.Mute(x.UserId, muted * 60));
+            await args.EventArgs.Reply("禁言成功！");
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}禁 [AT] [时长]！");
+        }
     }
+    #endregion
+
+    #region 解禁
+    [CommandMatch("解", Permissions.Mute)]
+    private async Task UnMute(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            var atlist = args.EventArgs.MessageContext.GetAts();
+            if (atlist.Count == 0)
+            {
+                await args.EventArgs.Reply("未指令目标成员!");
+                return;
+            }
+            atlist.ForEach(async x => await args.EventArgs.Group.Mute(x.UserId, 0));
+            await args.EventArgs.Reply("解禁成功！");
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}解 [AT] [时长]！");
+        }
+    }
+    #endregion
+
+    #region 全体禁言
+    [CommandMatch("全禁", Permissions.Mute)]
+    private async Task MuteAll(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            switch (args.Parameters[0])
+            {
+                case "开启":
+                case "开":
+                case "true":
+                    await args.EventArgs.Group.MuteAll(true);
+                    await args.EventArgs.Reply("开启成功！");
+                    break;
+                case "关闭":
+                case "关":
+                case "false":
+                    await args.EventArgs.Group.MuteAll(false);
+                    await args.EventArgs.Reply("关闭成功");
+                    break;
+                default:
+                    await args.EventArgs.Reply("语法错误,正确语法:\n全禁 [开启|关闭]");
+                    break;
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply("语法错误,正确语法:\n全禁 [开启|关闭]");
+        }
+    }
+    #endregion
+
+    #region 设置群名
+    [CommandMatch("设置群名", Permissions.ChangeGroupOption)]
+    private async Task SetGroupName(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            if (string.IsNullOrEmpty(args.Parameters[0]))
+            {
+                await args.EventArgs.Reply("群名不能未空！");
+                return;
+            }
+            await args.EventArgs.Group.SetName(args.Parameters[0]);
+            await args.EventArgs.Reply($"群名称已修改为`{args.Parameters[0]}`");
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}设置群名 [名称]");
+        }
+    }
+    #endregion
+
+    #region 设置群成员名片
+    [CommandMatch("设置昵称", Permissions.ChangeGroupOption)]
+    private async Task SetGroupMemeberNick(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            var atlist = args.EventArgs.MessageContext.GetAts().First();
+            if (atlist != null)
+            {
+                await args.EventArgs.Group.SetMemberCard(atlist.UserId, args.Parameters[0]);
+                await args.EventArgs.Reply("修改昵称成功!");
+            }
+            else
+            {
+                await args.EventArgs.Reply("请选择一位成员！");
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [名称]");
+        }
+    }
+    #endregion
+
+    #region 设置管理
+    [CommandMatch("设置管理", Permissions.ChangeGroupOption)]
+    private async Task SetGroupAdmin(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            var atlist = args.EventArgs.MessageContext.GetAts().First();
+            if (atlist != null)
+            {
+                await args.EventArgs.Group.SetAdmin(atlist.UserId, true);
+                await args.EventArgs.Reply($"已将`{atlist.UserId}`设置为管理员!");
+            }
+            else
+            {
+                await args.EventArgs.Reply("请选择一位成员！");
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [AT]");
+        }
+    }
+    #endregion
+
+    #region 取消管理
+    [CommandMatch("取消管理", Permissions.ChangeGroupOption)]
+    private async Task UnsetGroupAdmin(CommandArgs args)
+    {
+        if (args.Parameters.Count == 0)
+        {
+            var atlist = args.EventArgs.MessageContext.GetAts().First();
+            if (atlist != null)
+            {
+                await args.EventArgs.Group.SetAdmin(atlist.UserId, false);
+                await args.EventArgs.Reply($"已取消`{atlist.UserId}`的管理员!");
+            }
+            else
+            {
+                await args.EventArgs.Reply("请选择一位成员！");
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [AT]");
+        }
+    }
+    #endregion
 }

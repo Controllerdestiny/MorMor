@@ -1,6 +1,7 @@
 ﻿using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Model.Event.MessageEvent;
+using System.Reflection.Metadata.Ecma335;
 
 namespace MomoAPI.EventArgs;
 
@@ -18,6 +19,11 @@ public class GroupMessageEventArgs : MessageEventArgs
     public GroupSenderInfo SenderInfo { get; }
 
     public bool IsSuperAdmin { get; }
+
+    public async Task<ApiStatus> SetMemberNick(string nick)
+    { 
+       return await Group.SetMemberCard(SenderInfo.UserId, nick);
+    }
 
     public async Task<(ApiStatus, long)> Reply(MessageBody body)
     { 

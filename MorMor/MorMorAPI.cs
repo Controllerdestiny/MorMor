@@ -3,7 +3,6 @@ using MomoAPI.Interface;
 using MorMor.Commands;
 using MorMor.Configuration;
 using MorMor.DB.Manager;
-using MorMor.Event;
 using MorMor.Plugin;
 using MySql.Data.MySqlClient;
 using System.Data;

@@ -10,7 +10,7 @@ public class GroupSenderInfo
     /// 账号
     /// </summary>
     [JsonProperty("user_id")]
-    public long QQ { get; internal set; }
+    public long UserId { get; internal set; }
 
     /// <summary>
     /// 昵称
