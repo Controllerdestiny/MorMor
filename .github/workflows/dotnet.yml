@@ -43,9 +43,9 @@ jobs:
         run: |
           echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
           dotnet build /p:GenerateDocumentationFile=true
-          Copy-Item **/bin/Debug/net6.0/* Artifact
-          tar cvf Artifact.tar Artifact
-          Compress-Archive -Path Artifact Artifact.zip
+          Copy-Item **/bin/Debug/net6.0/* MomoAPI
+          tar cvf Artifact.tar MomoAPI
+          Compress-Archive -Path MomoAPI Artifact.zip
 
       - name: Release
         uses: softprops/action-gh-release@v1
