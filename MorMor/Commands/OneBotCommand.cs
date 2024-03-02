@@ -536,4 +536,10 @@ internal class OneBotCommand
         }
     }
     #endregion
+
+    [CommandMatch("test")]
+    private async Task Testm(CommandArgs args)
+    { 
+        
+    }
 }
