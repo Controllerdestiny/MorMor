@@ -25,9 +25,19 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
+    - name: Prepare Release
+      id: setenvo
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      run: |
+        echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
+        dotnet build /p:GenerateDocumentationFile=true
+        Copy-Item **/bin/Debug/net6.0/* MomoAPI
+        tar cvf MomoAPI.tar MomoAPI
+        Compress-Archive -Path MomoAPI MomoAPI.zip
+      
     - name: Release
       uses: softprops/action-gh-release@v1
-      #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
       with:
         prerelease: true
         tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
