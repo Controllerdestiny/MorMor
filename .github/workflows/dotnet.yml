@@ -48,3 +48,47 @@ jobs:
         with:
           name: MorMor_all
           path: MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip
+  NightlyRelease:
+    name: Nightly Release
+    runs-on: ubuntu-latest
+    needs: Build
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Update Nightly Tag
+        run: |
+          git tag -f nightly
+          git push -f origin nightly
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: MorMor_all
+          path: ./bin
+      - name: Update Nightly Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: nightly
+          name: 'Nightly Release'
+          prerelease: true
+          body: '> ⚠️This is a nightly release.'
+          artifacts: |
+            ./bin/*
+          allowUpdates: true
+          removeArtifacts: true
+  
+  ClearTempArtifacts:
+    name: Clear Temp Artifacts
+    if: always()
+    runs-on: ubuntu-latest
+    needs:
+      - NightlyRelease
+    permissions:
+      actions: write
+    steps:
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            MorMor_all
