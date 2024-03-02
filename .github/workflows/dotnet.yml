@@ -24,7 +24,7 @@ jobs:
     - name: Build
       run: |
         dotnet build
-          New-Item -ItemType Directory
+          New-Item -ItemType Directory TempDir
           Copy-Item **/bin/Debug/net6.0/* TempDir
           Copy-Item README.md TempDir
       
