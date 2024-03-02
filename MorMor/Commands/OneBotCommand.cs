@@ -537,11 +537,4 @@ internal class OneBotCommand
         }
     }
     #endregion
-
-    [CommandMatch("Test", "")]
-    public async Task Test(CommandArgs args)
-    {
-        var result = await args.EventArgs.OneBotAPI.GetStatus();
-       await args.EventArgs.Reply($"Test指令回调消息！\n{JsonConvert.SerializeObject(result.Item2)}");
-    }
 }
