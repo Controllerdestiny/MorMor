@@ -1,29 +1,45 @@
-name: Release
-on:
-  push:
-    branches: [ master ]
+name: Main
+
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: pwsh
+
 jobs:
   build:
-    name: Release
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v1
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-    - name: Build
-      shell: pwsh
-      run: .\build.ps1 --stable=true
-    - name: Get Release Version
-      shell: pwsh
-      run: .\build\getReleaseVersion.ps1
-    - name: Create GitHub release
-      uses: marvinpinto/action-automatic-releases@latest
-      with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        automatic_release_tag: ${{ env.ReleaseVersion }}
-        title: ${{ env.ReleaseVersion }}
-        prerelease: false
-        files: |
-          artifacts/packages/*
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0.100'  
+          
+      - name: Prepare Release
+        id: setenvo
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
+          dotnet build /p:GenerateDocumentationFile=true
+          Copy-Item **/bin/Debug/net6.0/* MomoAPI
+          tar cvf MomoAPI.tar Artifact
+          Compress-Archive -Path MomoAPI MomoAPI.zip
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        with:
+          prerelease: true
+          tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
+          target_commitish: ${{ github.sha }}
+          name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
+          files: |
+            MomoAPI.tar
+            MomoAPI.zip
