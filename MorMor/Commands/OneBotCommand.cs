@@ -518,7 +518,6 @@ internal class OneBotCommand
             var url = $"https://oiapi.net/API/Nbnhhsh?text={args.Parameters[0]}";
             HttpClient client = new();
             var result = await client.GetStringAsync(url);
-            
             var data = JObject.Parse(result);
             var trans = data["data"]?[0]?["trans"];
             if (trans != null && trans.Any())
