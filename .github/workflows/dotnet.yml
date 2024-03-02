@@ -1,4 +1,4 @@
-name: Release
+name: Lagrange.OneBot Release
 
 on: [push, pull_request]
 
@@ -18,31 +18,31 @@ jobs:
         with:
           dotnet-version: 6.0.x
           
-      - name: Build MomoAPI .NET 6.0
+      - name: Build
         shell: powershell
         run: |
           dotnet publish MorMor/MorMor.csproj --self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net6.0
 
-      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 6.0
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v3
         with:
-          name: MorMor_${{ matrix.runtimeIdentifier }}_6.0
-          path: MorMor/bin/Debug/net6.0/${{ matrix.runtimeIdentifier }}
+          name: MorMor_${{ matrix.runtimeIdentifier }}_8.0
+          path: MorMor/bin/Debug/net6.0/${{ matrix.runtimeIdentifier }}/publish
           
       - name: Compress files (Not Windows)
         if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Debug\net6.0\${{ matrix.runtimeIdentifier }}MorMor' -DestinationPath  'MomoAPI_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MorMor\bin\Release\net6.0\${{ matrix.runtimeIdentifier }}\publish\MorMor' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
       - name: Compress files (Windows)
         if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Release\net6.0\${{ matrix.runtimeIdentifier }}MorMor.exe' -DestinationPath  'MomoAPI_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MorMor\bin\Debug\net6.0\${{ matrix.runtimeIdentifier }}\publish\MorMor.exe' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
           
       - name: Prepare release files
         uses: actions/upload-artifact@v3
         with:
-          name: MomoAPI_all
-          path: MomoAPI_${{ matrix.runtimeIdentifier }}_6.0.zip
+          name: MorMor_all
+          path: MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip
   
   NightlyRelease:
     name: Nightly Release
