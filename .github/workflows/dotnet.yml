@@ -16,7 +16,7 @@ jobs:
         runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Install .NET
         uses: actions/setup-dotnet@v3
@@ -41,7 +41,7 @@ jobs:
       - name: Compress files (Windows)
         if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Release\net6.0\${{ matrix.runtimeIdentifier }}\MorMor.exe' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MorMor\bin\Debug\net6.0\${{ matrix.runtimeIdentifier }}\MorMor.exe' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
           
       - name: Prepare release files
         uses: actions/upload-artifact@v3
