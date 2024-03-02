@@ -27,22 +27,22 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: MorMor_${{ matrix.runtimeIdentifier }}_6.0
-          path: MorMor/bin/Release/net6.0/${{ matrix.runtimeIdentifier }}/publish
+          path: MomoAPI/MorMor/bin/Debug/net6.0/${{ matrix.runtimeIdentifier }}/publish
           
       - name: Compress files (Not Windows)
         if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Release\net6.0\${{ matrix.runtimeIdentifier }}\publish\MorMor' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MomoAPI\MorMor\bin\Debug\net6.0\${{ matrix.runtimeIdentifier }}MorMor' -DestinationPath  'MomoAPI_${{ matrix.runtimeIdentifier }}_6.0.zip'
       - name: Compress files (Windows)
         if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Release\net6.0\${{ matrix.runtimeIdentifier }}\publish\MorMor.exe' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MomoAPI\MorMor\bin\Release\net6.0\${{ matrix.runtimeIdentifier }}MorMor.exe' -DestinationPath  'MomoAPI_${{ matrix.runtimeIdentifier }}_6.0.zip'
           
       - name: Prepare release files
         uses: actions/upload-artifact@v3
         with:
-          name: MorMor_all
-          path: MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip
+          name: MomoAPI_all
+          path: MomoAPI_${{ matrix.runtimeIdentifier }}_6.0.zip
   
   NightlyRelease:
     name: Nightly Release
