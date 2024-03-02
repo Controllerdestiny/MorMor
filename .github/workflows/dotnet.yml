@@ -1,43 +1,29 @@
-name: .NET Release
-
+name: Release
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
-
+    branches: [ master ]
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    name: Release
+    runs-on: windows-latest
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v2
-      
-    - name: Setup .NET
+    - uses: actions/checkout@v1
+    - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 6.0.x
-        
-    - name: Install dependencies
-      run: dotnet restore
-      
+        dotnet-version: 5.0.x
     - name: Build
-      run: dotnet build --configuration Release --no-restore
-      
-    - name: Zip the Build
-      run: zip -r ${{ secrets.ReleaseZipName }} ./AppName/bin/Release/net6.0/ 
-      
-    - name: Create Release and Upload Release Asset
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
+      shell: pwsh
+      run: .\build.ps1 --stable=true
+    - name: Get Release Version
+      shell: pwsh
+      run: .\build\getReleaseVersion.ps1
+    - name: Create GitHub release
+      uses: marvinpinto/action-automatic-releases@latest
       with:
-        tag_name: ${{ github.ref }}
-        name: Release ${{ github.ref }}
-        body: TODO New Release.
-        draft: false
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: ${{ env.ReleaseVersion }}
+        title: ${{ env.ReleaseVersion }}
         prerelease: false
         files: |
-          ${{ secrets.ReleaseZipName }}.zip
-          LICENSE 
+          artifacts/packages/*
