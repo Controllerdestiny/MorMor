@@ -1,58 +1,40 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-name: .NET
+name: MomoAPI Build
 
 on:
   push:
-    branches: [ "master" ]
+    paths:
+      - "**.cs"
+    branches: ["master"]
   pull_request:
-    branches: [ "master" ]
-defaults:
-  run:
-    shell: pwsh
+    branches: ["master"]
+    paths:
+      - "**.cs"
+
+  workflow_dispatch:
 
 jobs:
-  build:
-
-    runs-on: window-latest
+  Build:
+    runs-on: windows-latest
 
     strategy:
       matrix:
         runtimeIdentifier: [ win-x64, win-x86, linux-x64, linux-arm, linux-arm64, osx-x64, osx-arm64, linux-musl-x64, linux-musl-arm64 ]
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: |
-        dotnet build
-          New-Item -ItemType Directory MomoAPI
+      - uses: actions/checkout@v3
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
           
-      
-    - name: Prepare Release
-      id: setenvo
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      run: |
-        echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
-        dotnet build /p:GenerateDocumentationFile=true
-        Copy-Item **/bin/Debug/net6.0/* MomoAPI
-        tar cvf MomoAPI.tar MomoAPI
-        Compress-Archive -Path MomoAPI MomoAPI.zip
-      
-    - name: Release
-      uses: softprops/action-gh-release@v1
-      if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-      with:
-        prerelease: true
-        tag_name: v${{ steps.setenvo.outputs.TAG_NAME }}
-        target_commitish: ${{ github.sha }}
-        name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
-        files: |
-          MomoAPI.tar
-          MomoAPI.zip
+      - name: Build MomoAPI .NET 6.0
+        shell: powershell
+        run: |
+          dotnet publish MomoAPI/MomoAPI.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeContentInSingleFile=true -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net6.0
+          
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 6.0
+        uses: actions/upload-artifact@v3
+        with:
+          name: MomoAPI_${{ matrix.runtimeIdentifier }}_8.0
+          path: MomoAPI/bin/Release/net6.0/${{ matrix.runtimeIdentifier }}/publish
