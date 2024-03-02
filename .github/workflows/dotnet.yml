@@ -1,4 +1,4 @@
-name: Lagrange.OneBot Release
+name: Release
 
 on:
   workflow_dispatch:
