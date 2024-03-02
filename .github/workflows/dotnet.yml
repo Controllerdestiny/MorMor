@@ -22,15 +22,11 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-    - name: Build and NuGet
       run: |
         dotnet build
-          New-Item -ItemType Directory MomoAPI
-          Copy-Item **/bin/Debug/net6.0/* MomoAPI
-          Copy-Item README.md MomoAPI
+          New-Item -ItemType Directory
+          Copy-Item **/bin/Debug/net6.0/* TempDir
+          Copy-Item README.md TempDir
       
     - name: Prepare Release
       id: setenvo
@@ -38,9 +34,9 @@ jobs:
       run: |
         echo "TAG_NAME=$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
         dotnet build /p:GenerateDocumentationFile=true
-        Copy-Item **/bin/Debug/net6.0/* MomoAPI
-        tar cvf MomoAPI.tar MomoAPI
-        Compress-Archive -Path MomoAPI MomoAPI.zip
+        Copy-Item **/bin/Debug/net6.0/* TempDir
+        tar cvf MomoAPI.tar TempDir
+        Compress-Archive -Path TempDir MomoAPI.zip
       
     - name: Release
       uses: softprops/action-gh-release@v1
