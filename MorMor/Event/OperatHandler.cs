@@ -17,6 +17,8 @@ public static class OperatHandler
 
     public static UserPermissionType UserPermission(AccountManager.Account account, string prem)
     {
+        if (account.UserId == MorMorAPI.Setting.OwnerId)
+            return UserPermissionType.Granted;
         if (OnUserPermission == null)
             return UserPermissionType.Denied;
         var args = new PermissionEventArgs(account, prem, UserPermissionType.Denied);

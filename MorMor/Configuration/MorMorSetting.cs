@@ -7,6 +7,9 @@ public class MorMorSetting
     [JsonProperty("指令前缀")]
     public List<string> CommamdPrefix { get; init; } = new();
 
+    [JsonProperty("权限所有者")]
+    public long OwnerId { get; set; } = 523321293;
+
     [JsonProperty("监听地址")]
     public string Host { get; init; } = "127.0.0.1";
 

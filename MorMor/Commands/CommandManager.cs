@@ -2,6 +2,7 @@
 using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Event;
+using MorMor.Model.Database;
 using System.Reflection;
 using System.Text;
 
@@ -114,8 +115,7 @@ public class CommandManager
             {
                 var cmdName = cmdParam[0];
                 cmdParam.RemoveAt(0);
-                var account = MorMorAPI.AccountManager.TryGetAccoumt(args.Sender.Id, args.Group.Id, out var user) ? user
-                            : new DB.Manager.AccountManager.Account(args.Sender.Id, new(MorMorAPI.Setting.DefaultPermGroup, args.Group.Id));
+                var account = MorMorAPI.AccountManager.GetAccountNullDefault(args.Sender.Id);
                 foreach (var command in commands)
                 {
                     if (command.Name.Contains(cmdName))

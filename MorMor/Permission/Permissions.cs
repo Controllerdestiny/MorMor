@@ -3,9 +3,9 @@ namespace MorMor.Permission;
 
 internal class Permissions
 {
-    public const string Sign = "";
+    public const string Sign = "onebot.sign";
 
-    public const string Jrrp = "";
+    public const string Jrrp = "onebot.join";
 
     public const string Reload = "onebot.reload";
 
@@ -13,7 +13,7 @@ internal class Permissions
 
     public const string Group = "onebot.group.admin";
 
-    public const string Help = "";
+    public const string Help = "onebot.help";
 
     public const string CurrencyUse = "onebot.current.use";
 

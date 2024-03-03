@@ -96,7 +96,7 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.AccountManager.AddAccount(atList.First().UserId, args.EventArgs.Group.Id, args.Parameters[1]);
+                MorMorAPI.AccountManager.AddAccount(atList.First().UserId, args.Parameters[1]);
                 await args.EventArgs.Reply($"{atList.First().UserId} 已添加到组 {args.Parameters[1]}");
             }
             catch (Exception ex)
@@ -110,7 +110,7 @@ internal class OneBotCommand
             {
                 try
                 {
-                    MorMorAPI.AccountManager.AddAccount(id, args.EventArgs.Group.Id, args.Parameters[2]);
+                    MorMorAPI.AccountManager.AddAccount(id, args.Parameters[2]);
                     await args.EventArgs.Reply($"{id} 已添加到组 {args.Parameters[2]}");
                 }
                 catch (Exception ex)
@@ -127,7 +127,7 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.AccountManager.RemoveAccount(atList.First().UserId, args.EventArgs.Group.Id);
+                MorMorAPI.AccountManager.RemoveAccount(atList.First().UserId);
                 await args.EventArgs.Reply($"删除成功!");
             }
             catch (Exception ex)
@@ -135,13 +135,13 @@ internal class OneBotCommand
                 await args.EventArgs.Reply(ex.Message);
             }
         }
-        else if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "del")
+        else if (args.Parameters.Count == 3 && args.Parameters[0].ToLower() == "del")
         {
             if (long.TryParse(args.Parameters[1], out long id))
             {
                 try
                 {
-                    MorMorAPI.AccountManager.RemoveAccount(id, args.EventArgs.Group.Id);
+                    MorMorAPI.AccountManager.RemoveAccount(id);
                     await args.EventArgs.Reply($"删除成功!");
                 }
                 catch (Exception ex)
@@ -158,7 +158,7 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.AccountManager.ReAccountGroup(atList.First().UserId, args.EventArgs.Group.Id, args.Parameters[1]);
+                MorMorAPI.AccountManager.ReAccountGroup(atList.First().UserId, args.Parameters[1]);
                 await args.EventArgs.Reply($"账户 {atList.First().UserId} 的组 成功更改为 {args.Parameters[1]}");
             }
             catch (Exception ex)
@@ -172,7 +172,7 @@ internal class OneBotCommand
             {
                 try
                 {
-                    MorMorAPI.AccountManager.ReAccountGroup(id, args.EventArgs.Group.Id, args.Parameters[1]);
+                    MorMorAPI.AccountManager.ReAccountGroup(id, args.Parameters[1]);
                     await args.EventArgs.Reply($"账户 {id} 的组 成功更改为 {args.Parameters[1]}");
                 }
                 catch (Exception ex)
@@ -189,8 +189,8 @@ internal class OneBotCommand
         {
             try
             {
-                var accounts = MorMorAPI.AccountManager.GetAccounts(args.EventArgs.Group.Id);
-                var lines = accounts.Select(x => $"\n账户:{x.UserId}\n权限:{x.Group.GroupName}");
+                var accounts = MorMorAPI.AccountManager.Accounts;
+                var lines = accounts.Select(x => $"\n账户:{x.UserId}\n权限:{x.Group.Name}");
                 Show(lines.ToList());
             }
             catch (AccountException ex)
@@ -224,7 +224,7 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.GroupManager.AddGroup(args.EventArgs.Group.Id, args.Parameters[1]);
+                MorMorAPI.GroupManager.AddGroup(args.Parameters[1]);
                 await args.EventArgs.Reply($"组 {args.Parameters[1]} 添加成功!");
             }
             catch (GroupException ex)
@@ -237,7 +237,7 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.GroupManager.RemoveGroup(args.EventArgs.Group.Id, args.Parameters[1]);
+                MorMorAPI.GroupManager.RemoveGroup(args.Parameters[1]);
                 await args.EventArgs.Reply($"组 {args.Parameters[1]} 删除成功!");
             }
             catch (GroupException ex)
@@ -250,7 +250,7 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.GroupManager.ReParentGroup(args.EventArgs.Group.Id, args.Parameters[1], args.Parameters[2]);
+                MorMorAPI.GroupManager.ReParentGroup(args.Parameters[1], args.Parameters[2]);
                 await args.EventArgs.Reply($"组 {args.Parameters[1]} 的组已更改为 {args.Parameters[2]}!");
             }
             catch (Exception ex)
@@ -263,8 +263,7 @@ internal class OneBotCommand
         {
             try
             {
-
-                MorMorAPI.GroupManager.AddPerm(args.EventArgs.Group.Id, args.Parameters[1], args.Parameters[2]);
+                MorMorAPI.GroupManager.AddPerm(args.Parameters[1], args.Parameters[2]);
                 await args.EventArgs.Reply($"权限添加成功!");
             }
             catch (GroupException ex)
@@ -277,12 +276,12 @@ internal class OneBotCommand
         {
             try
             {
-                MorMorAPI.GroupManager.RemovePerm(args.EventArgs.Group.Id, args.Parameters[1], args.Parameters[2]);
+                MorMorAPI.GroupManager.RemovePerm(args.Parameters[1], args.Parameters[2]);
                 await args.EventArgs.Reply($"权限删除成功!");
             }
             catch (GroupException ex)
             {
-                args.EventArgs.Reply(ex.Message);
+                await args.EventArgs.Reply(ex.Message);
             }
         }
         else
