@@ -6,8 +6,12 @@ using MorMor.Event;
 using MorMor.EventArgs;
 using MorMor.Exceptions;
 using MorMor.Permission;
+using MorMor.Picture;
 using MorMor.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace MorMor.Commands;
 
@@ -706,6 +710,284 @@ internal class OneBotCommand
         {
             await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [AT]");
         }
+    }
+    #endregion
+
+    #region 服务器列表
+    [CommandMatch("服务器列表", "")]
+    private async Task ServerList(CommandArgs args)
+    {
+        if (MorMorAPI.Setting.Servers.Count == 0)
+        {
+            await args.EventArgs.Reply("服务器列表空空如也!");
+            return;
+        }
+        var sb = new StringBuilder("服务器列表\n");
+        foreach(var x in MorMorAPI.Setting.Servers)
+        {
+            var status = await x.Status();
+            sb.Append("[名称]: ");
+            sb.AppendLine(x.Name);
+            sb.Append("[地址]: ");
+            sb.AppendLine(x.IP);
+            sb.Append("[端口]: ");
+            sb.AppendLine(x.Port.ToString());
+            sb.Append("[版本]: ");
+            sb.AppendLine(x.Version);
+            sb.Append("[状态]: ");
+            sb.AppendLine(status.Status != Enumeration.TerrariaApiStatus.DisposeConnect ? $"已运行 {status.UpTime}" : "无法连接");
+            sb.Append("[介绍]: ");
+            sb.AppendLine(x.Describe);
+        }
+        await args.EventArgs.Reply(sb.ToString().Trim());
+    }
+    #endregion
+
+    #region 切换服务器
+    [CommandMatch("切换", "")]
+    private async Task ChangeServer(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            var server = MorMorAPI.Setting.GetServer(args.Parameters[0]);
+            if (server == null)
+            {
+                await args.EventArgs.Reply("你切换的服务器不存在!", true);
+                return;
+            }
+            MorMorAPI.UserLocation.Change(args.EventArgs.Sender.Id, server);
+            await args.EventArgs.Reply($"已切换至`{server.Name}`服务器",true);
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [服务器名称]");
+        }
+    }
+    #endregion
+
+    #region 查询在线玩家
+    [CommandMatch("在线", "")]
+    private async Task OnlinePlayers(CommandArgs args)
+    {
+        if (MorMorAPI.Setting.Servers.Count == 0)
+        {
+            await args.EventArgs.Reply("还没有配置任何一个服务器!", true);
+            return;
+        }
+        var sb = new StringBuilder();
+        foreach(var server in MorMorAPI.Setting.Servers)
+        {
+            var api = await server.PlayerOnline();
+            sb.AppendLine($"[{server.Name}]在线玩家数量({(api.IsSuccess ? api.Players.Count : 0)}/{255})");
+            sb.AppendLine(api.IsSuccess ? string.Join(",", api.Players) : "无法连接服务器");
+        }
+        await args.EventArgs.Reply(sb.ToString().Trim());
+    }
+    #endregion
+
+    #region 生成地图
+    [CommandMatch("生成地图", "")]
+    private async Task GenerateMap(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var api = await server.GeneareMap();
+            var body = new MessageBody();
+            if (api.IsSuccess)
+            {
+                body.Add(MomoSegment.Image($"base64://{api.Uri}"));
+            }
+            else
+            {
+                body.Add("无法连接服务器！");
+            }
+            await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 注册
+    [CommandMatch("注册", "")]
+    private async Task Register(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            if (args.Parameters[0].Length > 19)
+            {
+                await args.EventArgs.Reply("注册的人物名称不能大于19个字符!", true);
+                return;
+            }
+            if (!new Regex("^[a-zA-Z\u4E00-\u9FA5]+$").IsMatch(args.Parameters[0]))
+            {
+                await args.EventArgs.Reply("注册的人物名称不能包含中文以及字母以外的字符", true);
+                return;
+            }
+            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+            {
+                var pass = Guid.NewGuid().ToString()[..8];
+                try
+                {
+                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, server.Name, args.Parameters[0], pass);
+                    var api = await server.Register(args.Parameters[0], pass);
+                    var body = new MessageBody();
+                    if (api.IsSuccess)
+                    {
+                        MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
+                            $"{server.Name}服务器注册密码",
+                            $"您的注册密码是:{pass}<br>请注意保存不要暴露给他人");
+                        body.Add($"注册成功!" +
+                            $"\n注册服务器: {server.Name}" +
+                            $"\n注册名称: {args.Parameters[0]}" +
+                            $"\n注册账号: {args.EventArgs.Sender.Id}" +
+                            $"\n注册人昵称: {args.EventArgs.SenderInfo.Name}" +
+                            $"\n注册密码已发送至QQ邮箱请点击下方链接查看" +
+                            $"\nhttps://wap.mail.qq.com/home/index");
+                    }
+                    else
+                    {
+                        MorMorAPI.TerrariaUserManager.Remove(server.Name, args.Parameters[0]);
+                        body.Add(string.IsNullOrEmpty(api.ErrorMessage) ? "无法连接服务器！" : api.ErrorMessage);
+                    }
+                    await args.EventArgs.Reply(body);
+                }
+                catch (AccountException ex)
+                {
+                    await args.EventArgs.Reply(ex.Message);
+                }
+
+            }
+            else
+            {
+                await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [名称]");
+        }
+    }
+    #endregion
+
+    #region 注册列表
+    [CommandMatch("注册列表","")]
+    private async Task RegisterList(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var users = MorMorAPI.TerrariaUserManager.GetUsers(server.Name);
+            if (users == null || users.Count == 0)
+            {
+                await args.EventArgs.Reply("注册列表空空如也!");
+                return;
+            }
+            var sb = new StringBuilder($"[{server.Name}]注册列表\n");
+            foreach (var user in users)
+            {
+                sb.AppendLine($"{user.Name} => {user.Id}");
+            }
+            await args.EventArgs.Reply(sb.ToString().Trim());
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region user管理
+    [CommandMatch("user", "")]
+    private async Task User(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+           if (args.Parameters.Count == 2)
+            {
+                switch(args.Parameters[0].ToLower())
+                {
+                    case "del":
+                        try
+                        {
+                            MorMorAPI.TerrariaUserManager.Remove(server.Name, args.Parameters[1]);
+                            await args.EventArgs.Reply("移除成功!", true);
+                        }
+                        catch(TerrariaUserException ex)
+                        {
+                            await args.EventArgs.Reply(ex.Message);
+                        }
+                        break;
+                    default:
+                        await args.EventArgs.Reply("未知子命令!");
+                        break;
+                }       
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+        
+    }
+    #endregion
+
+    #region 进度查询
+    [CommandMatch("进度查询", "")]
+    private async Task GameProgress(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var api = await server.Progress();
+            var body = new MessageBody();
+            if (api.IsSuccess)
+            {
+                body.Add(MomoSegment.Image(ProgressImage.DrawImg(api.Progress, server.Name)));
+            }
+            else
+            {
+                body.Add("无法获取服务器信息！");
+            }
+            await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 查询背包
+    [CommandMatch("查背包", "")]
+    private async Task QueryInventory(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+            {
+                var api = await server.QueryInventory(args.Parameters[0]);
+                var body = new MessageBody();
+                if (api.IsSuccess)
+                {
+                    body.Add(MomoSegment.Image(new InventoryImage().DrawImg(api.PlayerinventoryInfo, args.Parameters[0], server.Name)));
+                }
+                else
+                {
+                    body.Add("无法获取用户信息！");
+                }
+                await args.EventArgs.Reply(body);
+            }
+            else
+            {
+                await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [用户名]");
+        }
+        
     }
     #endregion
 }

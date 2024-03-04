@@ -61,7 +61,7 @@ public class MessageBody : IList<MomoSegment>
 
     public void Insert(int index, MomoSegment item)
     {
-        Insert(index, item);
+        _messages.Insert(index, item);
     }
 
     public bool Remove(MomoSegment item)

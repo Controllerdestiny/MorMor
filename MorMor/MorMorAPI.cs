@@ -21,13 +21,19 @@ public class MorMorAPI
 
     public static CurrencyManager CurrencyManager { get; internal set; }
 
+    public static TerrariaUserManager TerrariaUserManager { get; internal set; }
+
     public static string PATH => Environment.CurrentDirectory;
 
     public static string SAVE_PATH => Path.Combine(PATH, "Config");
 
     internal static string ConfigPath => Path.Combine(SAVE_PATH, "MorMor.Json");
 
+    internal static string UserLocationPath => Path.Combine(SAVE_PATH, "UserLocation.Json");
+
     public static MorMorSetting Setting { get; internal set; }
+
+    public static UserLocation UserLocation { get; internal set; }
 
     public static IMomoService Service { get; internal set; }
 
@@ -54,7 +60,11 @@ public class MorMorAPI
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
     }
 
-    internal static void LoadConfig() => Setting = Config.LoadConfig<MorMorSetting>(ConfigPath);
+    internal static void LoadConfig()
+    { 
+        Setting = Config.LoadConfig<MorMorSetting>(ConfigPath);
+        UserLocation = Config.LoadConfig<UserLocation>(UserLocationPath);
+    } 
 
     private static void InitDb()
     {
@@ -67,5 +77,6 @@ public class MorMorAPI
         AccountManager = new();
         CurrencyManager = new();
         SignManager = new();
+        TerrariaUserManager = new();
     }
 }

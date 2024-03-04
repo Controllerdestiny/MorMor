@@ -39,22 +39,22 @@ public class MomoSegment
         });
     }
 
-    public static MomoSegment Image(string url)
+    public static MomoSegment Image(string file)
     {
         return new MomoSegment(SegmentType.Image, new Image()
         {
-            File = url
+            File = file
         });
     }
 
     public static MomoSegment Image(Stream stream)
     {
-        using var memory = new MemoryStream();
-        memory.CopyTo(stream);
-        var base64 = Convert.ToBase64String(memory.ToArray());
+        byte[] bytes = new byte[stream.Length];
+        stream.Read(bytes,0, bytes.Length);
+        var base64 = Convert.ToBase64String(bytes);
         return new MomoSegment(SegmentType.Image, new Image()
         {
-            File = base64
+            File = "base64://" + base64
         });
     }
 

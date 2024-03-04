@@ -1,5 +1,6 @@
 ﻿using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
+using MomoAPI.Entities.Segment;
 using MomoAPI.Model.Event.MessageEvent;
 using System.Reflection.Metadata.Ecma335;
 
@@ -25,8 +26,10 @@ public class GroupMessageEventArgs : MessageEventArgs
        return await Group.SetMemberCard(SenderInfo.UserId, nick);
     }
 
-    public async Task<(ApiStatus, long)> Reply(MessageBody body)
-    { 
+    public async Task<(ApiStatus, long)> Reply(MessageBody body, bool msg = false)
+    {
+        if (msg)
+            body.Insert(0, MomoSegment.Reply(MessageContext.MessageID));
         return await Group.Reply(body);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using MorMor.Terraria;
+using Newtonsoft.Json;
 
 namespace MorMor.Configuration;
 
@@ -33,4 +34,21 @@ public class MorMorSetting
 
     [JsonProperty("用户默认权限组")]
     public string DefaultPermGroup { get; init; } = "default";
+
+    [JsonProperty("邮箱服务地址")]
+    public string MailHost { get; init; } = "";
+
+    [JsonProperty("发件人邮箱")]
+    public string SenderMail { get; init; } = "";
+
+    [JsonProperty("发件人邮箱密码")]
+    public string SenderPwd { get; init; } = "";
+
+    [JsonProperty("服务器列表")]
+    public List<TerrariaServer> Servers { get; } = new();
+
+    public TerrariaServer? GetServer(string name)
+    { 
+        return Servers.Find(x => x.Name == name);
+    }
 }
