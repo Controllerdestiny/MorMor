@@ -1,7 +1,7 @@
-# MomoAPI
+# MorMor
 # 基于[LLOneBot](https://github.com/LLOneBot/LLOneBot) 开发的.NET TerrariaServerBot
 * MomoAPI基于[Sora](https://github.com/Hoshikawa-Kaguya/Sora)更改而来。
-* MorMor项目中数据库部分代码使用了[TShock](https://github.com/Pryaxis/TShock)代码<br>
+* MorMor项目中数据库与分页工具部使用了[TShock](https://github.com/Pryaxis/TShock)代码<br>
  # 使用前你可能需要配置Mail服务机器人会用到
  # 预计支持功能(部分功能可能需要插件支持)
 ## 群功能
