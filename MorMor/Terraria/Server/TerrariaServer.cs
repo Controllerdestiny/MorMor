@@ -10,10 +10,10 @@ namespace MorMor.Terraria;
 public class TerrariaServer
 {
     [JsonProperty("服务器名称")]
-    public string Name { get; set; } = "玄荒";
+    public string Name { get; set; } = "服务器1";
 
     [JsonProperty("服务器IP")]
-    public string IP { get; set; } = "1.15.157.111";
+    public string IP { get; set; } = "";
 
     [JsonProperty("服务器端口号")]
     public ushort Port { get; set; } = 7777;
@@ -22,10 +22,10 @@ public class TerrariaServer
     public ushort NatProt { get; set; } = 7777;
 
     [JsonProperty("服务器Rest端口号")]
-    public ushort RestPort { get; set; } = 6767;
+    public ushort RestPort { get; set; } = 8888;
 
     [JsonProperty("服务器令牌")]
-    public string Token { get; set; } = "Wzopaadeq1";
+    public string Token { get; set; } = "";
 
     [JsonProperty("注册默认组")]
     public string DefaultGroup { get; set; } = "default";
@@ -40,10 +40,10 @@ public class TerrariaServer
     public bool EnabledPrize { get; set; }
 
     [JsonProperty("Tshock路径")]
-    public string TShockPath { get; set; } = "C:/Users/Administrator/Desktop/tshock/玄荒/";
+    public string TShockPath { get; set; } = "C:/Users/Administrator/Desktop/tshock/";
 
     [JsonProperty("地图存放路径")]
-    public string MapSavePath { get; set; } = "C:/Users/Administrator/Desktop/tshock/玄荒/world/玄荒.wld";
+    public string MapSavePath { get; set; } = "C:/Users/Administrator/Desktop/tshock/world/地图.wld";
 
     [JsonProperty("服务器说明")]
     public string Describe { get; set; } = "正常玩法服务器";
@@ -52,19 +52,19 @@ public class TerrariaServer
     public string Version { get; set; } = "1.4.4.9";
 
     [JsonProperty("数据库地址")]
-    public string DBAddress { get; set; } = "1.15.157.111";
+    public string DBAddress { get; set; } = "";
 
     [JsonProperty("数据库端口")]
     public ushort DBPort { get; set; } = 3306;
 
     [JsonProperty("数据库名称")]
-    public string DBName { get; set; } = "Terraria";
+    public string DBName { get; set; } = "";
 
     [JsonProperty("数据库用户名")]
-    public string DBUserName { get; set; } = "Terraria";
+    public string DBUserName { get; set; } = "";
 
     [JsonProperty("数据库密码")]
-    public string DBPassword { get; set; } = "123456";
+    public string DBPassword { get; set; } = "";
 
     [JsonProperty("重置禁止删除表")]
     public HashSet<string> NotRemoveTable { get; set; } = new HashSet<string>()
