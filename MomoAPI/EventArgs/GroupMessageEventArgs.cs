@@ -26,9 +26,9 @@ public class GroupMessageEventArgs : MessageEventArgs
        return await Group.SetMemberCard(SenderInfo.UserId, nick);
     }
 
-    public async Task<(ApiStatus, long)> Reply(MessageBody body, bool msg = false)
+    public async Task<(ApiStatus, long)> Reply(MessageBody body, bool Cite = false)
     {
-        if (msg)
+        if (Cite)
             body.Insert(0, MomoSegment.Reply(MessageContext.MessageID));
         return await Group.Reply(body);
     }

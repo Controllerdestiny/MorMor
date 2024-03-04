@@ -1,4 +1,5 @@
-﻿using MorMor.Terraria.Server.ApiRequestParam;
+﻿using MorMor.Model.Terraria;
+using MorMor.Terraria.Server.ApiRequestParam;
 using Newtonsoft.Json;
 
 namespace MorMor.Terraria.Server.ApResultArgs;
@@ -9,5 +10,5 @@ public class DeatRankArgs: BaseResultArgs
     public string Response { get; init; }
 
     [JsonProperty("data")]
-    public Dictionary<string, int> Rank { get; init; }
+    public List<PlayerDeathInfo> Rank { get; init; }
 }

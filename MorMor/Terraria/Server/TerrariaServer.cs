@@ -4,6 +4,7 @@ using MorMor.Terraria.Server.ApiRequestParam;
 using MorMor.Terraria.Server.ApResultArgs;
 using Newtonsoft.Json;
 using System.Runtime.CompilerServices;
+using System.Web;
 
 namespace MorMor.Terraria;
 
@@ -85,7 +86,7 @@ public class TerrariaServer
 
     public async Task<OnlineRankArgs> QueryOnlines()
     {
-        return await ApiRequest.Send<OnlineRankArgs>(this, TerrariaApiType.PlayerOnline);
+        return await ApiRequest.Send<OnlineRankArgs>(this, TerrariaApiType.OnlineRank);
     }
 
     public async Task<DeatRankArgs> DeatRank()
@@ -106,7 +107,7 @@ public class TerrariaServer
     {
         var param = new Dictionary<string, string>()
         {
-            { "name", cmd }
+            { "cmd", HttpUtility.UrlEncode(cmd) }
         };
         return await ApiRequest.Send<ExecuteCommamdArgs>(this, TerrariaApiType.ExecCommand
             , param);

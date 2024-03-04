@@ -1,6 +1,5 @@
 ﻿
 using SkiaSharp;
-using System.IO;
 
 namespace MorMor.Picture;
 
@@ -129,7 +128,7 @@ public class ProgressImage
                 height = width * bmp.Height / bmp.Width;
             }
         }
-        return bmp.Resize(new SKSizeI(width, height),SKFilterQuality.None);
+        return bmp.Resize(new SKSizeI(width, height),SKSamplingOptions.Default);
     }
 
 

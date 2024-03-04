@@ -15,10 +15,10 @@ using System.Text.RegularExpressions;
 
 namespace MorMor.Commands;
 
-internal class OneBotCommand
+public class OneBotCommand
 {
     #region 帮助
-    [CommandMatch("help", Permissions.Help)]
+    [CommandMatch("help", OneBotPermissions.Help)]
     public async Task Help(CommandArgs args)
     {
         void Show(List<string> line)
@@ -40,7 +40,7 @@ internal class OneBotCommand
     #endregion
 
     #region 签到
-    [CommandMatch("签到", Permissions.Sign)]
+    [CommandMatch("签到", OneBotPermissions.Sign)]
     private async Task Sign(CommandArgs args)
     {
         try
@@ -67,7 +67,7 @@ internal class OneBotCommand
     #endregion
 
     #region 重读
-    [CommandMatch("reload", Permissions.Reload)]
+    [CommandMatch("reload", OneBotPermissions.Reload)]
     private async Task Reload(CommandArgs args)
     {
         var reloadArgs = new ReloadEventArgs();
@@ -79,7 +79,7 @@ internal class OneBotCommand
     #endregion
 
     #region 账户管理
-    [CommandMatch("account", Permissions.Account)]
+    [CommandMatch("account", OneBotPermissions.Account)]
     private async Task Account(CommandArgs args)
     {
         void Show(List<string> line)
@@ -221,7 +221,7 @@ internal class OneBotCommand
     #endregion
 
     #region 权限组管理
-    [CommandMatch("group", Permissions.Group)]
+    [CommandMatch("group", OneBotPermissions.Group)]
     private async Task Group(CommandArgs args)
     {
         if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "add")
@@ -305,13 +305,13 @@ internal class OneBotCommand
     #endregion
 
     #region 星币管理
-    [CommandMatch("星币", Permissions.CurrencyUse, Permissions.CurrencyAdmin)]
+    [CommandMatch("星币", OneBotPermissions.CurrencyUse, OneBotPermissions.CurrencyAdmin)]
     private async Task Currency(CommandArgs args)
     {
         var at = args.EventArgs.MessageContext.GetAts();
         if (args.Parameters.Count == 3 && args.Parameters[0].ToLower() == "add")
         {
-            if (!args.Account.HasPermission(Permissions.CurrencyAdmin))
+            if (!args.Account.HasPermission(OneBotPermissions.CurrencyAdmin))
             {
                 await args.EventArgs.Reply("你没有权限执行此命令!");
                 return;
@@ -340,7 +340,7 @@ internal class OneBotCommand
         }
         else if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "add" && at.Count() == 1)
         {
-            if (!args.Account.HasPermission(Permissions.CurrencyAdmin))
+            if (!args.Account.HasPermission(OneBotPermissions.CurrencyAdmin))
             {
                 await args.EventArgs.Reply("你没有权限执行此命令!");
                 return;
@@ -362,7 +362,7 @@ internal class OneBotCommand
         }
         else if (args.Parameters.Count == 3 && args.Parameters[0].ToLower() == "del")
         {
-            if (!args.Account.HasPermission(Permissions.CurrencyAdmin))
+            if (!args.Account.HasPermission(OneBotPermissions.CurrencyAdmin))
             {
                 await args.EventArgs.Reply("你没有权限执行此命令!");
                 return;
@@ -391,7 +391,7 @@ internal class OneBotCommand
         }
         else if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "del" && at.Count() == 1)
         {
-            if (!args.Account.HasPermission(Permissions.CurrencyAdmin))
+            if (!args.Account.HasPermission(OneBotPermissions.CurrencyAdmin))
             {
                 await args.EventArgs.Reply("你没有权限执行此命令!");
                 return;
@@ -483,7 +483,7 @@ internal class OneBotCommand
     #endregion
 
     #region 查询指令权限
-    [CommandMatch("scmdperm", Permissions.SearchCommandPerm)]
+    [CommandMatch("scmdperm", OneBotPermissions.SearchCommandPerm)]
     private async Task CmdBan(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -512,7 +512,7 @@ internal class OneBotCommand
     #endregion
 
     #region 缩写查询
-    [CommandMatch("缩写", Permissions.Nbnhhsh)]
+    [CommandMatch("缩写", OneBotPermissions.Nbnhhsh)]
     private async Task Nbnhhsh(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -540,7 +540,7 @@ internal class OneBotCommand
     #endregion
 
     #region 禁言
-    [CommandMatch("禁",Permissions.Mute)]
+    [CommandMatch("禁",OneBotPermissions.Mute)]
     private async Task Mute(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -567,7 +567,7 @@ internal class OneBotCommand
     #endregion
 
     #region 解禁
-    [CommandMatch("解", Permissions.Mute)]
+    [CommandMatch("解", OneBotPermissions.Mute)]
     private async Task UnMute(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -589,7 +589,7 @@ internal class OneBotCommand
     #endregion
 
     #region 全体禁言
-    [CommandMatch("全禁", Permissions.Mute)]
+    [CommandMatch("全禁", OneBotPermissions.Mute)]
     private async Task MuteAll(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -621,7 +621,7 @@ internal class OneBotCommand
     #endregion
 
     #region 设置群名
-    [CommandMatch("设置群名", Permissions.ChangeGroupOption)]
+    [CommandMatch("设置群名", OneBotPermissions.ChangeGroupOption)]
     private async Task SetGroupName(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -642,7 +642,7 @@ internal class OneBotCommand
     #endregion
 
     #region 设置群成员名片
-    [CommandMatch("设置昵称", Permissions.ChangeGroupOption)]
+    [CommandMatch("设置昵称", OneBotPermissions.ChangeGroupOption)]
     private async Task SetGroupMemeberNick(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -666,7 +666,7 @@ internal class OneBotCommand
     #endregion
 
     #region 设置管理
-    [CommandMatch("设置管理", Permissions.ChangeGroupOption)]
+    [CommandMatch("设置管理", OneBotPermissions.ChangeGroupOption)]
     private async Task SetGroupAdmin(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -690,7 +690,7 @@ internal class OneBotCommand
     #endregion
 
     #region 取消管理
-    [CommandMatch("取消管理", Permissions.ChangeGroupOption)]
+    [CommandMatch("取消管理", OneBotPermissions.ChangeGroupOption)]
     private async Task UnsetGroupAdmin(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
@@ -714,7 +714,7 @@ internal class OneBotCommand
     #endregion
 
     #region 服务器列表
-    [CommandMatch("服务器列表", "")]
+    [CommandMatch("服务器列表", OneBotPermissions.ServerList)]
     private async Task ServerList(CommandArgs args)
     {
         if (MorMorAPI.Setting.Servers.Count == 0)
@@ -744,7 +744,7 @@ internal class OneBotCommand
     #endregion
 
     #region 切换服务器
-    [CommandMatch("切换", "")]
+    [CommandMatch("切换", OneBotPermissions.ChangeServer)]
     private async Task ChangeServer(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -766,7 +766,7 @@ internal class OneBotCommand
     #endregion
 
     #region 查询在线玩家
-    [CommandMatch("在线", "")]
+    [CommandMatch("在线", OneBotPermissions.QueryOnlienPlayer)]
     private async Task OnlinePlayers(CommandArgs args)
     {
         if (MorMorAPI.Setting.Servers.Count == 0)
@@ -786,7 +786,7 @@ internal class OneBotCommand
     #endregion
 
     #region 生成地图
-    [CommandMatch("生成地图", "")]
+    [CommandMatch("生成地图", OneBotPermissions.GenerateMap)]
     private async Task GenerateMap(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
@@ -811,7 +811,7 @@ internal class OneBotCommand
     #endregion
 
     #region 注册
-    [CommandMatch("注册", "")]
+    [CommandMatch("注册", OneBotPermissions.RegisterUser)]
     private async Task Register(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -873,7 +873,7 @@ internal class OneBotCommand
     #endregion
 
     #region 注册列表
-    [CommandMatch("注册列表","")]
+    [CommandMatch("注册列表",OneBotPermissions.QueryUserList)]
     private async Task RegisterList(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
@@ -899,7 +899,7 @@ internal class OneBotCommand
     #endregion
 
     #region user管理
-    [CommandMatch("user", "")]
+    [CommandMatch("user", OneBotPermissions.UserAdmin)]
     private async Task User(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
@@ -934,7 +934,7 @@ internal class OneBotCommand
     #endregion
 
     #region 进度查询
-    [CommandMatch("进度查询", "")]
+    [CommandMatch("进度查询", OneBotPermissions.QueryProgress)]
     private async Task GameProgress(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
@@ -959,7 +959,7 @@ internal class OneBotCommand
     #endregion
 
     #region 查询背包
-    [CommandMatch("查背包", "")]
+    [CommandMatch("查背包", OneBotPermissions.QueryInventory)]
     private async Task QueryInventory(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -988,6 +988,112 @@ internal class OneBotCommand
             await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [用户名]");
         }
         
+    }
+    #endregion
+
+    #region 执行命令
+    [CommandMatch("执行",OneBotPermissions.ExecuteCommand)]
+    private async Task ExecuteCommand(CommandArgs args)
+    {
+        if (args.Parameters.Count < 1)
+        {
+            await args.EventArgs.Reply("请输入要执行的命令!", true);
+            return;
+        }
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var cmd = "/" + string.Join(" ",args.Parameters);
+            var api = await server.ExecCommamd(cmd);
+            var body = new MessageBody();
+            if (api.IsSuccess)
+            {
+                var cmdResult = $"[{server.Name}]命令执行结果:\n{string.Join("\n", api.Response)}";
+                body.Add(cmdResult);
+            }
+            else
+            {
+                body.Add("无法连接到服务器！");
+            }
+            await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 在线排行
+    [CommandMatch("在线排行", OneBotPermissions.OnlineRank)]
+    private async Task OnlineRank(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var api = await server.QueryOnlines();
+            var body = new MessageBody();
+            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(api));
+            if (api.IsSuccess)
+            {
+                var sb = new StringBuilder($"[{server.Name}]在线排行:\n");
+                var rank = api.Rank.OrderByDescending(x => x.Duration);
+                foreach (var duration in rank)
+                {
+                    var day = duration.Duration / (60 * 60 * 24);
+                    var hour = (duration.Duration - day * 60 * 60 * 24)/ (60 * 60);
+                    var minute = (duration.Duration - day * 60 * 60 * 24 - hour * 60 * 60) / 60;
+                    var second = duration.Duration - day * 60 * 60 * 24 - hour * 60 * 60 - minute * 60;
+                    sb.Append($"[{duration.Name}]在线时长: ");
+                    if (day > 0)
+                        sb.Append($"{day}天");
+                    if(hour > 0)
+                        sb.Append($"{hour}时");
+                    if (minute > 0)
+                        sb.Append($"{minute}分");
+                    sb.Append($"{second}秒\n");
+                }
+                body.Add(sb.ToString().Trim());
+            }
+            else
+            {
+                body.Add("无法连接到服务器！");
+            }
+            await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 死亡排行
+    [CommandMatch("死亡排行", OneBotPermissions.DeathRank)]
+    private async Task DeathRank(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var api = await server.DeatRank();
+            var body = new MessageBody();
+            if (api.IsSuccess)
+            {
+                var sb = new StringBuilder($"[{server.Name}]死亡排行:\n");
+                var rank = api.Rank.OrderByDescending(x => x.Count);
+                foreach (var deathInfo in rank)
+                {
+                    sb.AppendLine($"[{deathInfo.Name}]死亡次数: {deathInfo.Count}");
+                }
+                body.Add(sb.ToString().Trim());
+            }
+            else
+            {
+                body.Add("无法连接到服务器！");
+            }
+            await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
     }
     #endregion
 }

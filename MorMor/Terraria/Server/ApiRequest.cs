@@ -26,7 +26,6 @@ public class ApiRequest
                 RequestUri = new Uri(url.ToString().TrimEnd('&'))
             });
             var str = await result.Content.ReadAsStringAsync();
-            
             var args = JObject.Parse(str);
             return args.ToObject<T>();
         }

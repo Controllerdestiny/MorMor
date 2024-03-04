@@ -1,4 +1,5 @@
-﻿using MorMor.Terraria.Server.ApiRequestParam;
+﻿using MorMor.Model.Terraria;
+using MorMor.Terraria.Server.ApiRequestParam;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,5 +15,5 @@ public class OnlineRankArgs :BaseResultArgs
     public string Response { get; init; }
 
     [JsonProperty("data")]
-    public Dictionary<string, int> Rank { get; init; }
+    public List<PlayerOnlineInfo> Rank { get; init; }
 }

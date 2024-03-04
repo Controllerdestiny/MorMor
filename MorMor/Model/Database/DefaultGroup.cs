@@ -1,10 +1,4 @@
-﻿using MorMor.Permission;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using MorMor.Permission;    
 
 namespace MorMor.Model.Database;
 
@@ -12,11 +6,21 @@ public class DefaultGroup : Group
 {
     public override List<string> permissions => new()
     { 
-        Permissions.Sign,
-        Permissions.Help,
-        Permissions.Jrrp,
-        Permissions.CurrencyUse,
-        Permissions.Nbnhhsh
+        OneBotPermissions.Sign,
+        OneBotPermissions.Help,
+        OneBotPermissions.Jrrp,
+        OneBotPermissions.CurrencyUse,
+        OneBotPermissions.Nbnhhsh,
+        OneBotPermissions.QueryOnlienPlayer,
+        OneBotPermissions.QueryProgress,
+        OneBotPermissions.QueryInventory,
+        OneBotPermissions.ChangeServer,
+        OneBotPermissions.QueryUserList,
+        OneBotPermissions.GenerateMap,
+        OneBotPermissions.ServerList,
+        OneBotPermissions.RegisterUser,
+        OneBotPermissions.OnlineRank,
+        OneBotPermissions.DeathRank
     };
     public DefaultGroup() : base(MorMorAPI.Setting.DefaultPermGroup)
     {
