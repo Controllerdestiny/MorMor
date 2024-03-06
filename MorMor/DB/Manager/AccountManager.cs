@@ -1,9 +1,9 @@
-﻿using MorMor.Exceptions;
+﻿using MorMor.Event;
+using MorMor.Exceptions;
 using MorMor.Extensions;
+using MorMor.Model.Database;
 using MySql.Data.MySqlClient;
 using System.Data;
-using MorMor.Event;
-using MorMor.Model.Database;
 
 namespace MorMor.DB.Manager;
 
@@ -133,7 +133,7 @@ public class AccountManager
     /// <returns></returns>
     public void ReAccountGroup(long userid, string Group)
     {
-        if(!HasAccount(userid))
+        if (!HasAccount(userid))
             throw new AccountException($"账户 {userid} 不存在无法更改组!");
         if (database.Query("UPDATE `Account` SET `Group` = @0 WHERE `Account`.`Account`.`ID` = @1", Group, userid) == 1)
         {

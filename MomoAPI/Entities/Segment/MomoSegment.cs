@@ -50,7 +50,7 @@ public class MomoSegment
     public static MomoSegment Image(Stream stream)
     {
         byte[] bytes = new byte[stream.Length];
-        stream.Read(bytes,0, bytes.Length);
+        stream.Read(bytes, 0, bytes.Length);
         var base64 = Convert.ToBase64String(bytes);
         return new MomoSegment(SegmentType.Image, new Image()
         {

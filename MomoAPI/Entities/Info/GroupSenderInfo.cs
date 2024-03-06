@@ -30,4 +30,7 @@ public class GroupSenderInfo
     [JsonProperty("role")]
     [JsonConverter(typeof(EnumConverter))]
     public MemberRoleType Role { get; internal set; }
+
+    [JsonIgnore]
+    public string TitleImage => $"http://q.qlogo.cn/headimg_dl?dst_uin={UserId}&spec=640&img_type=png";
 }

@@ -1,11 +1,11 @@
-﻿using MorMor.Permission;    
+﻿using MorMor.Permission;
 
 namespace MorMor.Model.Database;
 
 public class DefaultGroup : Group
 {
     public override List<string> permissions => new()
-    { 
+    {
         OneBotPermissions.Sign,
         OneBotPermissions.Help,
         OneBotPermissions.Jrrp,
@@ -20,7 +20,9 @@ public class DefaultGroup : Group
         OneBotPermissions.ServerList,
         OneBotPermissions.RegisterUser,
         OneBotPermissions.OnlineRank,
-        OneBotPermissions.DeathRank
+        OneBotPermissions.DeathRank,
+        OneBotPermissions.SelfInfo,
+        OneBotPermissions.TerrariaWiki
     };
     public DefaultGroup() : base(MorMorAPI.Setting.DefaultPermGroup)
     {

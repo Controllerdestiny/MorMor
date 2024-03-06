@@ -1,8 +1,6 @@
-﻿using MomoAPI.Utils;
-using MorMor.Enumeration;
+﻿using MorMor.Enumeration;
 using MorMor.Utils;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace MorMor.Terraria.Server.ApiRequestParam;
 
@@ -12,7 +10,7 @@ public class BaseResultArgs
     [JsonConverter(typeof(TerrariaApiStatusConverter))]
     public TerrariaApiStatus Status { get; init; }
 
-    [JsonProperty("error",DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [JsonProperty("error", DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string ErrorMessage { get; init; }
 
     [JsonIgnore]

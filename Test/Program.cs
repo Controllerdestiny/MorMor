@@ -1,21 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using System.Net;
 using Test;
 
-var result = JsonConvert.SerializeObject(new CTest(),Formatting.Indented);
-Console.WriteLine(result);
-Console.ReadLine();
-class CTest
+var server = new SocketClient(IPAddress.Parse("127.0.0.1"), 6000);
+server.Start();
+while (true)
 {
-    [JsonConverter(typeof(CommentConvert),"年龄")]
-    public int Age { get; set; }
-
-    [JsonConverter(typeof(CommentConvert), "名字")]
-    public string Name { get; set; }
-
-    public CTest()
-    {
-        Age = 1;
-        Name = "张三";
-    }
+    var msg = Console.ReadLine();
+    server.SendMsg(msg);
+    server.Client.Dispose();
 }
+
+
 

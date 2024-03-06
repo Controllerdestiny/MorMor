@@ -16,17 +16,17 @@ public class ProgressImage
         var p = new SKPaint()
         {
             Shader = SKShader.CreateLinearGradient(new SKPoint(0, 0),
-            new SKPoint(Weight, Height), 
+            new SKPoint(Weight, Height),
             //渐变色
-            new SKColor[] 
-            { 
-                SKColor.Parse("fbd3e9"), 
-                SKColor.Parse("eef2f3"), 
+            new SKColor[]
+            {
+                SKColor.Parse("fbd3e9"),
+                SKColor.Parse("eef2f3"),
                 SKColor.Parse("ffdde1")
             },
             SKShaderTileMode.Repeat)
         };
-        
+
         //画框
         var _Bitmap = new SKBitmap(600, 600);
 
@@ -66,7 +66,7 @@ public class ProgressImage
         float x = 550f;
         float y = 700f;
         int i = 0;
-        foreach (var item  in data)
+        foreach (var item in data)
         {
             //画背景
             //设置背景颜色绿 代表未击杀
@@ -128,7 +128,7 @@ public class ProgressImage
                 height = width * bmp.Height / bmp.Width;
             }
         }
-        return bmp.Resize(new SKSizeI(width, height),SKSamplingOptions.Default);
+        return bmp.Resize(new SKSizeI(width, height), SKSamplingOptions.Default);
     }
 
 

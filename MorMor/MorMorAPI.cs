@@ -3,7 +3,9 @@ using MomoAPI.Interface;
 using MorMor.Commands;
 using MorMor.Configuration;
 using MorMor.DB.Manager;
+using MorMor.Event;
 using MorMor.Plugin;
+using MorMor.Terraria.Server;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -56,15 +58,20 @@ public class MorMorAPI
             Host = Setting.Host,
             Port = Setting.Port,
         }).Start();
+        //socket服务器启动
+        SocketServer.Start();
+        SocketServer.SocketMessage += SocketReceiveHandler.Adapter;
+        MessageAdapter.Adapter();
+        Service.Event.OnGroupMessage += MessageAdapter.GroupMessageAdapter;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
     }
 
     internal static void LoadConfig()
-    { 
-        Setting = Config.LoadConfig<MorMorSetting>(ConfigPath);
-        UserLocation = Config.LoadConfig<UserLocation>(UserLocationPath);
-    } 
+    {
+        Setting = Config.LoadConfig(ConfigPath, Setting);
+        UserLocation = Config.LoadConfig(UserLocationPath, UserLocation);
+    }
 
     private static void InitDb()
     {

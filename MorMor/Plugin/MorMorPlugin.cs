@@ -43,7 +43,7 @@ public abstract class MorMorPlugin
 
     protected abstract void Dispose(bool dispose);
 
-    ~MorMorPlugin() 
+    ~MorMorPlugin()
     {
         Dispose(true);
     }

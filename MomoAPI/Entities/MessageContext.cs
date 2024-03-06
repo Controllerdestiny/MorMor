@@ -25,7 +25,7 @@ public class MessageContext
     }
 
     public string GetText()
-    { 
+    {
         string text = string.Empty;
         Messages.ForEach(x =>
         {

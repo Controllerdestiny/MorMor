@@ -1,5 +1,5 @@
-﻿using MorMor.Model.Terraria;
-using MorMor.Terraria.Server.ApResultArgs;
+﻿
+using MorMor.Model.Terraria;
 using SkiaSharp;
 
 namespace MorMor.Picture;
@@ -30,11 +30,11 @@ public class InventoryImage
         var p = new SKPaint()
         {
             Shader = SKShader.CreateLinearGradient(
-                new SKPoint(0, 0), new SKPoint(w, h), 
-                new SKColor[] 
-                { 
-                    SKColor.Parse("fbd3e9"), 
-                    SKColor.Parse("eef2f3"), 
+                new SKPoint(0, 0), new SKPoint(w, h),
+                new SKColor[]
+                {
+                    SKColor.Parse("fbd3e9"),
+                    SKColor.Parse("eef2f3"),
                     SKColor.Parse("ffdde1")
                 }, SKShaderTileMode.Repeat)
         };

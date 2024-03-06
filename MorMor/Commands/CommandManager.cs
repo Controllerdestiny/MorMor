@@ -2,7 +2,6 @@
 using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Event;
-using MorMor.Model.Database;
 using System.Reflection;
 using System.Text;
 
@@ -129,7 +128,7 @@ public class CommandManager
 
     private async Task RunCommandCallback(CommandArgs args, Command command)
     {
-        foreach(var perm in command.Permission)
+        foreach (var perm in command.Permission)
         {
             if (args.Account.HasPermission(perm))
             {

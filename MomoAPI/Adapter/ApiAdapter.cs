@@ -6,7 +6,6 @@ using MomoAPI.Enumeration.ApiType;
 using MomoAPI.Enumeration.EventParamType;
 using MomoAPI.Model.API;
 using MomoAPI.Net;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Sora.Entities.Info;
 
@@ -430,7 +429,7 @@ internal class ApiAdapter
             ApiRequestType = ActionType.GetImage,
             ApiParams = new
             {
-               file
+                file
             }
         });
         return (status, obj["data"]?["file"]?.ToString() ?? "");

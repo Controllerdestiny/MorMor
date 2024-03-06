@@ -23,7 +23,7 @@ internal class MappingPlugin
         {
             var assembly = Assembly.Load(File.ReadAllBytes(file.FullName));
             GetAssmblyInstance(assembly);
-            
+
         }
         GetAssmblyInstance(Assembly.GetExecutingAssembly());
         Instances.OrderByDescending(x => x.Order).ForEach(x => x.Initialize());

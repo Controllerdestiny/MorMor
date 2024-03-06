@@ -19,7 +19,7 @@ public class CommandArgs : System.EventArgs
 
     public bool Handler { get; set; }
 
-    public CommandArgs(string name, GroupMessageEventArgs args, string commamdPrefix, 
+    public CommandArgs(string name, GroupMessageEventArgs args, string commamdPrefix,
         List<string> parameters, Dictionary<string, string> commamdLine, AccountManager.Account account)
     {
         Name = name;

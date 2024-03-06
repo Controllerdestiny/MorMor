@@ -4,5 +4,5 @@ namespace MomoAPI.EventArgs;
 
 public class BaseMomoEventArgs : System.EventArgs
 {
-    public OneBotAPI OneBotAPI { get;} = OneBotAPI.Instance;
+    public OneBotAPI OneBotAPI { get; } = OneBotAPI.Instance;
 }

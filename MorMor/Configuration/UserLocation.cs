@@ -1,5 +1,4 @@
 ﻿using MorMor.Terraria;
-using MorMor.Utils;
 using Newtonsoft.Json;
 
 namespace MorMor.Configuration;
@@ -7,7 +6,7 @@ namespace MorMor.Configuration;
 public class UserLocation
 {
     [JsonProperty("服务器位置")]
-    public Dictionary<long, string> Location  = new();
+    public Dictionary<long, string> Location = new();
 
     public void Change(long id, TerrariaServer server)
     {
@@ -21,11 +20,11 @@ public class UserLocation
     }
 
     public bool TryGetServer(long id, out TerrariaServer? terrariaServer)
-    { 
-        if(Location.TryGetValue(id, out var name) && !string.IsNullOrEmpty(name))
+    {
+        if (Location.TryGetValue(id, out var name) && !string.IsNullOrEmpty(name))
         {
             var server = MorMorAPI.Setting.GetServer(name);
-            if(server != null)
+            if (server != null)
             {
                 terrariaServer = server;
                 return true;

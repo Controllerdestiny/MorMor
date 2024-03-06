@@ -3,7 +3,6 @@ using MorMor.Terraria.Server;
 using MorMor.Terraria.Server.ApiRequestParam;
 using MorMor.Terraria.Server.ApResultArgs;
 using Newtonsoft.Json;
-using System.Runtime.CompilerServices;
 using System.Web;
 
 namespace MorMor.Terraria;
@@ -83,6 +82,9 @@ public class TerrariaServer
 
     [JsonProperty("消息转发群")]
     public HashSet<long> ForwardGroups { get; set; } = new();
+
+    [JsonIgnore]
+    public Guid Guid { get; set; } = Guid.NewGuid();
 
     public async Task<OnlineRankArgs> QueryOnlines()
     {

@@ -8,10 +8,10 @@ using MorMor.Exceptions;
 using MorMor.Permission;
 using MorMor.Picture;
 using MorMor.Utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Web;
 
 namespace MorMor.Commands;
 
@@ -51,7 +51,7 @@ public class OneBotCommand
             var currency = MorMorAPI.CurrencyManager.Add(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, num);
             MessageBody body = new()
             {
-                MomoSegment.Image($"http://q.qlogo.cn/headimg_dl?dst_uin={args.EventArgs.Sender.Id}&spec=640&img_type=png"),
+                MomoSegment.Image(args.EventArgs.SenderInfo.TitleImage),
                 MomoSegment.Text($"签到成功！\n"),
                 MomoSegment.Text($"[签到时长]：{result.Date}\n"),
                 MomoSegment.Text($"[获得星币]：{num}\n"),
@@ -59,7 +59,7 @@ public class OneBotCommand
             };
             await args.EventArgs.Reply(body);
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             await args.EventArgs.Reply(e.Message);
         }
@@ -524,7 +524,7 @@ public class OneBotCommand
             var trans = data["data"]?[0]?["trans"];
             if (trans != null && trans.Any())
             {
-                
+
                 await args.EventArgs.Reply($"缩写:`{args.Parameters[0]}`可能为:\n{string.Join(",", trans)}");
             }
             else
@@ -540,7 +540,7 @@ public class OneBotCommand
     #endregion
 
     #region 禁言
-    [CommandMatch("禁",OneBotPermissions.Mute)]
+    [CommandMatch("禁", OneBotPermissions.Mute)]
     private async Task Mute(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
@@ -723,7 +723,7 @@ public class OneBotCommand
             return;
         }
         var sb = new StringBuilder("服务器列表\n");
-        foreach(var x in MorMorAPI.Setting.Servers)
+        foreach (var x in MorMorAPI.Setting.Servers)
         {
             var status = await x.Status();
             sb.Append("[名称]: ");
@@ -756,7 +756,7 @@ public class OneBotCommand
                 return;
             }
             MorMorAPI.UserLocation.Change(args.EventArgs.Sender.Id, server);
-            await args.EventArgs.Reply($"已切换至`{server.Name}`服务器",true);
+            await args.EventArgs.Reply($"已切换至`{server.Name}`服务器", true);
         }
         else
         {
@@ -775,7 +775,7 @@ public class OneBotCommand
             return;
         }
         var sb = new StringBuilder();
-        foreach(var server in MorMorAPI.Setting.Servers)
+        foreach (var server in MorMorAPI.Setting.Servers)
         {
             var api = await server.PlayerOnline();
             sb.AppendLine($"[{server.Name}]在线玩家数量({(api.IsSuccess ? api.Players.Count : 0)}/{255})");
@@ -873,7 +873,7 @@ public class OneBotCommand
     #endregion
 
     #region 注册列表
-    [CommandMatch("注册列表",OneBotPermissions.QueryUserList)]
+    [CommandMatch("注册列表", OneBotPermissions.QueryUserList)]
     private async Task RegisterList(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
@@ -904,9 +904,9 @@ public class OneBotCommand
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
         {
-           if (args.Parameters.Count == 2)
+            if (args.Parameters.Count == 2)
             {
-                switch(args.Parameters[0].ToLower())
+                switch (args.Parameters[0].ToLower())
                 {
                     case "del":
                         try
@@ -914,7 +914,7 @@ public class OneBotCommand
                             MorMorAPI.TerrariaUserManager.Remove(server.Name, args.Parameters[1]);
                             await args.EventArgs.Reply("移除成功!", true);
                         }
-                        catch(TerrariaUserException ex)
+                        catch (TerrariaUserException ex)
                         {
                             await args.EventArgs.Reply(ex.Message);
                         }
@@ -922,14 +922,14 @@ public class OneBotCommand
                     default:
                         await args.EventArgs.Reply("未知子命令!");
                         break;
-                }       
+                }
             }
         }
         else
         {
             await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
         }
-        
+
     }
     #endregion
 
@@ -987,12 +987,12 @@ public class OneBotCommand
         {
             await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [用户名]");
         }
-        
+
     }
     #endregion
 
     #region 执行命令
-    [CommandMatch("执行",OneBotPermissions.ExecuteCommand)]
+    [CommandMatch("执行", OneBotPermissions.ExecuteCommand)]
     private async Task ExecuteCommand(CommandArgs args)
     {
         if (args.Parameters.Count < 1)
@@ -1002,7 +1002,7 @@ public class OneBotCommand
         }
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
         {
-            var cmd = "/" + string.Join(" ",args.Parameters);
+            var cmd = "/" + string.Join(" ", args.Parameters);
             var api = await server.ExecCommamd(cmd);
             var body = new MessageBody();
             if (api.IsSuccess)
@@ -1031,21 +1031,25 @@ public class OneBotCommand
         {
             var api = await server.QueryOnlines();
             var body = new MessageBody();
-            await Console.Out.WriteLineAsync(JsonConvert.SerializeObject(api));
             if (api.IsSuccess)
             {
+                if (api.Rank.Count == 0)
+                {
+                    await args.EventArgs.Reply("当前还没有数据记录", true);
+                    return;
+                }
                 var sb = new StringBuilder($"[{server.Name}]在线排行:\n");
                 var rank = api.Rank.OrderByDescending(x => x.Duration);
                 foreach (var duration in rank)
                 {
                     var day = duration.Duration / (60 * 60 * 24);
-                    var hour = (duration.Duration - day * 60 * 60 * 24)/ (60 * 60);
+                    var hour = (duration.Duration - day * 60 * 60 * 24) / (60 * 60);
                     var minute = (duration.Duration - day * 60 * 60 * 24 - hour * 60 * 60) / 60;
                     var second = duration.Duration - day * 60 * 60 * 24 - hour * 60 * 60 - minute * 60;
                     sb.Append($"[{duration.Name}]在线时长: ");
                     if (day > 0)
                         sb.Append($"{day}天");
-                    if(hour > 0)
+                    if (hour > 0)
                         sb.Append($"{hour}时");
                     if (minute > 0)
                         sb.Append($"{minute}分");
@@ -1076,6 +1080,11 @@ public class OneBotCommand
             var body = new MessageBody();
             if (api.IsSuccess)
             {
+                if (api.Rank.Count == 0)
+                {
+                    await args.EventArgs.Reply("当前还没有数据记录", true);
+                    return;
+                }
                 var sb = new StringBuilder($"[{server.Name}]死亡排行:\n");
                 var rank = api.Rank.OrderByDescending(x => x.Count);
                 foreach (var deathInfo in rank)
@@ -1094,6 +1103,84 @@ public class OneBotCommand
         {
             await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
         }
+    }
+    #endregion
+
+    #region 消息转发
+    [CommandMatch("消息转发", OneBotPermissions.ForwardMsg)]
+    private async Task MessageForward(CommandArgs args)
+    {
+        if (args.Parameters.Count == 1)
+        {
+            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+            {
+                switch (args.Parameters[0])
+                {
+                    case "开启":
+                    case "true":
+                        server.ForwardGroups.Add(args.EventArgs.Group.Id);
+                        await args.EventArgs.Reply("开启成功", true);
+                        break;
+                    case "关闭":
+                    case "false":
+                        server.ForwardGroups.Remove(args.EventArgs.Group.Id);
+                        await args.EventArgs.Reply("关闭成功", true);
+                        break;
+                    default:
+                        await args.EventArgs.Reply("未知子命令！", true);
+                        break;
+                }
+                Config.Write(MorMorAPI.ConfigPath, MorMorAPI.Setting);
+            }
+            else
+            {
+                await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n{args.CommamdPrefix}{args.Name} [开启|关闭]!", true);
+        }
+    }
+    #endregion
+
+    #region 我的信息
+    [CommandMatch("我的信息", OneBotPermissions.SelfInfo)]
+    private async Task SelfInfo(CommandArgs args)
+    {
+        var userid = args.EventArgs.SenderInfo.UserId;
+        var serverName = MorMorAPI.UserLocation.TryGetServer(userid,out var server) ? server?.Name ?? "NULL" : "NULL";
+        var group = args.Account.Group.Name;
+        var bindUser = MorMorAPI.TerrariaUserManager.GetUserById(userid, serverName);
+        var bindName = bindUser == null ? "NULL" : bindUser.Name;
+        var api = await server?.QueryEconomicBank(bindName);
+        var signInfo = MorMorAPI.SignManager.Query(args.EventArgs.Group.Id, userid);
+        var sign = signInfo != null ? signInfo.Date : 0;
+        var currencyInfo = MorMorAPI.CurrencyManager.Query(args.EventArgs.Group.Id, userid);
+        var currency = currencyInfo != null ? currencyInfo.num : 0;
+        var exp = api == null || api.IsSuccess ? 0 : api.CurrentNum;
+        MessageBody body = new()
+        {
+            MomoSegment.Image(args.EventArgs.SenderInfo.TitleImage),
+            MomoSegment.Text($"[QQ账号]:{userid}\n"),
+            MomoSegment.Text($"[签到时长]:{sign}\n"),
+            MomoSegment.Text($"[星币数量]:{currency}\n"),
+            MomoSegment.Text($"[拥有权限]:{group}\n"),
+            MomoSegment.Text($"[绑定角色]:{bindName}\n"),
+            MomoSegment.Text($"[经验数量]:{exp}\n"),
+            MomoSegment.Text($"[所在服务器]:{serverName}")
+        };
+        await args.EventArgs.Reply(body);
+    }
+    #endregion
+
+    #region Wiki
+    [CommandMatch("wiki", OneBotPermissions.TerrariaWiki)]
+    private async Task Wiki(CommandArgs args)
+    {
+        string url = "https://terraria.wiki.gg/zh/index.php?search=";
+        var msg = args.Parameters.Count > 0 ? url += HttpUtility.UrlEncode(args.Parameters[0]) : url.Split("?")[0];
+        await args.EventArgs.Reply(msg);
     }
     #endregion
 }

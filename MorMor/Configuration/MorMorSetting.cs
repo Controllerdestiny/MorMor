@@ -44,11 +44,14 @@ public class MorMorSetting
     [JsonProperty("发件人邮箱密码")]
     public string SenderPwd { get; init; } = "";
 
+    [JsonProperty("Socket服务器端口号")]
+    public int SocketProt { get; init; } = 6000;
+
     [JsonProperty("服务器列表")]
     public List<TerrariaServer> Servers { get; } = new();
 
     public TerrariaServer? GetServer(string name)
-    { 
+    {
         return Servers.Find(x => x.Name == name);
     }
 }

@@ -50,4 +50,10 @@ internal class OneBotPermissions
     public const string DeathRank = "onebot.tshock.deathrank";
 
     public const string OnlineRank = "onebot.tshock.onlinerank";
+
+    public const string ForwardMsg = "onebot.tshock.forward";
+
+    public const string SelfInfo = "onebot.tshock.userinfo";
+
+    public const string TerrariaWiki = "onebot.terraria.wiki";
 }
