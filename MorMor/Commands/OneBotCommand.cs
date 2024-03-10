@@ -17,6 +17,19 @@ namespace MorMor.Commands;
 
 public class OneBotCommand
 {
+    #region 版本信息
+    [CommandMatch("version", OneBotPermissions.Version)]
+    private async Task VersionInfo(CommandArgs args)
+    {
+        var info = "名称: MorMor" +
+            "\n版本: V1.0.0.7" +
+            $"\n运行时长: {DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime:dd\\.hh\\:mm\\:ss}" +
+            "\nMorMor是基于LLOneBot开发的 .NET平台机器人，主要功能为群管理以及TShock服务器管理" +
+            "\n开源地址: https://github.com/dalaoshus/MorMor";
+        await args.EventArgs.Reply(info);
+    }
+    #endregion
+
     #region 帮助
     [CommandMatch("help", OneBotPermissions.Help)]
     public async Task Help(CommandArgs args)
@@ -854,7 +867,7 @@ public class OneBotCommand
                     }
                     await args.EventArgs.Reply(body);
                 }
-                catch (AccountException ex)
+                catch (TerrariaUserException ex)
                 {
                     await args.EventArgs.Reply(ex.Message);
                 }
@@ -1003,7 +1016,7 @@ public class OneBotCommand
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
         {
             var cmd = "/" + string.Join(" ", args.Parameters);
-            var api = await server.ExecCommamd(cmd);
+            var api = await server.ExecCommand(cmd);
             var body = new MessageBody();
             if (api.IsSuccess)
             {
@@ -1149,7 +1162,7 @@ public class OneBotCommand
     private async Task SelfInfo(CommandArgs args)
     {
         var userid = args.EventArgs.SenderInfo.UserId;
-        var serverName = MorMorAPI.UserLocation.TryGetServer(userid,out var server) ? server?.Name ?? "NULL" : "NULL";
+        var serverName = MorMorAPI.UserLocation.TryGetServer(userid, out var server) ? server?.Name ?? "NULL" : "NULL";
         var group = args.Account.Group.Name;
         var bindUser = MorMorAPI.TerrariaUserManager.GetUserById(userid, serverName);
         var bindName = bindUser == null ? "NULL" : bindUser.Name;
@@ -1182,5 +1195,63 @@ public class OneBotCommand
         var msg = args.Parameters.Count > 0 ? url += HttpUtility.UrlEncode(args.Parameters[0]) : url.Split("?")[0];
         await args.EventArgs.Reply(msg);
     }
+    #endregion
+
+    #region 启动服务器
+    [CommandMatch("启动", OneBotPermissions.StartTShock)]
+    private async Task StartTShock(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            if (server.Start(args.CommamdLine))
+            {
+                await args.EventArgs.Reply($"{server.Name} 正在对其执行启动命令!", true);
+                return;
+            }
+            await args.EventArgs.Reply($"{server.Name} 启动失败!", true);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 启动服务器
+    [CommandMatch("泰拉服务器重置", OneBotPermissions.StartTShock)]
+    private async Task ResetTShock(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            await server.Reset(args.CommamdLine);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 随机视频
+    [CommandMatch("randv", "")]
+    private async Task RandVideo(CommandArgs args)
+    {
+        var uri = new Uri("https://v2.api-m.com/api/meinv");
+        var httpClient = new HttpClient();
+        var response = httpClient.Send(new()
+        {
+            Method = HttpMethod.Get,
+            RequestUri = uri
+        });
+        if (response.IsSuccessStatusCode)
+        {
+            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
+            await args.EventArgs.Reply(new MessageBody()
+            {
+                MomoSegment.Video(result?["data"]?.ToString())
+            });
+        }
+    }
+
     #endregion
 }

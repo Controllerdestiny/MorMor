@@ -22,7 +22,8 @@ public class DefaultGroup : Group
         OneBotPermissions.OnlineRank,
         OneBotPermissions.DeathRank,
         OneBotPermissions.SelfInfo,
-        OneBotPermissions.TerrariaWiki
+        OneBotPermissions.TerrariaWiki,
+        OneBotPermissions.Version
     };
     public DefaultGroup() : base(MorMorAPI.Setting.DefaultPermGroup)
     {

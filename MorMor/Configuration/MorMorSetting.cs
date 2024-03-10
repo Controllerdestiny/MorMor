@@ -54,4 +54,9 @@ public class MorMorSetting
     {
         return Servers.Find(x => x.Name == name);
     }
+
+    public TerrariaServer? GetServer(string name, long groupid)
+    {
+        return Servers.Find(x => x.Name == name && x.Groups.Contains(groupid));
+    }
 }

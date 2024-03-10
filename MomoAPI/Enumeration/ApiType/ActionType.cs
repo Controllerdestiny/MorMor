@@ -11,6 +11,9 @@ public enum ActionType
     [Description("send_msg")]
     SendMsg,
 
+    [Description("get_cookies")]
+    GetCookie,
+
     /// <summary>
     /// 发送群消息
     /// </summary>

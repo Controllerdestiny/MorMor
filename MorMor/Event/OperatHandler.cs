@@ -15,6 +15,8 @@ public static class OperatHandler
 
     public static event EventCallBack<ReloadEventArgs, Task> OnReload;
 
+    public static event EventCallBack<GroupMessageForwardArgs, Task> OnGroupMessageForward;
+
     public static UserPermissionType UserPermission(AccountManager.Account account, string prem)
     {
         if (account.UserId == MorMorAPI.Setting.OwnerId)
@@ -23,6 +25,14 @@ public static class OperatHandler
             return UserPermissionType.Denied;
         var args = new PermissionEventArgs(account, prem, UserPermissionType.Denied);
         return OnUserPermission(args);
+    }
+
+    public static async Task<bool> MessageForward(GroupMessageForwardArgs args)
+    {
+        if (OnGroupMessageForward == null)
+            return false;
+        await OnGroupMessageForward(args);
+        return args.Handler;
     }
 
     public static async Task<bool> UserCommand(CommandArgs args)

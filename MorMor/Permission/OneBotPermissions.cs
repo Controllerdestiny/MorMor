@@ -3,6 +3,8 @@ namespace MorMor.Permission;
 
 internal class OneBotPermissions
 {
+    public const string Version = "onebot.version.info";
+
     public const string Sign = "onebot.sign";
 
     public const string Jrrp = "onebot.join";
@@ -56,4 +58,8 @@ internal class OneBotPermissions
     public const string SelfInfo = "onebot.tshock.userinfo";
 
     public const string TerrariaWiki = "onebot.terraria.wiki";
+
+    public const string StartTShock = "onebot.tshock.start";
+
+    public const string ResetTShock = "onebot.tshock.reset";
 }

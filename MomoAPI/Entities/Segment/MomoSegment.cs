@@ -90,11 +90,12 @@ public class MomoSegment
         });
     }
 
-    public static MomoSegment File(string data)
+    public static MomoSegment File(string data, string name = null)
     {
         return new MomoSegment(SegmentType.File, new DataModel.File()
         {
-            Data = data
+            Data = data,
+            Name = name
         });
     }
 

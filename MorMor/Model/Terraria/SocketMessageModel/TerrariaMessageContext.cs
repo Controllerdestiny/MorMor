@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace MorMor.Model.Terraria.SocketMessageModel;
 
-public class SendMessage
+public class TerrariaMessageContext
 {
     [JsonProperty("type")]
     [JsonConverter(typeof(EnumConverter))]
@@ -18,4 +18,9 @@ public class SendMessage
 
     [JsonProperty("color")]
     public byte[] Color { get; set; }
+
+    public string ToJson()
+    {
+        return JsonConvert.SerializeObject(this);
+    }
 }

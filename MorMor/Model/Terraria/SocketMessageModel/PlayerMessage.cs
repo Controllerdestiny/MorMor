@@ -19,6 +19,9 @@ public class PlayerMessage : BaseMessage
     public bool IsLogin { get; init; }
 
     [JsonIgnore]
+    public bool Handler { get; set; }
+
+    [JsonIgnore]
     private TerrariaUserManager.User? User
     {
         get

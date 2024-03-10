@@ -448,4 +448,17 @@ internal class ApiAdapter
         });
         return (status, obj["data"]?["file"]?.ToString() ?? "");
     }
+
+    public static async Task<(ApiStatus, JObject)> GetCookie(string domain = "")
+    {
+        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.GetCookie,
+            ApiParams = new
+            {
+                domain
+            }
+        });
+        return (status, obj);
+    }
 }

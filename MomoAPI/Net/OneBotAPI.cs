@@ -15,6 +15,11 @@ public class OneBotAPI
     {
 
     }
+    public async Task<(ApiStatus, JObject)> GetCookie(string domain = "")
+    {
+        return await ApiAdapter.GetCookie(domain);
+    }
+
     public async Task<(ApiStatus, long)> SendGroupMessage(long target, MessageBody body, TimeSpan? timeout = null)
     {
         return await ApiAdapter.SendGroupMessage(target, body, timeout);

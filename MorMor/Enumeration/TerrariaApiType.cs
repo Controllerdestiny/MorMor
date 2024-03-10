@@ -25,11 +25,8 @@ public enum TerrariaApiType
     [Description("/bank")]
     EconomicsBank,
 
-    [Description("/msg/public")]
-    SendPublicMsg,
-
-    [Description("/msg/private")]
-    SendPrivateMsg,
+    [Description("/reset")]
+    Reset,
 
     [Description("/beanInvsee")]
     BeanInvsee,

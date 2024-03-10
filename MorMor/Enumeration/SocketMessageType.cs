@@ -49,7 +49,7 @@ public enum SocketMessageType
     /// 公共消息
     /// </summary>
     [Description("public")]
-    PluginMsg,
+    PublicMsg,
 
     /// <summary>
     /// 私有消息

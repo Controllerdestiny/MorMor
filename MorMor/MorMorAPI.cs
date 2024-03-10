@@ -41,7 +41,6 @@ public class MorMorAPI
 
     public static async Task Star()
     {
-
         if (!Directory.Exists(SAVE_PATH))
             Directory.CreateDirectory(SAVE_PATH);
         //读取Config
@@ -60,9 +59,10 @@ public class MorMorAPI
         }).Start();
         //socket服务器启动
         SocketServer.Start();
-        SocketServer.SocketMessage += SocketReceiveHandler.Adapter;
-        MessageAdapter.Adapter();
-        Service.Event.OnGroupMessage += MessageAdapter.GroupMessageAdapter;
+        //Socket信息适配器
+        SocketServer.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
+        //群消息转发适配器
+        Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
     }
