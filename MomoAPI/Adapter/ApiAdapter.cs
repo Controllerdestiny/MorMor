@@ -461,4 +461,13 @@ internal class ApiAdapter
         });
         return (status, obj);
     }
+
+    public static async Task<ApiStatus> CleanCache()
+    {
+        (ApiStatus status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.CleanChahe,
+        });
+        return status;
+    }
 }

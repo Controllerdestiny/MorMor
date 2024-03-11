@@ -1,15 +1,22 @@
+<div align="center">
+  
 # MorMor
 
 # 基于[LLOneBot](https://github.com/LLOneBot/LLOneBot) 开发的.NET TerrariaServerBot
 
+</div>
+
+## 说明
+
 - MomoAPI 基于[Sora](https://github.com/Hoshikawa-Kaguya/Sora)更改而来。
-- MorMor 项目中数据库与分页工具部使用了[TShock](https://github.com/Pryaxis/TShock)代码<br>
+- MorMor 项目中数据库与分页工具部使用了[TShock](https://github.com/Pryaxis/TShock)代码
+- 该机器人依然采用 tshock 的权限管理模式，使用 RABQ 模型，指令设计上不会与 tshock 有多少区别，另外也采用了插件加载模式，可以自写插件实现更多功能。
 
-## 使用前你可能需要配置 Mail 服务机器人会用到，如发送注册密码等服务！
+## 使用注意事项
 
-## 机器人用到的插件可在[TshockAdapter](https://github.com/dalaoshus/TShockAdapter)仓库下载使用
-
-## 如何[部署](https://llonebot.github.io/zh-CN/guide/getting-started)LLOneBot？请点击超链查看教程!
+- 如何部署 LLOneBot？请[点击此处](https://llonebot.github.io/zh-CN/guide/getting-started)查看教程!
+- 使用前你可能需要配置 Mail 服务，机器人会用到，如发送注册密码等服务！
+- TShock 管理功能需要插件，机器人用到的插件可在[TshockAdapter](https://github.com/dalaoshus/TShockAdapter)仓库下载使用
 
 # 预计支持功能(部分功能可能需要插件支持)
 
@@ -45,34 +52,18 @@
 
 ## 指令列表
 
-| 名称            | 是否需要 TShock 插件 |               描述               |
-| --------------- | :------------------: | :------------------------------: |
-| /help           |          否          |           查看指令列表           |
-| /签到           |          否          |             每日签到             |
-| /reload         |          否          |             重读配置             |
-| /group          |          否          |            权限组管理            |
-| /account        |          否          |            账户组管理            |
-| /星币           |          否          |             货币管理             |
-| /scmdperm       |          否          |           查询指令权限           |
-| /缩写           |          否          |           查询中文缩写           |
-| /禁             |          否          |               禁言               |
-| /解             |          否          |               解禁               |
-| /生成地图       |          是          |      生成 Tshock 服务器地图      |
-| /进度查询       |          是          |          查询服务器进度          |
-| /user           |          否          |           注册用户管理           |
-| /全禁           |          否          |             全体禁言             |
-| /设置群名       |          否          |             设置群名             |
-| /设置管理       |          否          |            设置管理员            |
-| /取消管理       |          否          |            取消管理员            |
-| /设置昵称       |          否          |          设置群成员昵称          |
-| /切换           |          否          |         切换至某个服务器         |
-| /在线           |          否          |        查询服务器在线玩家        |
-| /注册           |          否          |          注册服务器用户          |
-| /注册列表       |          否          |           查询注册列表           |
-| /查背包         |          是          |        查询服务器玩家背包        |
-| /在线排行       |          是          |          在线时长排行榜          |
-| /死亡排行       |          是          |          死亡次数排行榜          |
-| /启动           |          是          | 启动服务器(可附带 ts 的启动参数) |
-| /泰拉服务器重置 |          是          |  重置服务器(可附带 ts 启动参数)  |
-
-## 该机器人依然采用 tshock 的权限管理模式，使用 RABQ 模型，指令设计上不会与 tshock 有多少区别，另外也采用了插件加载模式，可以自写插件实现更多功能。
+| 名称      | 是否需要 TShock 插件 |          描述          |
+| --------- | :------------------: | :--------------------: |
+| /help     |          否          |      查看指令列表      |
+| /签到     |          否          |        每日签到        |
+| /reload   |          否          |        重读配置        |
+| /group    |          否          |       权限组管理       |
+| /account  |          否          |       账户组管理       |
+| /星币     |          否          |        货币管理        |
+| /scmdperm |          否          |      查询指令权限      |
+| /缩写     |          否          |      查询中文缩写      |
+| /禁       |          否          |          禁言          |
+| /解       |          否          |          解禁          |
+| /生成地图 |          是          | 生成 Tshock 服务器地图 |
+| /进度查询 |          是          |     查询服务器进度     |
+| /user     |          否          |      注册用户管理      |

@@ -165,4 +165,9 @@ public class OneBotAPI
     {
         return await ApiAdapter.GetRecord(file, type);
     }
+
+    public async Task<ApiStatus> CleanCache()
+    {
+        return await ApiAdapter.CleanCache();
+    }
 }

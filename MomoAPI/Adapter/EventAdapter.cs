@@ -1,4 +1,5 @@
-﻿using MomoAPI.EventArgs;
+﻿using MomoAPI.Enumeration.EventParamType;
+using MomoAPI.EventArgs;
 using MomoAPI.Model.Event.MessageEvent;
 using MomoAPI.Model.Event.MetaEvent;
 using MomoAPI.Model.Event.NoticeEvent;
@@ -61,6 +62,16 @@ public class EventAdapter
     /// 生命周期事件
     /// </summary>
     public event EventCallBackHandler<LifeCycleEventArgs> OnLifeCycle;
+
+    /// <summary>
+    /// 群禁言事件
+    /// </summary>
+    public event EventCallBackHandler<GroupMuteEventArgs> OnGroupMute;
+
+    /// <summary>
+    /// 群解除禁用事件
+    /// </summary>
+    public event EventCallBackHandler<GroupUnMuteEventArgs> OnGroupUnMute;
 
     internal async Task Adapter(JObject messageObj)
     {
@@ -211,6 +222,34 @@ public class EventAdapter
                         if (args != null)
                         {
                             await OnGroupMemberChange(args);
+                        }
+                        break;
+                    }
+                case "group_ban":
+                    {
+                        var obj = messageObj.ToObject<OneBotGroupMuteEventArgs>();
+                        if (obj == null)
+                            break;
+                        switch (obj.OperatorType)
+                        {
+                            case MuteType.Mute:
+                                {
+                                    var args = new GroupMuteEventArgs(obj);
+                                    if (args != null)
+                                    {
+                                        await OnGroupMute(args);
+                                    }
+                                    break;
+                                }
+                            case MuteType.UnMute:
+                                {
+                                    var args = new GroupUnMuteEventArgs(obj);
+                                    if (args != null)
+                                    {
+                                        await OnGroupUnMute(args);
+                                    }
+                                    break;
+                                }
                         }
                         break;
                     }

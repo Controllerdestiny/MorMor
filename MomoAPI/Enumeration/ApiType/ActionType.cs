@@ -11,8 +11,17 @@ public enum ActionType
     [Description("send_msg")]
     SendMsg,
 
+    /// <summary>
+    /// 获取cookie
+    /// </summary>
     [Description("get_cookies")]
     GetCookie,
+
+    /// <summary>
+    /// 清理缓存
+    /// </summary>
+    [Description("clean_cache")]
+    CleanChahe,
 
     /// <summary>
     /// 发送群消息
