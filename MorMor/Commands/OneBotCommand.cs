@@ -22,10 +22,10 @@ public class OneBotCommand
     private async Task VersionInfo(CommandArgs args)
     {
         var info = "名称: MorMor" +
-            "\n版本: V1.0.0.9" +
+            "\n版本: V1.0.1.0" +
             $"\n运行时长: {DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime:dd\\.hh\\:mm\\:ss}" +
             "\nMorMor是基于LLOneBot开发的 .NET平台机器人，主要功能为群管理以及TShock服务器管理" +
-            "\n开源地址: https://github.com/dalaoshus/MorMor";
+            "\n开源地址: https://github.com/Controllerdestiny/MorMor";
         await args.EventArgs.Reply(info);
     }
     #endregion

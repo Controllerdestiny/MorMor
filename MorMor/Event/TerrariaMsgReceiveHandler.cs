@@ -122,7 +122,7 @@ public class TerrariaMsgReceiveHandler
         }
         catch
         {
-            Console.WriteLine("接受到无法解析的信息:" + args.Message);
+            Console.WriteLine($"{args.Client.RemoteEndPoint} 发送了一条无法解析的信息");
         }
 
     }
