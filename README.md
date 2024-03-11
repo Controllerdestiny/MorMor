@@ -5,17 +5,11 @@
 - MomoAPI 基于[Sora](https://github.com/Hoshikawa-Kaguya/Sora)更改而来。
 - MorMor 项目中数据库与分页工具部使用了[TShock](https://github.com/Pryaxis/TShock)代码<br>
 
-## 使用前你可能需要配置 Mail 服务机器人会用到
+## 使用前你可能需要配置 Mail 服务机器人会用到，如发送注册密码等服务！
 
 ## 机器人用到的插件可在[TshockAdapter](https://github.com/dalaoshus/TShockAdapter)仓库下载使用
 
-## 部署[LLOneBot](https://github.com/LLOneBot/LLOneBot)
-
-1. 你需要安装 NTQQ
-2. 你需要部署[LiteLoaderQQNT](https://github.com/LiteLoaderQQNT/LiteLoaderQQNT) 推荐使用[LiteLoaderQQNT_Install](https://github.com/Mzdyl/LiteLoaderQQNT_Install/)自动安装程序
-3. 将 LLOneBot 解压至 plugin 文件夹内
-4. 下载 MorMor 启动后配置生成的配置文件
-5. 需要配置 Mail 服务，机器人会用到，列如给玩家发送注册密码等服务。
+## 如何[部署](https://llonebot.github.io/zh-CN/guide/getting-started)LLOneBot？请点击超链查看教程!
 
 # 预计支持功能(部分功能可能需要插件支持)
 
@@ -81,4 +75,4 @@
 | /启动           |          是          | 启动服务器(可附带 ts 的启动参数) |
 | /泰拉服务器重置 |          是          |  重置服务器(可附带 ts 启动参数)  |
 
-# 该机器采依然才用 tshock 的管理模式，使用 RABQ 模型，指令设计上不会与 tshock 有多少区别，另外也采用了插件加载模式，可以自写插件实现更多功能。
+## 该机器人依然采用 tshock 的权限管理模式，使用 RABQ 模型，指令设计上不会与 tshock 有多少区别，另外也采用了插件加载模式，可以自写插件实现更多功能。
