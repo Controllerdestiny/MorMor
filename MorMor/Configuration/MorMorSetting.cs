@@ -17,6 +17,15 @@ public class MorMorSetting
     [JsonProperty("监听端口")]
     public int Port { get; init; } = 5000;
 
+    [JsonProperty("监听令牌")]
+    public string AccessToken { get; set; } = "";
+
+    [JsonProperty("数据库类型")]
+    public string DbType { get; set; } = "sqlite";
+
+    [JsonProperty("Sqlite路径")]
+    public string DbPath { get; set; } = "MorMor.sqlite";
+
     [JsonProperty("数据库地址")]
     public string DbHost { get; init; } = "127.0.0.1";
 

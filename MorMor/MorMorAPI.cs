@@ -1,9 +1,11 @@
-﻿using MomoAPI;
+﻿using Microsoft.Data.Sqlite;
+using MomoAPI;
 using MomoAPI.Interface;
 using MorMor.Commands;
 using MorMor.Configuration;
 using MorMor.DB.Manager;
 using MorMor.Event;
+using MorMor.Log;
 using MorMor.Plugin;
 using MorMor.Terraria.Server;
 using MySql.Data.MySqlClient;
@@ -33,6 +35,8 @@ public class MorMorAPI
 
     internal static string UserLocationPath => Path.Combine(SAVE_PATH, "UserLocation.Json");
 
+    public static TextLog Log { get; internal set; }
+
     public static MorMorSetting Setting { get; internal set; }
 
     public static UserLocation UserLocation { get; internal set; }
@@ -43,6 +47,7 @@ public class MorMorAPI
     {
         if (!Directory.Exists(SAVE_PATH))
             Directory.CreateDirectory(SAVE_PATH);
+        Log = new TextLog(Path.Combine(PATH, "log", $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log"));
         //读取Config
         LoadConfig();
         //初始化数据库
@@ -56,6 +61,8 @@ public class MorMorAPI
         {
             Host = Setting.Host,
             Port = Setting.Port,
+            AccessToken = Setting.AccessToken,
+            Log = Log
         }).Start();
         //socket服务器启动
         SocketServer.Start();
@@ -75,11 +82,29 @@ public class MorMorAPI
 
     private static void InitDb()
     {
-        DB = new MySqlConnection()
+        switch (Setting.DbType.ToLower())
         {
-            ConnectionString = string.Format("Server={0};Port={1};Database={2};Uid={3};Pwd={4}",
-            Setting.DbHost, Setting.DbPort, Setting.DbName, Setting.DbUserName, Setting.DbPassword)
-        };
+            case "sqlite":
+                {
+                    string sql = Path.Combine(PATH, Setting.DbPath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(sql)!);
+                    DB = new SqliteConnection(string.Format("Data Source={0}", sql));
+                    break;
+                }
+            case "mysql":
+                {
+                    Console.WriteLine(66);
+                    DB = new MySqlConnection()
+                    {
+                        ConnectionString = string.Format("Server={0};Port={1};Database={2};Uid={3};Pwd={4}",
+                        Setting.DbHost, Setting.DbPort, Setting.DbName, Setting.DbUserName, Setting.DbPassword)
+                    };
+                    break;
+                }
+            default:
+                throw new TypeLoadException("无法使用类型:" + Setting.DbType);
+
+        }
         GroupManager = new();
         AccountManager = new();
         CurrencyManager = new();

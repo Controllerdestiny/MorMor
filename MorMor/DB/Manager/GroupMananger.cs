@@ -21,12 +21,16 @@ public class GroupMananger
             new SqlColumn("Permission", MySqlDbType.Text),
             new SqlColumn("Parent", MySqlDbType.Text) { DefaultValue = "" }
             );
-        var create = new SqlTableCreator(database, new MysqlQueryCreator());
-        Groups = GetGroups();
+        var create = new SqlTableCreator(database,
+                database.GetSqlType() == SqlType.Sqlite
+                    ? new SqliteQueryCreator()
+                    : new MysqlQueryCreator());
+        
         if (create.EnsureTableStructure(table))
         {
             AddGroup(DefaultGroup.Name, DefaultGroup.Permssion);
         }
+        Groups = GetGroups();
     }
 
     public void AddGroup(string groupName, string perms = "")

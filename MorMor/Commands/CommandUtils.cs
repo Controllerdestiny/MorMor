@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using MomoAPI.Entities.Segment;
+using MomoAPI.Entities;
+using System.Reflection;
 
 namespace MorMor.Commands;
 
@@ -20,5 +22,31 @@ internal static class CommandUtils
             }
         }
         return false;
+    }
+
+    public static async Task<MessageBody> GetAccountInfo(long groupid, long uin, string groupName)
+    {
+        var userid = uin;
+        var serverName = MorMorAPI.UserLocation.TryGetServer(userid, out var server) ? server?.Name ?? "NULL" : "NULL";
+        var bindUser = MorMorAPI.TerrariaUserManager.GetUserById(userid, serverName);
+        var bindName = bindUser == null ? "NULL" : bindUser.Name;
+        var api = server != null ? (await server.QueryEconomicBank(bindName)): null;
+        var signInfo = MorMorAPI.SignManager.Query(groupid, userid);
+        var sign = signInfo != null ? signInfo.Date : 0;
+        var currencyInfo = MorMorAPI.CurrencyManager.Query(groupid, userid);
+        var currency = currencyInfo != null ? currencyInfo.num : 0;
+        var exp = api == null || !api.IsSuccess ? 0 : api.CurrentNum;
+        MessageBody body = new()
+        {
+            MomoSegment.Image($"http://q.qlogo.cn/headimg_dl?dst_uin={uin}&spec=640&img_type=png"),
+            MomoSegment.Text($"[QQ账号]:{userid}\n"),
+            MomoSegment.Text($"[签到时长]:{sign}\n"),
+            MomoSegment.Text($"[星币数量]:{currency}\n"),
+            MomoSegment.Text($"[拥有权限]:{groupName}\n"),
+            MomoSegment.Text($"[绑定角色]:{bindName}\n"),
+            MomoSegment.Text($"[经验数量]:{exp}\n"),
+            MomoSegment.Text($"[所在服务器]:{serverName}")
+        };
+        return body;
     }
 }

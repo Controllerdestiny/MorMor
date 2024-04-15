@@ -5,10 +5,13 @@ using MorMor.Configuration;
 using MorMor.Event;
 using MorMor.EventArgs;
 using MorMor.Exceptions;
+using MorMor.Music;
 using MorMor.Permission;
 using MorMor.Picture;
 using MorMor.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Sora.Entities.Info;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -17,6 +20,141 @@ namespace MorMor.Commands;
 
 public class OneBotCommand
 {
+    #region 点歌
+    [CommandMatch("点歌", OneBotPermissions.Music)]
+    private static async Task Music(CommandArgs args)
+    {
+        if (args.Parameters.Count > 0)
+        {
+            var musicName = string.Join(" ", args.Parameters);
+            if (args.Parameters[0] == "网易")
+            {
+                if (args.Parameters.Count > 1)
+                {
+                    await args.EventArgs.Reply(await MusicTool.WangYiMusic(musicName[2..]));
+                    MusicTool.ChangeName(musicName[2..], args.EventArgs.Sender.Id);
+                    MusicTool.ChangeLocal("网易", args.EventArgs.Sender.Id);
+                }
+                else
+                {
+                    await args.EventArgs.Reply("请输入一个歌名!");
+                }
+            }
+            else if (args.Parameters[0] == "QQ")
+            {
+                if (args.Parameters.Count > 1)
+                {
+                    await args.EventArgs.Reply(await MusicTool.QQMusic(musicName[2..]));
+                    MusicTool.ChangeName(musicName[2..], args.EventArgs.Sender.Id);
+                    MusicTool.ChangeLocal("QQ", args.EventArgs.Sender.Id);
+                }
+                else
+                {
+                    await args.EventArgs.Reply("请输入一个歌名!");
+                }
+            }
+            else
+            {
+                var type = MusicTool.GetLocal(args.EventArgs.Sender.Id);
+
+                if (type == "网易")
+                {
+                    await args.EventArgs.Reply(await MusicTool.WangYiMusic(musicName));
+                    MusicTool.ChangeName(musicName, args.EventArgs.Sender.Id);
+                }
+                else
+                {
+
+                    await args.EventArgs.Reply(await MusicTool.QQMusic(musicName));
+                    MusicTool.ChangeName(musicName, args.EventArgs.Sender.Id);
+                }
+               
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply("请输入一个歌名!");
+        }
+    }
+    #endregion
+
+    #region 选歌
+    [CommandMatch("选", OneBotPermissions.Music)]
+    private async Task ChageMusic(CommandArgs args)
+    {
+        if (args.Parameters.Count > 0)
+        {
+            var musicName = MusicTool.GetName(args.EventArgs.Sender.Id);
+            if (musicName != null)
+            {
+                if (int.TryParse(args.Parameters[0], out int id))
+                {
+                    if (MusicTool.GetLocal(args.EventArgs.Sender.Id) == "QQ")
+                    {
+                        try
+                        {
+                            var music = await MusicTool.GetMusicQQ(musicName, id);
+                            Console.WriteLine(music.JumpUrl);
+                            await args.EventArgs.Reply(new MessageBody()
+                            { 
+                                
+                                MomoSegment.Music_QQ(music.MusicUrl,music.Picture,music.Name,string.Join(",",music.Singers))
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+
+                            await args.EventArgs.Reply(ex.Message);
+
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            var music = await MusicTool.GetMusic163(musicName, id);
+                            await args.EventArgs.Reply(new MessageBody()
+                            {
+                                MomoSegment.Music_163(music.MusicUrl,music.Picture,music.Name,string.Join(",",music.Singers))
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            await args.EventArgs.Reply(ex.Message);
+                        }
+                    }
+
+                }
+                else
+                {
+                    await args.EventArgs.Reply("请输入一个正确的序号!");
+                }
+
+            }
+            else
+            {
+                await args.EventArgs.Reply("请先点歌!");
+            }
+
+        }
+        else
+        {
+            await args.EventArgs.Reply("请输入一个正确的序号!");
+        }
+    }
+    #endregion
+
+    #region 内部自用获取Cookie
+    [CommandMatch("test", OneBotPermissions.Account)]
+    private async Task Test(CommandArgs args)
+    {
+        if (args.Parameters.Count != 1)
+            return;
+       var (_,cookie) = await args.EventArgs.OneBotAPI.GetCookie(args.EventArgs.Group.Id, args.Parameters[0]);
+       await args.EventArgs.Reply(JsonConvert.SerializeObject(cookie, Formatting.Indented));
+    }
+    #endregion
+
     #region 版本信息
     [CommandMatch("version", OneBotPermissions.Version)]
     private async Task VersionInfo(CommandArgs args)
@@ -885,6 +1023,87 @@ public class OneBotCommand
     }
     #endregion
 
+    #region 我的密码
+    [CommandMatch("我的密码", OneBotPermissions.SelfPassword)]
+    private async Task SelfPassword(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        {
+            var user = MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name);
+            if(user != null)
+            {
+                MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
+                            $"{server.Name}服务器注册密码",
+                            $"您的注册密码是:{user.Password}<br>请注意保存不要暴露给他人");
+                await args.EventArgs.Reply("密码查询成功已发送至你的QQ邮箱。", true);
+                return;
+            }
+            await args.EventArgs.Reply($"{server.Name}上未找到你的注册信息。");
+            return;
+        }
+        await args.EventArgs.Reply("服务器无效或未切换至一个有效服务器!");
+    }
+    #endregion
+
+    #region 查询注册人
+    [CommandMatch("注册查询", OneBotPermissions.SearchUser)]
+    private async Task SearchUser(CommandArgs args)
+    {
+        async Task GetRegister(long id)
+        {
+            var users = MorMorAPI.TerrariaUserManager.GetUsers(id);
+            if (users.Count == 0)
+            {
+                await args.EventArgs.Reply("未查询到该用户的注册信息!");
+                return;
+            }
+            StringBuilder sb = new("查询结果:");
+            foreach (var user in users)
+            {
+                sb.AppendLine($"注册名称: {user.Name}");
+                sb.AppendLine($"注册账号: {user.Id}");
+                (ApiStatus status, GroupMemberInfo info) = await args.EventArgs.OneBotAPI.GetGroupMemberInfo(args.EventArgs.Group.Id, user.Id);
+                if (status.RetCode == 0)
+                {
+                    sb.AppendLine($"群昵称: {info.Card}");
+                }
+                else
+                {
+                    sb.AppendLine("注册人不在此群中");
+                }
+            }
+            await args.EventArgs.Reply(sb.ToString());
+        }
+        var atlist = args.EventArgs.MessageContext.GetAts();
+        if (args.Parameters.Count == 0 && atlist.Count > 0)
+        {
+            var target = atlist.First();
+            await GetRegister(target.UserId);
+            
+        }
+        else if (args.Parameters.Count == 1)
+        {
+            if (long.TryParse(args.Parameters[0], out var id))
+            {
+                await GetRegister(id);
+            }
+            else
+            {
+                var user = MorMorAPI.TerrariaUserManager.GetUsersByName(args.Parameters[0]);
+                if (user == null)
+                {
+                    await args.EventArgs.Reply("未查询到注册信息", true);
+                    return;
+                }
+                else
+                {
+                    await GetRegister(user.Id);
+                }
+            }
+        }
+    }
+    #endregion
+
     #region 注册列表
     [CommandMatch("注册列表", OneBotPermissions.QueryUserList)]
     private async Task RegisterList(CommandArgs args)
@@ -1157,33 +1376,41 @@ public class OneBotCommand
     }
     #endregion
 
+    #region 查询他人信息
+    [CommandMatch("查", OneBotPermissions.SelfInfo)]
+    private async Task AcountInfo(CommandArgs args)
+    {
+        try
+        { 
+        var at = args.EventArgs.MessageContext.GetAts();
+        if (at.Any())
+        {
+            var group = MorMorAPI.AccountManager.GetAccountNullDefault(at.First().UserId);
+            await args.EventArgs.Reply(await CommandUtils.GetAccountInfo(args.EventArgs.Group.Id, at.First().UserId, group.Group.Name));
+        }
+        else if (args.Parameters.Count == 1 && long.TryParse(args.Parameters[0], out var id))
+        {
+            var group = MorMorAPI.AccountManager.GetAccountNullDefault(id);
+            await args.EventArgs.Reply(await CommandUtils.GetAccountInfo(args.EventArgs.Group.Id, id, group.Group.Name));
+        }
+        else
+        {
+            await args.EventArgs.Reply("查谁呢?", true);
+        }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.ToString());
+        }
+        
+    }
+    #endregion
+
     #region 我的信息
     [CommandMatch("我的信息", OneBotPermissions.SelfInfo)]
     private async Task SelfInfo(CommandArgs args)
     {
-        var userid = args.EventArgs.SenderInfo.UserId;
-        var serverName = MorMorAPI.UserLocation.TryGetServer(userid, out var server) ? server?.Name ?? "NULL" : "NULL";
-        var group = args.Account.Group.Name;
-        var bindUser = MorMorAPI.TerrariaUserManager.GetUserById(userid, serverName);
-        var bindName = bindUser == null ? "NULL" : bindUser.Name;
-        var api = await server?.QueryEconomicBank(bindName);
-        var signInfo = MorMorAPI.SignManager.Query(args.EventArgs.Group.Id, userid);
-        var sign = signInfo != null ? signInfo.Date : 0;
-        var currencyInfo = MorMorAPI.CurrencyManager.Query(args.EventArgs.Group.Id, userid);
-        var currency = currencyInfo != null ? currencyInfo.num : 0;
-        var exp = api == null || api.IsSuccess ? 0 : api.CurrentNum;
-        MessageBody body = new()
-        {
-            MomoSegment.Image(args.EventArgs.SenderInfo.TitleImage),
-            MomoSegment.Text($"[QQ账号]:{userid}\n"),
-            MomoSegment.Text($"[签到时长]:{sign}\n"),
-            MomoSegment.Text($"[星币数量]:{currency}\n"),
-            MomoSegment.Text($"[拥有权限]:{group}\n"),
-            MomoSegment.Text($"[绑定角色]:{bindName}\n"),
-            MomoSegment.Text($"[经验数量]:{exp}\n"),
-            MomoSegment.Text($"[所在服务器]:{serverName}")
-        };
-        await args.EventArgs.Reply(body);
+        await args.EventArgs.Reply(await CommandUtils.GetAccountInfo(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, args.Account.Group.Name));
     }
     #endregion
 
@@ -1217,7 +1444,7 @@ public class OneBotCommand
     }
     #endregion
 
-    #region 启动服务器
+    #region 重置服务器
     [CommandMatch("泰拉服务器重置", OneBotPermissions.StartTShock)]
     private async Task ResetTShock(CommandArgs args)
     {
@@ -1236,22 +1463,11 @@ public class OneBotCommand
     [CommandMatch("randv", "")]
     private async Task RandVideo(CommandArgs args)
     {
-        var uri = new Uri("https://v2.api-m.com/api/meinv");
-        var httpClient = new HttpClient();
-        var response = httpClient.Send(new()
+        var body = new MessageBody()
         {
-            Method = HttpMethod.Get,
-            RequestUri = uri
-        });
-        if (response.IsSuccessStatusCode)
-        {
-            var result = JObject.Parse(await response.Content.ReadAsStringAsync());
-            await args.EventArgs.Reply(new MessageBody()
-            {
-                MomoSegment.Video(result?["data"]?.ToString())
-            });
-        }
+            MomoSegment.Video("https://www.yujn.cn/api/heisis.php")
+        };
+        await args.EventArgs.Reply(body);
     }
-
     #endregion
 }

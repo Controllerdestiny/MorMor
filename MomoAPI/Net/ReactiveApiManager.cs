@@ -52,11 +52,18 @@ internal static class ReactiveApiManager
             .Select(x => x.data)
             .Timeout((TimeSpan)timeout)
             .Take(1)
-            .ToTask();
+            .ToTask()
+            .RunCatch(e =>
+            {
+                Console.WriteLine(e.Message);
+                return new JObject();
+            });
         ConnectMananger.SendMessage(JsonConvert.SerializeObject(request));
         var obj = await task;
-
         return (GetApiStatus(EnumConverter.GetFieldDesc(request.ApiRequestType), obj), obj);
+     
+
+        
     }
 
     private static ApiStatus GetApiStatus(string apiName, JObject msg)

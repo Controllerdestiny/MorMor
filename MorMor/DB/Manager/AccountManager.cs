@@ -44,9 +44,14 @@ public class AccountManager
             new SqlColumn("ID", MySqlDbType.Int64) { Unique = true },
             new SqlColumn("Group", MySqlDbType.Text) { DefaultValue = MorMorAPI.Setting.DefaultPermGroup }
             );
-        var create = new SqlTableCreator(database, new MysqlQueryCreator());
+        var create = new SqlTableCreator(database,
+                database.GetSqlType() == SqlType.Sqlite
+                    ? new SqliteQueryCreator()
+                    : new MysqlQueryCreator());
+
         create.EnsureTableStructure(table);
         Accounts = GetAccounts();
+
     }
 
     /// <summary>

@@ -59,7 +59,6 @@ public class TerrariaServer
     [JsonProperty("服务器版本")]
     public string Version { get; set; } = "1.4.4.9";
 
-
     [JsonProperty("所属群")]
     public HashSet<long> Groups { get; set; } = new();
 
@@ -119,7 +118,7 @@ public class TerrariaServer
         {
             { "user", name },
             { "password", password },
-            { "group", "default" }
+            { "group", DefaultGroup }
         };
         return await ApiRequest.Send<RegisterUserArgs>(this, TerrariaApiType.Register, param);
     }
@@ -198,7 +197,7 @@ public class TerrariaServer
         var param = new Dictionary<string, string>()
         {
             { "name", name },
-            { "cmd", "query" }
+            { "cmd", "clear" }
         };
         return await ApiRequest.Send<EconomicsBankArgs>(this, TerrariaApiType.EconomicsBank, param);
     }

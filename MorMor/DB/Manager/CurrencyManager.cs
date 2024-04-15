@@ -1,4 +1,5 @@
 ﻿using MorMor.Extensions;
+using MorMor.Model.Database;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -29,7 +30,11 @@ public class CurrencyManager
             new SqlColumn("num", MySqlDbType.Int64) { DefaultValue = "0" }
             );
 
-        var create = new SqlTableCreator(database, new MysqlQueryCreator());
+        var create = new SqlTableCreator(database,
+                database.GetSqlType() == SqlType.Sqlite
+                    ? new SqliteQueryCreator()
+                    : new MysqlQueryCreator());
+
         create.EnsureTableStructure(table);
         Currencys = GetCurrencys();
     }

@@ -1,7 +1,10 @@
-﻿using MomoAPI.EventArgs;
+﻿using MomoAPI;
+using MomoAPI.EventArgs;
+using MomoAPI.Log;
 using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Event;
+using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
 
@@ -115,6 +118,7 @@ public class CommandManager
                 var cmdName = cmdParam[0];
                 cmdParam.RemoveAt(0);
                 var account = MorMorAPI.AccountManager.GetAccountNullDefault(args.Sender.Id);
+                await Console.Out.WriteLineAsync(account.Group.Name);
                 foreach (var command in commands)
                 {
                     if (command.Name.Contains(cmdName))
@@ -133,10 +137,15 @@ public class CommandManager
             if (args.Account.HasPermission(perm))
             {
                 if (!await OperatHandler.UserCommand(args))
+                {
+                    
                     await command.CallBack(args);
+                    MorMorAPI.Log.ConsoleInfo($"group:{args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Cyan);
+                }
                 return;
             }
         }
+        MorMorAPI.Log.ConsoleInfo($"group: {args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 试图使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Yellow);
         await args.EventArgs.Reply("你无权使用此命令！");
     }
 

@@ -1,6 +1,9 @@
-﻿namespace MomoAPI.Entities.Segment.DataModel;
+﻿using Newtonsoft.Json;
 
-internal record Json : BaseMessage
+namespace MomoAPI.Entities.Segment.DataModel;
+
+public record Json : BaseMessage
 {
-
+    [JsonProperty("data")]
+    public string Connect { get; set; } 
 }

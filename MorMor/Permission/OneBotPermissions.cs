@@ -62,4 +62,10 @@ internal class OneBotPermissions
     public const string StartTShock = "onebot.tshock.start";
 
     public const string ResetTShock = "onebot.tshock.reset";
+
+    public const string SelfPassword = "onebot.user.password";
+
+    public const string SearchUser = "onebot.user.search";
+
+    public const string Music = "onebot.music.use";
 }

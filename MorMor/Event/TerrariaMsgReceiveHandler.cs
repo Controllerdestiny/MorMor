@@ -122,7 +122,7 @@ public class TerrariaMsgReceiveHandler
         }
         catch
         {
-            Console.WriteLine($"{args.Client.RemoteEndPoint} 发送了一条无法解析的信息");
+            MorMorAPI.Log.ConsoleError($"{args.Client.RemoteEndPoint} 发送了一条无法解析的信息");
         }
 
     }
@@ -174,14 +174,14 @@ public class TerrariaMsgReceiveHandler
         }
     }
 
-    private static async void ConnectAdapter(BaseMessage msg)
+    private static void ConnectAdapter(BaseMessage msg)
     {
         var server = MorMorAPI.Setting.GetServer(msg.ServerName);
         if (server != null)
         {
             server.Client = msg.Client;
         }
-        await Console.Out.WriteLineAsync($"Terraria Server {msg.ServerName} {msg.Client.RemoteEndPoint} 已连接...");
+        MorMorAPI.Log.ConsoleInfo($"Terraria Server {msg.ServerName} {msg.Client.RemoteEndPoint} 已连接...", ConsoleColor.Green);
     }
 
     private static async void GameInitAdapter(GameInitMessage args)

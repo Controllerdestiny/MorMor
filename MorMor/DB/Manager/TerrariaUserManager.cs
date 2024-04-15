@@ -2,6 +2,7 @@
 using MorMor.Extensions;
 using MySql.Data.MySqlClient;
 using System.Data;
+using static MorMor.DB.Manager.SignManager;
 
 namespace MorMor.DB.Manager;
 
@@ -33,10 +34,13 @@ public class TerrariaUserManager
             new SqlColumn("Password", MySqlDbType.VarChar) { Unique = true, Length = 100 }
             );
 
-        var create = new SqlTableCreator(database, new MysqlQueryCreator());
+        var create = new SqlTableCreator(database,
+        database.GetSqlType() == SqlType.Sqlite
+            ? new SqliteQueryCreator()
+            : new MysqlQueryCreator());
+
         create.EnsureTableStructure(table);
         Users = GetUsers();
-
     }
 
     private List<User> GetUsers()
@@ -119,6 +123,11 @@ public class TerrariaUserManager
         return Users.FindAll(f => f.Server == Server);
     }
 
+    public List<User> GetUsers(long id)
+    {
+        return Users.FindAll(f => f.Id == id);
+    }
+
     public User? GetUserById(long id, string server)
     {
         return Users.Find(f => f.Server == server && f.Id == id);
@@ -129,4 +138,8 @@ public class TerrariaUserManager
         return Users.Find(x => x.Name == name && x.Server == server);
     }
 
+    public User? GetUsersByName(string name)
+    {
+        return Users.Find(x => x.Name == name);
+    }
 }

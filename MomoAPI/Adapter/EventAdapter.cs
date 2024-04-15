@@ -150,6 +150,7 @@ public class EventAdapter
                         var args = new GroupRequestAddEventArgs(obj);
                         if (args != null)
                         {
+                            MomoServiceFactory.Log.ConsoleInfo($"群请求: group:{args.Group.Id} {args.User.Id} 请求入群");
                             await OnGroupRequestAdd(args);
                         }
                         break;
@@ -162,6 +163,7 @@ public class EventAdapter
                         var args = new FriendRequestAddEventArgs(obj);
                         if (args != null)
                         {
+                            MomoServiceFactory.Log.ConsoleInfo($"好友请求: {args.User.Id} 请求添加为好友");
                             await OnFriendRequestAdd(args);
                         }
                         break;
@@ -184,6 +186,7 @@ public class EventAdapter
                         var args = new GroupRecallEventArgs(obj);
                         if (args != null)
                         {
+                            MomoServiceFactory.Log.ConsoleInfo($"群消息撤回: group: {args.Group.Id} 成员`{args.MessageSender.Id}`被撤回了一条消息:{args.MessageID} 撤回人是`{args.Operator.Id}`");
                             await OnGroupRecall(args);
                         }
                         break;
@@ -196,6 +199,7 @@ public class EventAdapter
                         var args = new FriendRecallEventArgs(obj);
                         if (args != null)
                         {
+                            MomoServiceFactory.Log.ConsoleInfo($"好友撤回 {args.UID} 撤回了一条信息: {args.MessageID}");
                             await OnFriendReacll(args);
                         }
                         break;
@@ -208,6 +212,7 @@ public class EventAdapter
                         var args = new FriendAddEventArgs(obj);
                         if (args != null)
                         {
+                            MomoServiceFactory.Log.ConsoleInfo($"好友事件: {args.Sender.Id} 被添加为好友");
                             await OnFriendAdd(args);
                         }
                         break;
@@ -221,6 +226,7 @@ public class EventAdapter
                         var args = new GroupMemberChangeEventArgs(obj);
                         if (args != null)
                         {
+                            MomoServiceFactory.Log.ConsoleInfo($"群成员变动: group:{args.Group.Id} 成员({args.ChangeUser.Id}) {(args.ChangeType == MemberChangeType.Leave ? "离开" : "加入")}群聊");
                             await OnGroupMemberChange(args);
                         }
                         break;
@@ -237,6 +243,7 @@ public class EventAdapter
                                     var args = new GroupMuteEventArgs(obj);
                                     if (args != null)
                                     {
+                                        MomoServiceFactory.Log.ConsoleInfo($"群禁言: group: {args.Group.Id} 成员`{args.Target.Id}`被`{args.Operator.Id}`禁用{args.Duration}秒");
                                         await OnGroupMute(args);
                                     }
                                     break;
@@ -246,6 +253,7 @@ public class EventAdapter
                                     var args = new GroupUnMuteEventArgs(obj);
                                     if (args != null)
                                     {
+                                        MomoServiceFactory.Log.ConsoleInfo($"群解除禁言: group: {args.Group.Id} 成员`{args.Target.Id}`被`{args.Operator.Id}`解除了禁言");
                                         await OnGroupUnMute(args);
                                     }
                                     break;
@@ -261,6 +269,7 @@ public class EventAdapter
     {
         if (messageObj.TryGetValue("message_type", out var type) && type != null)
         {
+            //MomoServiceFactory.Log.ConsoleInfo(messageObj?["raw_message"]?.ToString());
             switch (type.ToString())
             {
                 case "group":

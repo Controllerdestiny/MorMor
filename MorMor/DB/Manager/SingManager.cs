@@ -1,5 +1,6 @@
 ﻿using MorMor.Exceptions;
 using MorMor.Extensions;
+using MorMor.Model.Database;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -31,10 +32,13 @@ public class SignManager
             new SqlColumn("date", MySqlDbType.Int64)
             );
 
-        var create = new SqlTableCreator(database, new MysqlQueryCreator());
+        var create = new SqlTableCreator(database,
+        database.GetSqlType() == SqlType.Sqlite
+            ? new SqliteQueryCreator()
+            : new MysqlQueryCreator());
+
         create.EnsureTableStructure(table);
         Signs = ReadAll();
-
     }
 
     private List<Sign> ReadAll()

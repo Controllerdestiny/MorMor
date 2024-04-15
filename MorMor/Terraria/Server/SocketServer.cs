@@ -74,7 +74,7 @@ public class SocketServer
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                MorMorAPI.Log.ConsoleError(ex.Message);
                 ClientPool.Remove(socket);
                 SocketDispose?.Invoke(new SocketDisposeArgs(socket));
                 client.Disconnect(false);
@@ -96,7 +96,7 @@ public class SocketServer
             }
             catch (SocketException e)
             {
-                Console.WriteLine(e.Message);
+                MorMorAPI.Log.ConsoleError(e.Message);
                 ClientPool.Remove(state.Client);
                 SocketDispose?.Invoke(new SocketDisposeArgs(state.Client));
                 state.Client.Disconnect(false);

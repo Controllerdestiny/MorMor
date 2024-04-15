@@ -4,6 +4,7 @@ using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration.ApiType;
 using MomoAPI.Enumeration.EventParamType;
+using MomoAPI.Log;
 using MomoAPI.Model.API;
 using MomoAPI.Net;
 using Newtonsoft.Json.Linq;
@@ -34,6 +35,7 @@ internal class ApiAdapter
         }, timeout);
         if (status.RetCode != ApiStatusType.Ok)
             return (status, -1);
+        MomoServiceFactory.Log.ConsoleInfo($"Bot 发送群消息: group-> {target} result ->{obj?["status"]}");
         long messageid = long.TryParse(obj?["data"]?["message_id"]?.ToString(), out var id) ? id : -1;
         return (status, messageid);
     }
@@ -449,14 +451,15 @@ internal class ApiAdapter
         return (status, obj["data"]?["file"]?.ToString() ?? "");
     }
 
-    public static async Task<(ApiStatus, JObject)> GetCookie(string domain = "")
+    public static async Task<(ApiStatus, JObject)> GetCookie(long groupid, string domain = "qq.qun.com")
     {
         (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetCookie,
             ApiParams = new
             {
-                domain
+                domain,
+                group = groupid
             }
         });
         return (status, obj);

@@ -14,7 +14,7 @@ public enum ActionType
     /// <summary>
     /// 获取cookie
     /// </summary>
-    [Description("get_cookies")]
+    [Description("get_cookie")]
     GetCookie,
 
     /// <summary>
