@@ -18,7 +18,7 @@
 - 使用前你可能需要配置 Mail 服务，机器人会用到，如发送注册密码等服务！
 - TShock 管理功能需要插件，机器人用到的插件可在[TshockAdapter](https://github.com/dalaoshus/TShockAdapter)仓库下载使用
 - LLOneBot 只需要打开 WebSocket 服务即可，注意端口号保持一致
-  [image](setting.png)
+  ![image](setting.png)
 
 # 预计支持功能(部分功能可能需要插件支持)
 
