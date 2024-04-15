@@ -4,7 +4,6 @@ using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration.ApiType;
 using Newtonsoft.Json.Linq;
-using Sora.Entities.Info;
 
 namespace MomoAPI.Net;
 
