@@ -1,6 +1,6 @@
 ﻿using MomoAPI.Adapter;
 using MomoAPI.Entities.Segment.DataModel;
-using Sora.Entities.Info;
+using MomoAPI.Entities.Info;
 
 namespace MomoAPI.Entities;
 
