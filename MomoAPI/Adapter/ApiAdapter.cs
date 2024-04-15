@@ -4,11 +4,9 @@ using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration.ApiType;
 using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Log;
 using MomoAPI.Model.API;
 using MomoAPI.Net;
 using Newtonsoft.Json.Linq;
-using Sora.Entities.Info;
 
 namespace MomoAPI.Adapter;
 

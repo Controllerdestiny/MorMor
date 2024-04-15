@@ -4,7 +4,7 @@ using MomoAPI.Util;
 using MomoAPI.Utils;
 using Newtonsoft.Json;
 
-namespace Sora.Entities.Info;
+namespace MomoAPI.Entities.Info;
 
 /// <summary>
 /// 群成员信息
