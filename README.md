@@ -18,7 +18,7 @@
 - 使用前你可能需要配置 Mail 服务，机器人会用到，如发送注册密码等服务！
 - TShock 管理功能需要插件，机器人用到的插件可在[TshockAdapter](https://github.com/dalaoshus/TShockAdapter)仓库下载使用
 - LLOneBot 只需要打开 WebSocket 服务即可，注意端口号保持一致
-  ![image](setting.png)
+  ![image 设置示例](setting.png)
 
 # 预计支持功能(部分功能可能需要插件支持)
 
@@ -97,7 +97,7 @@
 	"监听地址": "127.0.0.1",
 	"监听端口": 5000,
 	"监听令牌": "", //LLoneBot 配置界面的 Access Token
-	"数据库类型": "sqlite", //可选 sqlite 或 mysql sqlite 为本地数据库无需配置相关 mysql
+	"数据库类型": "sqlite", //可选 sqlite 或 mysql 当为sqlite 为本地数据库无需配置相关 mysql
 	"Sqlite 路径": "MorMor.sqlite",
 	"数据库地址": "127.0.0.1",
 	"数据库端口": 3306,
