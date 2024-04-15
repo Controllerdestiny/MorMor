@@ -11,7 +11,7 @@ using MorMor.Picture;
 using MorMor.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Sora.Entities.Info;
+using MomoAPI.Entities.Info;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
