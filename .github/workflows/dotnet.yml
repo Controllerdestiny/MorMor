@@ -61,8 +61,6 @@ jobs:
       - name: Update Nightly Tag
         run: |
            echo "TAG_NAME=V$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
-           git tag -f V999
-           git push -f origin V999
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
