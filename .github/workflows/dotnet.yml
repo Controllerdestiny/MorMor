@@ -60,8 +60,8 @@ jobs:
           fetch-depth: 0
       - name: Update Nightly Tag
         run: |
-          git tag -f ${{github.sha}}
-          git push -f origin ${{github.sha}}
+          git tag -f ${{github.run_id}}
+          git push -f origin ${{github.run_id}}
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
