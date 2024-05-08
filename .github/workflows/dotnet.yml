@@ -59,10 +59,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Update Nightly Tag
-        run: |
-          echo "::set-output name=date::$(date +'%Y-%m-%d')"
-          git tag -f Latest Version
-          git push -f origin Latest Version
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
