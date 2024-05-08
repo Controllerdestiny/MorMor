@@ -60,7 +60,7 @@ jobs:
           fetch-depth: 0
       - name: Update Nightly Tag
         run: |
-          FILENAME="%y%m%d%H%M%S"
+          echo "::set-output name=date::$(date +'%Y-%m-%d')"
           git tag -f $FILENAME
           git push -f origin $FILENAME
       - name: Download Artifacts
@@ -71,8 +71,8 @@ jobs:
       - name: Update Nightly Release
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ steps.setenvo.outputs.TAG_NAME }}
-          name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
+          tag: v${{ steps.date.outputs.date }}
+          name: Release v${{ steps.date.outputs.date }}
           prerelease: false
           body: '发布版本'
           artifacts: |
