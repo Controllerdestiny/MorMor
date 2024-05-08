@@ -61,8 +61,8 @@ jobs:
       - name: Update Nightly Tag
         run: |
            echo "::set-output name=date::$(date +'%Y-%m-%d')"
-           git tag -f V${{ steps.date.outputs.date }}
-           git push -f V${{ steps.date.outputs.date }}
+           git tag -f V999
+           git push -f origin V999
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
@@ -71,8 +71,8 @@ jobs:
       - name: Update Nightly Release
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ steps.date.outputs.date }}
-          name: Release v${{ steps.date.outputs.date }}
+          tag: V999
+          name: Release V999
           prerelease: false
           body: '发布版本'
           artifacts: |
