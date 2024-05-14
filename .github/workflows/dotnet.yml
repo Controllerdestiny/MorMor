@@ -21,33 +21,33 @@ jobs:
       - name: Install .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.x
           
       - name: Build MorMor
         shell: powershell
         run: |
           dotnet build MorMor/MorMor.csproj --self-contained=false -p:PublishSingleFile=false -p:IncludeContentInSingleFile=false -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net6.0
 
-      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 6.0
+      - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v3
         with:
-          name: MorMor_${{ matrix.runtimeIdentifier }}_6.0
-          path: MorMor/bin/Debug/net6.0/${{ matrix.runtimeIdentifier }}
+          name: MorMor_${{ matrix.runtimeIdentifier }}_8.0
+          path: MorMor/bin/Debug/net8.0/${{ matrix.runtimeIdentifier }}
           
       - name: Compress files (Not Windows)
         if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Debug\net6.0\${{ matrix.runtimeIdentifier }}' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MorMor\bin\Debug\net8.0\${{ matrix.runtimeIdentifier }}' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip'
       - name: Compress files (Windows)
         if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Debug\net6.0\${{ matrix.runtimeIdentifier }}' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip'
+          Compress-Archive -Path 'MorMor\bin\Debug\net8.0\${{ matrix.runtimeIdentifier }}' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip'
           
       - name: Prepare release files
         uses: actions/upload-artifact@v3
         with:
           name: MorMor_all
-          path: MorMor_${{ matrix.runtimeIdentifier }}_6.0.zip
+          path: MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip
   NightlyRelease:
     name: Nightly Release
     runs-on: ubuntu-latest
