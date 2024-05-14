@@ -59,9 +59,9 @@ jobs:
         with:
           fetch-depth: 0
       - name: Update Nightly Tag
+        id: pa
         run: |
-          git tag -f nightly
-          git push -f origin nightly
+           echo "TAG_NAME=V$(git rev-list --count HEAD)" >> $env:GITHUB_OUTPUT
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
@@ -70,10 +70,10 @@ jobs:
       - name: Update Nightly Release
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ steps.setenvo.outputs.TAG_NAME }}
-          name: Release v${{ steps.setenvo.outputs.TAG_NAME }}
-          prerelease: true
-          body: '> ⚠️This is a nightly release.'
+          tag: V999
+          name: V999
+          prerelease: false
+          body: '发布版本'
           artifacts: |
             ./bin/*
           allowUpdates: true
