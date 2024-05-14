@@ -2,7 +2,6 @@
 using MorMor.Extensions;
 using MySql.Data.MySqlClient;
 using System.Data;
-using static MorMor.DB.Manager.SignManager;
 
 namespace MorMor.DB.Manager;
 
@@ -19,6 +18,8 @@ public class TerrariaUserManager
 
         public string Password { get; init; }
 
+        public long GroupID { get; init; }
+
     }
     private readonly IDbConnection database;
 
@@ -31,6 +32,7 @@ public class TerrariaUserManager
             new SqlColumn("ID", MySqlDbType.Int64) { Unique = true, Length = 100 },
             new SqlColumn("Server", MySqlDbType.VarChar) { Unique = true, Length = 100 },
             new SqlColumn("Name", MySqlDbType.VarChar) { Length = 100 },
+            new SqlColumn("GroupID", MySqlDbType.Int64) { Length = 100 },
             new SqlColumn("Password", MySqlDbType.VarChar) { Unique = true, Length = 100 }
             );
 
@@ -51,12 +53,14 @@ public class TerrariaUserManager
         {
             var ID = read.Get<long>("ID");
             var Name = read.Get<string>("Name");
+            var GroupID = read.Get<long>("GroupID");
             var Server = read.Get<string>("Server");
             var Password = read.Get<string>("Password");
             users.Add(new User()
             {
                 Id = ID,
                 Name = Name,
+                GroupID = GroupID,
                 Server = Server,
                 Password = Password
             }); ;
@@ -69,7 +73,7 @@ public class TerrariaUserManager
         return Users.Any(x => x.Name == Name && x.Server == server);
     }
 
-    public void Add(long id, string Server, string Name, string Password)
+    public void Add(long id, long groupid, string Server, string Name, string Password)
     {
         if (Users.Any(x => x.Id == id && x.Server == Server))
             throw new TerrariaUserException("此用户已经注册过了!");
@@ -78,7 +82,7 @@ public class TerrariaUserManager
         if (user != null)
             throw new TerrariaUserException($"此名称已经被{user.Id}注册过了!");
 
-        if (database.Query("INSERT INTO `User` (`ID`, `Name`, `Server`, `Password`) VALUES (@0, @1, @2, @3)", id, Name, Server, Password) == 1)
+        if (database.Query("INSERT INTO `User` (`ID`, `Name`, `GroupID`, `Server`, `Password`) VALUES (@0, @1, @2, @3, @4)", id, Name, groupid, Server, Password) == 1)
         {
             Users.Add(new User()
             {
@@ -141,5 +145,11 @@ public class TerrariaUserManager
     public User? GetUsersByName(string name)
     {
         return Users.Find(x => x.Name == name);
+    }
+
+    public void Reset()
+    {
+        Users.Clear();
+        database.Query($"delete from User");
     }
 }

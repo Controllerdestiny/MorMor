@@ -3,6 +3,10 @@ namespace MorMor.Permission;
 
 internal class OneBotPermissions
 {
+    public const string TerrariaShop = "onebot.terraria.shop";
+
+    public const string EmojiLike = "onebot.emoji.like";
+
     public const string Version = "onebot.version.info";
 
     public const string Sign = "onebot.sign";

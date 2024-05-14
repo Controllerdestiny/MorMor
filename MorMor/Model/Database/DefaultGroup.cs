@@ -23,7 +23,10 @@ public class DefaultGroup : Group
         OneBotPermissions.DeathRank,
         OneBotPermissions.SelfInfo,
         OneBotPermissions.TerrariaWiki,
-        OneBotPermissions.Version
+        OneBotPermissions.Version,
+        OneBotPermissions.Music,
+        OneBotPermissions.EmojiLike,
+        OneBotPermissions.TerrariaShop
     };
     public DefaultGroup() : base(MorMorAPI.Setting.DefaultPermGroup)
     {

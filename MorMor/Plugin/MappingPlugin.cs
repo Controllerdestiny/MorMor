@@ -19,15 +19,19 @@ internal class MappingPlugin
         if (!directoryInfo.Exists)
             directoryInfo.Create();
         var files = directoryInfo.GetFiles("*.dll");
+        GetAssmblyInstance(Assembly.GetExecutingAssembly());
         foreach (var file in files)
         {
             var assembly = Assembly.Load(File.ReadAllBytes(file.FullName));
             GetAssmblyInstance(assembly);
-
         }
-        GetAssmblyInstance(Assembly.GetExecutingAssembly());
-        Instances.OrderByDescending(x => x.Order).ForEach(x => x.Initialize());
-        Assemblies.ForEach(ass => Commands.CommandManager.Hook.MappingCommands(ass));
+        Instances.OrderByDescending(x => x.Order).ForEach(x =>
+        {
+            x.Initialize();
+
+        });
+        Assemblies.ForEach(Commands.CommandManager.Hook.MappingCommands);
+        Assemblies.ForEach(Terraria.ChatCommand.ChatCommandMananger.Hook.MappingCommands);
     }
 
     private static void GetAssmblyInstance(Assembly assembly)
@@ -35,7 +39,7 @@ internal class MappingPlugin
         Assemblies.Add(assembly);
         assembly.GetExportedTypes().ForEach(x =>
         {
-            if (x.IsSubclassOf(typeof(MappingPlugin)) && x.IsPublic && !x.IsAbstract)
+            if (x.IsSubclassOf(typeof(MorMorPlugin)) && x.IsPublic && !x.IsAbstract)
             {
                 var Instance = Activator.CreateInstance(x) as MorMorPlugin;
                 Instances.Add(Instance);

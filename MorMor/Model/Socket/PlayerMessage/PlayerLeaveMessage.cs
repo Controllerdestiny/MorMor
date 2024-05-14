@@ -1,0 +1,10 @@
+﻿
+using ProtoBuf;
+
+namespace MorMor.Model.Socket.PlayerMessage;
+
+[ProtoContract]
+public class PlayerLeaveMessage : BasePlayerMessage
+{
+
+}

@@ -25,7 +25,7 @@ public class GroupMananger
                 database.GetSqlType() == SqlType.Sqlite
                     ? new SqliteQueryCreator()
                     : new MysqlQueryCreator());
-        
+
         if (create.EnsureTableStructure(table))
         {
             AddGroup(DefaultGroup.Name, DefaultGroup.Permssion);

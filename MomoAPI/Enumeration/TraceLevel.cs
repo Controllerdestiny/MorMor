@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MomoAPI.Enumeration;
+﻿namespace MomoAPI.Enumeration;
 
 public enum TraceLevel
 {
     Info,
 
-    Warning, 
+    Warning,
 
     Debug,
 

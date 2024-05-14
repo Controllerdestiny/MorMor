@@ -1,14 +1,14 @@
-﻿using System.Net.Sockets;
+﻿using Fleck;
 
 namespace MorMor.EventArgs.Sockets;
 
 public class SocketReceiveMessageArgs : BaseSocketArgs
 {
-    public string Message { get; init; }
+    public MemoryStream Stream { get; init; }
 
-    public SocketReceiveMessageArgs(Socket socket, string msg)
+    public SocketReceiveMessageArgs(IWebSocketConnection socket, MemoryStream stream)
     {
         Client = socket;
-        Message = msg;
+        Stream = stream;
     }
 }

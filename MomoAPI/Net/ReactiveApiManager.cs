@@ -55,19 +55,28 @@ internal static class ReactiveApiManager
             .ToTask()
             .RunCatch(e =>
             {
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
                 return new JObject();
             });
         ConnectMananger.SendMessage(JsonConvert.SerializeObject(request));
         var obj = await task;
         return (GetApiStatus(EnumConverter.GetFieldDesc(request.ApiRequestType), obj), obj);
-     
 
-        
+
+
     }
 
     private static ApiStatus GetApiStatus(string apiName, JObject msg)
     {
+        if (msg?["retcode"] == null)
+        {
+            return new ApiStatus
+            {
+                RetCode = ApiStatusType.UnknownStatus,
+                ApiMessage = "这可能是超时导致的",
+                ApiStatusStr = ""
+            };
+        }
         string retCode = int.TryParse(msg["retcode"]?.ToString(), out int ret) switch
         {
             true when ret < 0 => "100",

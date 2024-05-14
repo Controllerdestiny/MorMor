@@ -29,6 +29,78 @@ public class MessageBody : IList<MomoSegment>
 
     }
 
+    public MessageBody Text(string text)
+    {
+        Add(MomoSegment.Text(text));
+        return this;
+    }
+
+    public MessageBody Image(string file)
+    {
+        Add(MomoSegment.Image(file));
+        return this;
+    }
+
+    public MessageBody Image(Stream stream)
+    {
+        Add(MomoSegment.Image(stream));
+        return this;
+    }
+
+    public MessageBody Reply(long msgId)
+    {
+        Add(MomoSegment.Reply(msgId));
+        return this;
+    }
+
+    public MessageBody Record(string file)
+    {
+        Add(MomoSegment.Record(file));
+        return this;
+    }
+
+    public MessageBody At(long uid)
+    {
+        Add(MomoSegment.At(uid));
+        return this;
+    }
+
+    public MessageBody AtAll()
+    {
+        Add(MomoSegment.AtAll());
+        return this;
+    }
+
+    public MessageBody Face(int faceid)
+    {
+        Add(MomoSegment.Face(faceid));
+        return this;
+    }
+
+    public MessageBody Music(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        Add(MomoSegment.Music(jumpUrl, AudioUrl, imageUrl, song, singer));
+        return this;
+    }
+
+    public MessageBody File(string file, string name = null)
+    {
+        Add(MomoSegment.File(file, name));
+        return this;
+    }
+
+    public MessageBody Video(string file)
+    {
+        Add(MomoSegment.Video(file));
+        return this;
+    }
+
+    public MessageBody Json(string data)
+    {
+        Add(MomoSegment.Json(data));
+        return this;
+    }
+
     public void Add(MomoSegment item)
     {
         _messages.Add(item);

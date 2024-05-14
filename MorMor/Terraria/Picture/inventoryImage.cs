@@ -1,5 +1,5 @@
 ﻿
-using MorMor.Model.Terraria;
+using MorMor.Model.Socket.Internet;
 using SkiaSharp;
 
 namespace MorMor.Picture;
@@ -77,7 +77,7 @@ public class InventoryImage
     /// <param name="y">起始y</param>
     /// <param name="vertical">是否竖列</param>
     /// <returns></returns>
-    private void DrawSlotItem(List<ItemInfo> data, int SlotCount, int MaxCount, int x, int y, bool vertical = false)
+    private void DrawSlotItem(Item[] data, int SlotCount, int MaxCount, int x, int y, bool vertical = false)
     {
         int sourceX = x;
         int sourceY = y;
@@ -86,8 +86,8 @@ public class InventoryImage
         {
             //画背包格子
             canvas.DrawImage(SKImage.FromBitmap(_Bitmap), x, y);
-            var itemID = data[i].NetID;
-            var num = data[i].Stack;
+            var itemID = data[i].netID;
+            var num = data[i].stack;
             if (itemID > 0)
             {
                 var itemImage = SKBitmap.Decode((byte[])Properties.Resources.ResourceManager.GetObject(itemID.ToString())!);
@@ -127,10 +127,10 @@ public class InventoryImage
         }
     }
 
-    private List<ItemInfo> GetItems(List<ItemInfo> data, int start)
+    private List<Item> GetItems(Item[] data, int start)
     {
-        var arr = new List<ItemInfo>();
-        for (int i = 0; i < data.Count; i++)
+        var arr = new List<Item>();
+        for (int i = 0; i < data.Length; i++)
         {
             if (i >= start)
             {
@@ -139,40 +139,40 @@ public class InventoryImage
         }
         return arr;
     }
-    private void DrawLoadout(LoadoutInfo data, List<ItemInfo> miscEquip, List<ItemInfo> miscDye, int x, int y)
+    private void DrawLoadout(Suits data, Item[] miscEquip, Item[] miscDye, int x, int y)
     {
-        DrawSlotItem(data.Armors, 3, 3, x, y, vertical: true);
-        DrawSlotItem(GetItems(data.Armors, 10), 3, 3, x - (220 * 1), y, true);
-        DrawSlotItem(data.Dyes, 3, 3, x - (220 * 2), y, vertical: true);
-        DrawSlotItem(GetItems(data.Armors, 3), 7, 7, x - (220 * 3), y, true);
-        DrawSlotItem(GetItems(data.Armors, 13), 7, 7, x - (220 * 4), y, true);
-        DrawSlotItem(GetItems(data.Dyes, 3), 7, 7, x - (220 * 5), y, true);
-        DrawSlotItem(miscEquip, 5, 5, x - (220 * 6), y, vertical: true);
-        DrawSlotItem(miscDye, 5, 5, x - (220 * 7), y, vertical: true);
+        DrawSlotItem(data.armor, 3, 3, x, y, vertical: true);
+        DrawSlotItem(GetItems(data.armor, 10).ToArray(), 3, 3, x - (220 * 1), y, true);
+        DrawSlotItem(data.dye, 3, 3, x - (220 * 2), y, vertical: true);
+        DrawSlotItem(GetItems(data.armor, 3).ToArray(), 7, 7, x - (220 * 3), y, true);
+        DrawSlotItem(GetItems(data.armor, 13).ToArray(), 7, 7, x - (220 * 4), y, true);
+        DrawSlotItem(GetItems(data.dye, 3).ToArray(), 7, 7, x - (220 * 5), y, true);
+        DrawSlotItem(miscEquip.ToArray(), 5, 5, x - (220 * 6), y, vertical: true);
+        DrawSlotItem(miscDye.ToArray(), 5, 5, x - (220 * 7), y, vertical: true);
     }
 
-    public Stream DrawImg(PlayerinventoryInfo data, string name, string server)
+    public Stream DrawImg(PlayerData data, string name, string server)
     {
         //背包
-        DrawSlotItem(data.Inventory, 50, 10, 300, 1200);
+        DrawSlotItem(data.inventory, 50, 10, 300, 1200);
         //猪猪
         DrawSlotItem(data.Piggiy, 40, 10, 300, 2600);
         //保险箱
-        DrawSlotItem(data.Safe, 40, 10, 300, 3800);
+        DrawSlotItem(data.safe, 40, 10, 300, 3800);
         //虚空宝库
         DrawSlotItem(data.VoidVault, 40, 10, 2600, 2600);
         //护卫熔炉
         DrawSlotItem(data.Forge, 40, 10, 2600, 3800);
         //装备1
-        DrawLoadout(data.Loadout[0], data.MiscEquip, data.MiscDye, 4500, 780);
+        DrawLoadout(data.Loadout[0], data.miscEquip, data.miscDye, 4500, 780);
         //装备2
-        DrawLoadout(data.Loadout[1], data.MiscEquip, data.MiscDye, 6680, 780);
+        DrawLoadout(data.Loadout[1], data.miscEquip, data.miscDye, 6680, 780);
         //装备3
-        DrawLoadout(data.Loadout[2], data.MiscEquip, data.MiscDye, 6680, 3000);
+        DrawLoadout(data.Loadout[2], data.miscEquip, data.miscDye, 6680, 3000);
 
         //金币弹药
-        DrawSlotItem(GetItems(data.Inventory, 50), 8, 8, 70, 900, true);
-        DrawSlotItem(data.TrashItem, 1, 1, 2280, 2300, true);
+        DrawSlotItem(GetItems(data.inventory, 50).ToArray(), 8, 8, 70, 900, true);
+        DrawSlotItem(data.trashItem, 1, 1, 2280, 2300, true);
         Font.Size = 200f;
         canvas.DrawText($"{server}服务器{name}背包", 3500, 300, SKTextAlign.Center, Font, paint);
         Font.Size = 140f;

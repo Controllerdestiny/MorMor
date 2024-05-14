@@ -1,10 +1,7 @@
-﻿using MomoAPI;
-using MomoAPI.EventArgs;
-using MomoAPI.Log;
+﻿using MomoAPI.EventArgs;
 using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Event;
-using Newtonsoft.Json;
 using System.Reflection;
 using System.Text;
 
@@ -25,7 +22,7 @@ public class CommandManager
         commands.Add(command);
     }
 
-    private List<string> ParseParameters(string str)
+    public List<string> ParseParameters(string str)
     {
         var ret = new List<string>();
         var sb = new StringBuilder();
@@ -101,7 +98,7 @@ public class CommandManager
 
     public async Task CommandAdapter(GroupMessageEventArgs args)
     {
-        var text = args.MessageContext.GetText();
+        var text = args.MessageContext.GetText().Trim();
         string prefix = string.Empty;
         MorMorAPI.Setting.CommamdPrefix.ForEach(x =>
         {
@@ -118,7 +115,6 @@ public class CommandManager
                 var cmdName = cmdParam[0];
                 cmdParam.RemoveAt(0);
                 var account = MorMorAPI.AccountManager.GetAccountNullDefault(args.Sender.Id);
-                await Console.Out.WriteLineAsync(account.Group.Name);
                 foreach (var command in commands)
                 {
                     if (command.Name.Contains(cmdName))
@@ -138,7 +134,7 @@ public class CommandManager
             {
                 if (!await OperatHandler.UserCommand(args))
                 {
-                    
+
                     await command.CallBack(args);
                     MorMorAPI.Log.ConsoleInfo($"group:{args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Cyan);
                 }
@@ -161,7 +157,7 @@ public class CommandManager
                 x.GetMethods(flag).ForEach(m =>
                 {
                     //参数是否匹配
-                    if (m.CommandParamPares())
+                    if (m.CommandParamPares(typeof(CommandArgs)))
                     {
                         //获取特性
                         var attribute = m.GetCustomAttribute<CommandMatch>();

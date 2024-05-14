@@ -1,7 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-
-namespace MomoAPI.Utils;
+﻿namespace MomoAPI.Utils;
 
 /// <summary>
 /// 扩展方法

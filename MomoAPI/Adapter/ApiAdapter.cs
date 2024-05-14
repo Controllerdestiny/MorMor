@@ -76,10 +76,10 @@ internal class ApiAdapter
         {
             ApiRequestType = ActionType.GetGroupList
         });
-        if (status.RetCode != ApiStatusType.Ok)
+        if (status.RetCode != ApiStatusType.Ok || obj?["data"] == null)
             return (status, new List<GroupInfo>());
-        var groups = obj?["data"]?.ToObject<List<GroupInfo>>() ?? new List<GroupInfo>();
-        return (status, groups);
+        List<GroupInfo> groupList = obj["data"]?.ToObject<List<GroupInfo>>() ?? new List<GroupInfo>();
+        return (status, groupList);
     }
 
     public static async Task<(ApiStatus, GroupInfo)> GetGroupInfo(long groupid, bool cache)
@@ -93,7 +93,7 @@ internal class ApiAdapter
                 no_cache = !cache
             }
         });
-        if (status.RetCode != ApiStatusType.Ok)
+        if (status.RetCode != ApiStatusType.Ok || obj?["data"] == null)
             return (status, new GroupInfo());
         var groups = obj?["data"]?.ToObject<GroupInfo>() ?? new GroupInfo();
         return (status, groups);
@@ -449,7 +449,7 @@ internal class ApiAdapter
         return (status, obj["data"]?["file"]?.ToString() ?? "");
     }
 
-    public static async Task<(ApiStatus, JObject)> GetCookie(long groupid, string domain = "qq.qun.com")
+    public static async Task<(ApiStatus, JObject)> GetCookie(string domain = "qq.qun.com")
     {
         (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
@@ -457,15 +457,96 @@ internal class ApiAdapter
             ApiParams = new
             {
                 domain,
-                group = groupid
             }
         });
         return (status, obj);
     }
 
+    public static async Task<(ApiStatus, Entities.Info.FileInfo)> GetFile(string fileid)
+    {
+        var (status, data) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.GetFile,
+            ApiParams = new
+            {
+                file_id = fileid
+            }
+        });
+        return (status, data["data"]?.ToObject<Entities.Info.FileInfo>() ?? new());
+    }
+
+    public static async Task<ApiStatus> EmojiLike(string msgId, string emojiid)
+    {
+        var (status, data) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.EmojiLike,
+            ApiParams = new
+            {
+                message_id = msgId,
+                emoji_id = emojiid
+            }
+        });
+        return status;
+    }
+
+    public static async Task<ApiStatus> ForwardMsgSignleGroup(long groupid, long msgId)
+    {
+        var (status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.ForwardSingleMsgToGroup,
+            ApiParams = new
+            {
+                message_id = msgId,
+                group_id = groupid
+            }
+        });
+        return status;
+    }
+
+    public static async Task<ApiStatus> ForwardMsgSignlePrivate(long userid, long msgId)
+    {
+        var (status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.ForwardSingleMsgToPrivate,
+            ApiParams = new
+            {
+                message_id = msgId,
+                user_id = userid
+            }
+        });
+        return status;
+    }
+
+    public static async Task<ApiStatus> MarkPrivateMsgAsRead(long userid)
+    {
+        var (status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.MarkPrivateMsgRead,
+            ApiParams = new
+            {
+                user_id = userid
+            }
+        });
+        return status;
+    }
+
+    public static async Task<ApiStatus> MarkGroupMsgAsRead(long groupid)
+    {
+        var (status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.MarkPrivateMsgRead,
+            ApiParams = new
+            {
+                group_id = groupid
+            }
+        });
+        return status;
+    }
+
+
     public static async Task<ApiStatus> CleanCache()
     {
-        (ApiStatus status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        var (status, _) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.CleanChahe,
         });

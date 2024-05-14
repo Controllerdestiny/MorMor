@@ -19,11 +19,11 @@ public class UserLocation
         Save();
     }
 
-    public bool TryGetServer(long id, out TerrariaServer? terrariaServer)
+    public bool TryGetServer(long id, long groupid, out TerrariaServer? terrariaServer)
     {
         if (Location.TryGetValue(id, out var name) && !string.IsNullOrEmpty(name))
         {
-            var server = MorMorAPI.Setting.GetServer(name);
+            var server = MorMorAPI.Setting.GetServer(name, groupid);
             if (server != null)
             {
                 terrariaServer = server;

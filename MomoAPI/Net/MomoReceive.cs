@@ -30,7 +30,7 @@ internal class MomoReceive : IMomoService
         }));
         ConnectMananger.OpenConnect(Client);
         await Client.Start();
-        if(!Client.IsRunning || !Client.IsStarted)
+        if (!Client.IsRunning || !Client.IsStarted)
         {
             throw new Exception("无法连接到WebSocket服务器");
         }

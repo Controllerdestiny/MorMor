@@ -1,5 +1,5 @@
-﻿using MomoAPI.Entities.Segment;
-using MomoAPI.Entities;
+﻿using MomoAPI.Entities;
+using MomoAPI.Entities.Segment;
 using System.Reflection;
 
 namespace MorMor.Commands;
@@ -11,14 +11,14 @@ internal static class CommandUtils
         return constructors.Any(ctor => ctor.GetParameters().Length == 0);
     }
 
-    public static bool CommandParamPares(this MethodInfo method)
+    public static bool CommandParamPares(this MethodInfo method, Type type)
     {
         if (method != null)
         {
             var param = method.GetParameters();
             if (param.Length == 1)
             {
-                return param[0].ParameterType == typeof(CommandArgs);
+                return param[0].ParameterType == type;
             }
         }
         return false;
@@ -27,15 +27,16 @@ internal static class CommandUtils
     public static async Task<MessageBody> GetAccountInfo(long groupid, long uin, string groupName)
     {
         var userid = uin;
-        var serverName = MorMorAPI.UserLocation.TryGetServer(userid, out var server) ? server?.Name ?? "NULL" : "NULL";
+        var serverName = MorMorAPI.UserLocation.TryGetServer(userid, groupid, out var server) ? server?.Name ?? "NULL" : "NULL";
         var bindUser = MorMorAPI.TerrariaUserManager.GetUserById(userid, serverName);
         var bindName = bindUser == null ? "NULL" : bindUser.Name;
-        var api = server != null ? (await server.QueryEconomicBank(bindName)): null;
+        //var api = server != null ? (await server.QueryEconomicBank(bindName)): null;
         var signInfo = MorMorAPI.SignManager.Query(groupid, userid);
         var sign = signInfo != null ? signInfo.Date : 0;
         var currencyInfo = MorMorAPI.CurrencyManager.Query(groupid, userid);
         var currency = currencyInfo != null ? currencyInfo.num : 0;
-        var exp = api == null || !api.IsSuccess ? 0 : api.CurrentNum;
+        //var exp = api == null || !api.IsSuccess ? 0 : api.CurrentNum;
+        var exp = 0;
         MessageBody body = new()
         {
             MomoSegment.Image($"http://q.qlogo.cn/headimg_dl?dst_uin={uin}&spec=640&img_type=png"),

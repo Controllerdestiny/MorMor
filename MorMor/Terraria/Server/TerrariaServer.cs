@@ -1,17 +1,14 @@
-﻿using MomoAPI.Entities;
-using MomoAPI.Net;
+﻿using Fleck;
 using MorMor.Enumeration;
-using MorMor.Model.Terraria.SocketMessageModel;
-using MorMor.Terraria.Server;
-using MorMor.Terraria.Server.ApiRequestParam;
-using MorMor.Terraria.Server.ApResultArgs;
+using MorMor.Event;
+using MorMor.Model.Socket.Action;
+using MorMor.Model.Socket.Action.Receive;
+using MorMor.Model.Socket.Action.Response;
 using Newtonsoft.Json;
+using ProtoBuf;
 using System.Diagnostics;
 using System.Drawing;
-using System.Net.Sockets;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Web;
 
 namespace MorMor.Terraria;
 
@@ -28,9 +25,6 @@ public class TerrariaServer
 
     [JsonProperty("服务器转发端口号")]
     public ushort NatProt { get; set; } = 7777;
-
-    [JsonProperty("服务器Rest端口号")]
-    public ushort RestPort { get; set; } = 8888;
 
     [JsonProperty("服务器令牌")]
     public string Token { get; set; } = "";
@@ -66,194 +60,238 @@ public class TerrariaServer
     public HashSet<long> ForwardGroups { get; set; } = new();
 
     [JsonIgnore]
-    public Socket Client { get; internal set; }
+    public TaskCompletionSource<byte[]>? WaitFile { get; set; }
 
-    public async Task<OnlineRankArgs> QueryOnlines()
-    {
-        return await ApiRequest.Send<OnlineRankArgs>(this, TerrariaApiType.OnlineRank);
-    }
+    [JsonIgnore]
+    public IWebSocketConnection Client { get; internal set; }
 
-    public async Task<DeatRankArgs> DeatRank()
+    public async Task<ServerCommand> Command(string cmd)
     {
-        return await ApiRequest.Send<DeatRankArgs>(this, TerrariaApiType.DeathRank);
-    }
-
-    public async Task<PlayerInvseeArgs> QueryInventory(string name)
-    {
-        var param = new Dictionary<string, string>()
+        var args = new ServerCommandArgs()
         {
-            { "name", name }
+            Text = cmd,
+            ActionType = ActionType.Command,
         };
-        return await ApiRequest.Send<PlayerInvseeArgs>(this, TerrariaApiType.BeanInvsee, param);
+        return await RequestApi<ServerCommandArgs, ServerCommand>(args);
     }
 
-    public async Task<ExecuteCommamdArgs> ExecCommand(string cmd)
+    public async Task<ServerOnline> ServerOnline()
     {
-        var param = new Dictionary<string, string>()
+        var args = new BaseAction()
         {
-            { "cmd", HttpUtility.UrlEncode(cmd) }
+            ActionType = ActionType.ServerOnline,
         };
-        return await ApiRequest.Send<ExecuteCommamdArgs>(this, TerrariaApiType.ExecCommand
-            , param);
+        return await RequestApi<BaseAction, ServerOnline>(args);
     }
 
-    public async Task<PlayerListArgs> PlayerOnline()
+    public async Task<BaseActionResponse> Register(string Name, string Password)
     {
-        return await ApiRequest.Send<PlayerListArgs>(this, TerrariaApiType.PlayerOnline);
-    }
-
-    public async Task<GenerateMapArgs> GeneareMap()
-    {
-        return await ApiRequest.Send<GenerateMapArgs>(this, TerrariaApiType.GenerateMap);
-    }
-
-    public async Task<ProgressQueryArgs> Progress()
-    {
-        return await ApiRequest.Send<ProgressQueryArgs>(this, TerrariaApiType.GameProgress);
-    }
-
-    public async Task<RegisterUserArgs> Register(string name, string password)
-    {
-        var param = new Dictionary<string, string>()
+        var args = new RegisterAccountArgs()
         {
-            { "user", name },
-            { "password", password },
-            { "group", DefaultGroup }
+            ActionType = ActionType.RegisterAccount,
+            Name = Name,
+            Group = DefaultGroup,
+            Password = Password
         };
-        return await ApiRequest.Send<RegisterUserArgs>(this, TerrariaApiType.Register, param);
+        return await RequestApi<RegisterAccountArgs, BaseActionResponse>(args);
     }
 
-
-    public async Task<BaseResultArgs> SendMessage(TerrariaMessageContext context)
+    public async Task<GameProgress> QueryServerProgress()
     {
-        if (Client != null)
+        var args = new BaseAction()
         {
-            if (!Client.Poll(100, SelectMode.SelectRead) || Client.Available > 0)
+            ActionType = ActionType.GameProgress,
+        };
+        return await RequestApi<BaseAction, GameProgress>(args);
+    }
+
+    public async Task<PlayerInventory> PlayerInventory(string name)
+    {
+        var args = new QueryPlayerInventoryArgs()
+        {
+            ActionType = ActionType.Inventory,
+            Name = name
+        };
+        return await RequestApi<QueryPlayerInventoryArgs, PlayerInventory>(args);
+    }
+
+    public async Task<MapImage> MapImage(ImageType type)
+    {
+        var args = new MapImageArgs()
+        {
+            ActionType = ActionType.WorldMap,
+            ImageType = type
+        };
+        return await RequestApi<MapImageArgs, MapImage>(args);
+    }
+
+    public async Task<BaseActionResponse> Broadcast(string text, byte R, byte G, byte B)
+    {
+        var args = new BroadcastArgs()
+        {
+            ActionType = ActionType.PluginMsg,
+            Text = text,
+            Color = [R, G, B]
+        };
+        return await RequestApi<BroadcastArgs, BaseActionResponse>(args);
+    }
+
+    public async Task<BaseActionResponse> Broadcast(string text, Color color)
+    {
+        return await Broadcast(text, color.R, color.G, color.B);
+    }
+
+    public async Task<BaseActionResponse> PrivateMsg(string text, byte R, byte G, byte B)
+    {
+        var args = new PrivatMsgArgs()
+        {
+            ActionType = ActionType.PrivateMsg,
+            Text = text,
+            Color = [R, G, B]
+        };
+        return await RequestApi<PrivatMsgArgs, BaseActionResponse>(args);
+    }
+
+    public async Task<BaseActionResponse> PrivateMsg(string text, Color color)
+    {
+        return await Broadcast(text, color.R, color.G, color.B);
+    }
+
+    public async Task<PlayerOnlineRank> OnlineRank()
+    {
+        var args = new BaseAction()
+        {
+            ActionType = ActionType.OnlineRank
+        };
+        return await RequestApi<BaseAction, PlayerOnlineRank>(args);
+    }
+
+    public async Task<DeadRank> DeadRank()
+    {
+        var args = new BaseAction()
+        {
+            ActionType = ActionType.DeadRank
+        };
+        return await RequestApi<BaseAction, DeadRank>(args);
+    }
+
+    public async Task<UpLoadWorldFile> GetWorldFile()
+    {
+        var args = new BaseAction()
+        {
+            ActionType = ActionType.UpLoadWorld
+        };
+        return await RequestApi<BaseAction, UpLoadWorldFile>(args);
+    }
+
+    public bool IsReWorld(byte[] buffer)
+    {
+        try
+        {
+            using MemoryStream stream = new MemoryStream(buffer);
+            using BinaryReader reader = new BinaryReader(stream);
+            if (reader.ReadInt32() >= 135)
             {
-                await Client.SendAsync(Encoding.UTF8.GetBytes(context.ToJson()), SocketFlags.None);
-                return new BaseResultArgs()
+                ulong num = reader.ReadUInt64();
+                if ((num & 0xFFFFFFFFFFFFFFL) == 27981915666277746L)
+                    return true;
+            }
+        }
+        catch
+        {
+            return false;
+        }
+        return false;
+    }
+
+    public async Task<BaseActionResponse> Reset(Dictionary<string, string> startArgs, Action<RestServerType> OnWait)
+    {
+        var param = new Dictionary<string, string>
+        {
+            { "-autocreate", "3" },
+            { "-world", MapSavePath },
+            { "-port", Port.ToString() },
+            { "-lang", "7" },
+            { "-mode", "2" },
+            { "-players", "50" }
+        };
+        var startArgsLine = string.Join(" ", param
+            .Concat(startArgs)
+            .GroupBy(x => x.Key)
+            .ToDictionary(x => x.Key, x => x.Last().Value)
+            .Select(x => $"{x.Key} {x.Value}"));
+        var args = new RestServerArgs()
+        {
+            ActionType = ActionType.RestServer,
+            StartArgs = startArgsLine
+        };
+
+        if (startArgs.TryGetValue("-upload", out var file))
+        {
+            var now = DateTime.Now;
+            WaitFile = new();
+            OnWait(RestServerType.WaitFile);
+            try
+            {
+                var buffer = await WaitFile.Task.WaitAsync(TimeSpan.FromSeconds(60));
+                while (!IsReWorld(buffer) && (DateTime.Now - now).TotalSeconds < 60)
                 {
-                    Status = TerrariaApiStatus.Success
-                };
+                    OnWait(RestServerType.UnLoadFile);
+                    WaitFile = new();
+                    buffer = await WaitFile.Task.WaitAsync(TimeSpan.FromSeconds((DateTime.Now - now).TotalSeconds));
+                }
+                args.UseFile = true;
+                args.FileName = Name + ".wld";
+                args.FileBuffer = buffer;
+                OnWait(RestServerType.LoadFile);
             }
-            return new BaseResultArgs()
+            catch (Exception ex)
             {
-                Status = TerrariaApiStatus.Error,
-                ErrorMessage = "无法连接到服务器;"
-            };
-        }
-        return new BaseResultArgs()
-        {
-            Status = TerrariaApiStatus.Error,
-            ErrorMessage = "Socket对象为空无法发送!;"
-        };
-    }
-
-    public async Task<BaseResultArgs> SendPrivateMsg(string name, string msg, byte R, byte G, byte B)
-    {
-        var context = new TerrariaMessageContext()
-        {
-            Type = SocketMessageType.PrivateMsg,
-            Color = new byte[] { R, G, B },
-            Message = msg,
-            Name = name,
-        };
-        return await SendMessage(context);
-    }
-
-    public async Task<BaseResultArgs> SendPrivateMsg(string name, string msg, Color color)
-    {
-        return await SendPrivateMsg(name, msg, color.R, color.G, color.B);
-    }
-
-    public async Task<BaseResultArgs> SendPublicMsg(string msg, byte R, byte G, byte B)
-    {
-        var context = new TerrariaMessageContext()
-        {
-            Type = SocketMessageType.PublicMsg,
-            Color = new byte[] { R, G, B },
-            Message = msg
-        };
-        return await SendMessage(context);
-    }
-
-    public async Task<BaseResultArgs> SendPublicMsg(string msg, Color color)
-    {
-        return await SendPublicMsg(msg, color.R, color.G, color.B);
-    }
-
-    public async Task<EconomicsBankArgs> QueryEconomicBank(string name)
-    {
-        var param = new Dictionary<string, string>()
-        {
-            { "name", name },
-            { "cmd", "query" }
-        };
-        return await ApiRequest.Send<EconomicsBankArgs>(this, TerrariaApiType.EconomicsBank, param);
-    }
-
-    public async Task<EconomicsBankArgs> ClearEconomicBank(string name)
-    {
-        var param = new Dictionary<string, string>()
-        {
-            { "name", name },
-            { "cmd", "clear" }
-        };
-        return await ApiRequest.Send<EconomicsBankArgs>(this, TerrariaApiType.EconomicsBank, param);
-    }
-
-    public async Task<ServerStatusArgs> Status()
-    {
-        return await ApiRequest.Send<ServerStatusArgs>(this, TerrariaApiType.Status);
-    }
-
-    public async Task SendGroupMsg(MessageBody body)
-    {
-        foreach (var id in Groups)
-        {
-            await OneBotAPI.Instance.SendGroupMessage(id, body);
-        }
-    }
-
-    public async Task Reset(Dictionary<string, string> args)
-    {
-        var result = await ApiRequest.Send<BaseResultArgs>(this, TerrariaApiType.Reset);
-        if (result.IsSuccess)
-        {
-            await Task.Delay(5000);
-            MorMorAPI.TerrariaUserManager.RemoveByServer(Name);
-            if (!Start(args))
-            {
-                await SendGroupMsg("[重置] 服务器启动失败，请检查后台!");
-                return;
+                WaitFile = null;
+                OnWait(RestServerType.TimeOut);
             }
-            await SendGroupMsg($"[重置] {Name}重置成功，正在启动并创建地图!");
+            WaitFile = null;
         }
-        else
+        OnWait(RestServerType.Success);
+        return await RequestApi<RestServerArgs, BaseActionResponse>(args);
+    }
+
+    public async Task<TResult> RequestApi<In, TResult>(In ApiParam, TimeSpan? timeout = null) where In : BaseAction where TResult : BaseActionResponse, new()
+    {
+        if (Client != null && Client.IsAvailable)
         {
-            await SendGroupMsg($"[重置]服务器重置出错:{result.ErrorMessage}!");
+            ApiParam.Echo = Guid.NewGuid().ToString();
+            ApiParam.ServerName = Name;
+            using MemoryStream stream = new();
+            Serializer.Serialize(stream, ApiParam);
+            await Client.Send(stream.ToArray());
+            return await TerrariaMsgReceiveHandler.GetResponse<TResult>(Name, ApiParam.Echo, timeout);
         }
+        return new TResult()
+        {
+            Status = false,
+            ServerName = Name,
+            Message = "服务器未连接!"
+        };
     }
 
     public bool Start(Dictionary<string, string> startArgs)
     {
-        if (!startArgs.ContainsKey("-autocreate"))
-            startArgs["-autocreate"] = "3";
-        if (!startArgs.ContainsKey("-world"))
-            startArgs["-world"] = MapSavePath;
-        if (!startArgs.ContainsKey("-port"))
-            startArgs["-port"] = Port.ToString();
-        if (!startArgs.ContainsKey("-lang"))
-            startArgs["-lang"] = "7";
-        if (!startArgs.ContainsKey("-difficulty"))
-            startArgs["-mode"] = "2";
-        if (!startArgs.ContainsKey("-players"))
-            startArgs["-players"] = "50";
-        var startArgsLine = "";
-        foreach (var (key, value) in startArgs)
+        var param = new Dictionary<string, string>
         {
-            startArgsLine += $" {key} {value}";
-        }
+            { "-autocreate", "3" },
+            { "-world", MapSavePath },
+            { "-port", Port.ToString() },
+            { "-lang", "7" },
+            { "-mode", "2" },
+            { "-players", "50" }
+        };
+        var startArgsLine = string.Join(" ", param
+            .Concat(startArgs)
+            .GroupBy(x => x.Key)
+            .ToDictionary(x => x.Key, x => x.Last().Value)
+            .Select(x => $"{x.Key} {x.Value}"));
+
         Process process = new();
         process.StartInfo.WorkingDirectory = TShockPath;
         process.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "TShock.Server.exe" : "TShock.Server";

@@ -1,17 +1,19 @@
 ﻿using MomoAPI.Entities;
+using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment;
 using MorMor.Attributes;
 using MorMor.Configuration;
+using MorMor.Enumeration;
 using MorMor.Event;
 using MorMor.EventArgs;
 using MorMor.Exceptions;
+using MorMor.Extensions;
 using MorMor.Music;
 using MorMor.Permission;
 using MorMor.Picture;
 using MorMor.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using MomoAPI.Entities.Info;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -20,6 +22,154 @@ namespace MorMor.Commands;
 
 public class OneBotCommand
 {
+    //#region 购买商品
+    //[CommandMatch("购买", OneBotPermissions.TerrariaShop)]
+    //private async Task ShopBuy(CommandArgs args)
+    //{
+    //    if (args.Parameters.Count != 1)
+    //    {
+    //        await args.EventArgs.Reply($"语法错误:\n正确语法:{args.CommamdPrefix}{args.Name} [名称|ID]", true);
+    //        return;
+    //    }
+    //    if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+    //    {
+    //        var user = MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name);
+    //        if (user != null)
+    //        {
+    //            var online = await server.ServerOnline();
+    //            if (!online.Players.Any(x=>x.Name == user.Name))
+    //            {
+    //                await args.EventArgs.Reply("玩家不在线! 请进入服务器后购买!", true);
+    //                return;
+    //            }
+    //            if (int.TryParse(args.Parameters[0], out var id))
+    //            {
+    //                if (MorMorAPI.TerrariaShop.TryGetShop(id, out var shop) && shop != null)
+    //                {
+    //                    var curr = MorMorAPI.CurrencyManager.Query(args.EventArgs.Group.Id, args.EventArgs.Sender.Id);
+    //                    if (curr != null && curr.num >= shop.Price)
+    //                    {
+    //                        var res = await server.Command($"/g {shop.ID} {user.Name} {shop.num}");
+    //                        if (res.Status)
+    //                        {
+    //                            MorMorAPI.CurrencyManager.Del(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, shop.Price);
+    //                            await args.EventArgs.Reply("购买成功!", true);
+    //                        }
+    //                        else
+    //                        {
+    //                            await args.EventArgs.Reply("失败! 错误信息:\n" + res.Message, true);
+    //                        }
+    //                    }
+    //                    else
+    //                    {
+    //                        await args.EventArgs.Reply("星币不足!", true);
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    await args.EventArgs.Reply("该商品不存在!", true);
+    //                }
+    //            }
+    //            else
+    //            {
+    //                if (MorMorAPI.TerrariaShop.TryGetShop(args.Parameters[0], out var shop) && shop != null)
+    //                {
+    //                    var curr = MorMorAPI.CurrencyManager.Query(args.EventArgs.Group.Id, args.EventArgs.Sender.Id);
+    //                    if (curr != null && curr.num >= shop.Price)
+    //                    {
+    //                        var res = await server.Command($"/g {shop.ID} {user.Name} {shop.num}");
+    //                        if (res.Status)
+    //                        {
+    //                            MorMorAPI.CurrencyManager.Del(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, shop.Price);
+    //                            await args.EventArgs.Reply("购买成功!", true);
+    //                        }
+    //                        else
+    //                        {
+    //                            await args.EventArgs.Reply("失败! 错误信息:\n" + res.Message, true);
+    //                        }
+    //                    }
+    //                    else
+    //                    {
+    //                        await args.EventArgs.Reply("星币不足!", true);
+    //                    }
+    //                }
+    //                else
+    //                {
+    //                    await args.EventArgs.Reply("该商品不存在!", true);
+    //                }
+    //            }
+    //        }
+    //        else
+    //        {
+    //            await args.EventArgs.Reply("未找到你的注册信息!", true);
+    //        }
+    //    }
+    //    else
+    //    {
+    //        await args.EventArgs.Reply("服务器不存在或未切换到服务器!", true);
+    //    }
+    //}
+    //#endregion
+
+    #region 泰拉商店
+    [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop)]
+    private async Task Shop(CommandArgs args)
+    {
+        var sb = new StringBuilder("# 泰拉商店");
+        sb.AppendLine();
+        sb.AppendLine("|商品ID|商品名称|数量|价格|");
+        sb.AppendLine("|:--:|:--:|:--:|:--:|");
+        var id = 1;
+        foreach (var item in MorMorAPI.TerrariaShop.TrShop)
+        {
+            sb.AppendLine($"|{id}|{item.Name}|{item.num}|{item.Price}|");
+            id++;
+        }
+        await args.EventArgs.Reply(new MessageBody().MarkdownImage(sb.ToString()));
+    }
+    #endregion
+
+    #region 表情回应
+    [CommandMatch("表情回应", OneBotPermissions.EmojiLike)]
+    private async Task EmojiLike(CommandArgs args)
+    {
+        string[] emojis =
+        [
+            "4",
+            "5",
+            "8",
+            "9",
+            "10",
+            "12",
+            "14",
+            "16",
+            "21",
+            "23",
+            "24",
+            "25",
+            "26",
+            "27",
+            "28",
+            "29",
+            "30",
+            "32",
+            "33",
+            "34",
+            "38"
+        ];
+        var messageid = args.EventArgs.MessageContext.MessageID;
+        if (args.EventArgs.MessageContext.Reply != -1)
+            messageid = args.EventArgs.MessageContext.Reply;
+        var tasks = new List<Task>();
+        foreach (var id in emojis)
+        {
+            tasks.Add(args.EventArgs.OneBotAPI.EmojiLike(messageid.ToString(), id));
+        }
+        await Task.WhenAll(tasks);
+
+    }
+    #endregion
+
     #region 点歌
     [CommandMatch("点歌", OneBotPermissions.Music)]
     private static async Task Music(CommandArgs args)
@@ -31,7 +181,14 @@ public class OneBotCommand
             {
                 if (args.Parameters.Count > 1)
                 {
-                    await args.EventArgs.Reply(await MusicTool.WangYiMusic(musicName[2..]));
+                    try
+                    {
+                        await args.EventArgs.Reply(new MessageBody().MarkdownImage(await MusicTool.GetMusic163Markdown(musicName[2..])));
+                    }
+                    catch (Exception ex)
+                    {
+                        MorMorAPI.Log.ConsoleError($"点歌错误:{ex.Message}");
+                    }
                     MusicTool.ChangeName(musicName[2..], args.EventArgs.Sender.Id);
                     MusicTool.ChangeLocal("网易", args.EventArgs.Sender.Id);
                 }
@@ -44,7 +201,7 @@ public class OneBotCommand
             {
                 if (args.Parameters.Count > 1)
                 {
-                    await args.EventArgs.Reply(await MusicTool.QQMusic(musicName[2..]));
+                    await args.EventArgs.Reply(new MessageBody().MarkdownImage(await MusicTool.GetMusicQQMarkdown(musicName[2..])));
                     MusicTool.ChangeName(musicName[2..], args.EventArgs.Sender.Id);
                     MusicTool.ChangeLocal("QQ", args.EventArgs.Sender.Id);
                 }
@@ -56,19 +213,25 @@ public class OneBotCommand
             else
             {
                 var type = MusicTool.GetLocal(args.EventArgs.Sender.Id);
-
                 if (type == "网易")
                 {
-                    await args.EventArgs.Reply(await MusicTool.WangYiMusic(musicName));
+                    try
+                    {
+                        await args.EventArgs.Reply(new MessageBody().MarkdownImage(await MusicTool.GetMusic163Markdown(musicName)));
+                    }
+                    catch (Exception ex)
+                    {
+                        await args.EventArgs.Reply(ex.Message);
+                    }
                     MusicTool.ChangeName(musicName, args.EventArgs.Sender.Id);
                 }
                 else
                 {
 
-                    await args.EventArgs.Reply(await MusicTool.QQMusic(musicName));
+                    await args.EventArgs.Reply(new MessageBody().MarkdownImage(await MusicTool.GetMusicQQMarkdown(musicName)));
                     MusicTool.ChangeName(musicName, args.EventArgs.Sender.Id);
                 }
-               
+
             }
         }
         else
@@ -94,12 +257,11 @@ public class OneBotCommand
                         try
                         {
                             var music = await MusicTool.GetMusicQQ(musicName, id);
-                            Console.WriteLine(music.JumpUrl);
-                            await args.EventArgs.Reply(new MessageBody()
-                            { 
-                                
-                                MomoSegment.Music_QQ(music.MusicUrl,music.Picture,music.Name,string.Join(",",music.Singers))
-                            });
+                            await args.EventArgs.Reply(
+                            [
+
+                                MomoSegment.Music(music.url,music.music,music.picture,music.song,string.Join(",",music.singers))
+                            ]) ;
                         }
                         catch (Exception ex)
                         {
@@ -113,10 +275,15 @@ public class OneBotCommand
                         try
                         {
                             var music = await MusicTool.GetMusic163(musicName, id);
-                            await args.EventArgs.Reply(new MessageBody()
-                            {
-                                MomoSegment.Music_163(music.MusicUrl,music.Picture,music.Name,string.Join(",",music.Singers))
-                            });
+                            await args.EventArgs.Reply(
+                            [
+                                MomoSegment.Music(
+                                music.jumpurl,
+                                music.url,
+                                music.picurl,
+                                music.name,
+                                string.Join(",",music.singers.Select(x => x.name)))
+                            ]);
                         }
                         catch (Exception ex)
                         {
@@ -148,10 +315,24 @@ public class OneBotCommand
     [CommandMatch("test", OneBotPermissions.Account)]
     private async Task Test(CommandArgs args)
     {
-        if (args.Parameters.Count != 1)
-            return;
-       var (_,cookie) = await args.EventArgs.OneBotAPI.GetCookie(args.EventArgs.Group.Id, args.Parameters[0]);
-       await args.EventArgs.Reply(JsonConvert.SerializeObject(cookie, Formatting.Indented));
+        if (args.Parameters.Count == 1)
+        {
+            try
+            {
+
+                var server = MorMorAPI.Setting.GetServer("玄荒");
+                var res = await server?.Command(args.Parameters[0]);
+                await args.EventArgs.Reply(JsonConvert.SerializeObject(res));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+
+        }
+        //     return;
+        //var (_,cookie) = await args.EventArgs.OneBotAPI.GetCookie(args.Parameters[0]);
+        //await args.EventArgs.Reply(JsonConvert.SerializeObject(cookie, Formatting.Indented));
     }
     #endregion
 
@@ -222,7 +403,7 @@ public class OneBotCommand
     private async Task Reload(CommandArgs args)
     {
         var reloadArgs = new ReloadEventArgs();
-        MorMorAPI.Setting = Config.LoadConfig<MorMorSetting>(MorMorAPI.ConfigPath);
+        MorMorAPI.LoadConfig();
         reloadArgs.Message.Add("沫沫配置文件重读成功!");
         await OperatHandler.Reload(reloadArgs);
         await args.EventArgs.Reply(reloadArgs.Message);
@@ -876,7 +1057,7 @@ public class OneBotCommand
         var sb = new StringBuilder("服务器列表\n");
         foreach (var x in MorMorAPI.Setting.Servers)
         {
-            var status = await x.Status();
+            //var status = await x.Status();
             sb.Append("[名称]: ");
             sb.AppendLine(x.Name);
             sb.Append("[地址]: ");
@@ -886,7 +1067,7 @@ public class OneBotCommand
             sb.Append("[版本]: ");
             sb.AppendLine(x.Version);
             sb.Append("[状态]: ");
-            sb.AppendLine(status.Status != Enumeration.TerrariaApiStatus.DisposeConnect ? $"已运行 {status.UpTime}" : "无法连接");
+            //sb.AppendLine(status.Status != Enumeration.TerrariaApiStatus.DisposeConnect ? $"已运行 {status.UpTime}" : "无法连接");
             sb.Append("[介绍]: ");
             sb.AppendLine(x.Describe);
         }
@@ -928,9 +1109,9 @@ public class OneBotCommand
         var sb = new StringBuilder();
         foreach (var server in MorMorAPI.Setting.Servers)
         {
-            var api = await server.PlayerOnline();
-            sb.AppendLine($"[{server.Name}]在线玩家数量({(api.IsSuccess ? api.Players.Count : 0)}/{255})");
-            sb.AppendLine(api.IsSuccess ? string.Join(",", api.Players) : "无法连接服务器");
+            var api = await server.ServerOnline();
+            sb.AppendLine($"[{server.Name}]在线玩家数量({(api.Status ? api.Players.Count : 0)}/{api.MaxCount})");
+            sb.AppendLine(api.Status ? string.Join(",", api.Players.Select(x => x.Name)) : "无法连接服务器");
         }
         await args.EventArgs.Reply(sb.ToString().Trim());
     }
@@ -940,17 +1121,20 @@ public class OneBotCommand
     [CommandMatch("生成地图", OneBotPermissions.GenerateMap)]
     private async Task GenerateMap(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        var type = ImageType.Jpg;
+        if (args.Parameters.Count > 0 && args.Parameters[0] == "-p")
+            type = ImageType.Png;
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
-            var api = await server.GeneareMap();
+            var api = await server.MapImage(type);
             var body = new MessageBody();
-            if (api.IsSuccess)
+            if (api.Status)
             {
-                body.Add(MomoSegment.Image($"base64://{api.Uri}"));
+                body.Add(MomoSegment.Image($"base64://{Convert.ToBase64String(api.Buffer)}"));
             }
             else
             {
-                body.Add("无法连接服务器！");
+                body.Add(api.Message);
             }
             await args.EventArgs.Reply(body);
         }
@@ -977,15 +1161,15 @@ public class OneBotCommand
                 await args.EventArgs.Reply("注册的人物名称不能包含中文以及字母以外的字符", true);
                 return;
             }
-            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
             {
                 var pass = Guid.NewGuid().ToString()[..8];
                 try
                 {
-                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, server.Name, args.Parameters[0], pass);
+                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, server.Name, args.Parameters[0], pass);
                     var api = await server.Register(args.Parameters[0], pass);
                     var body = new MessageBody();
-                    if (api.IsSuccess)
+                    if (api.Status)
                     {
                         MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
                             $"{server.Name}服务器注册密码",
@@ -1001,7 +1185,7 @@ public class OneBotCommand
                     else
                     {
                         MorMorAPI.TerrariaUserManager.Remove(server.Name, args.Parameters[0]);
-                        body.Add(string.IsNullOrEmpty(api.ErrorMessage) ? "无法连接服务器！" : api.ErrorMessage);
+                        body.Add(string.IsNullOrEmpty(api.Message) ? "无法连接服务器！" : api.Message);
                     }
                     await args.EventArgs.Reply(body);
                 }
@@ -1027,10 +1211,10 @@ public class OneBotCommand
     [CommandMatch("我的密码", OneBotPermissions.SelfPassword)]
     private async Task SelfPassword(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
             var user = MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name);
-            if(user != null)
+            if (user != null)
             {
                 MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
                             $"{server.Name}服务器注册密码",
@@ -1057,7 +1241,7 @@ public class OneBotCommand
                 await args.EventArgs.Reply("未查询到该用户的注册信息!");
                 return;
             }
-            StringBuilder sb = new("查询结果:");
+            StringBuilder sb = new("查询结果:\n");
             foreach (var user in users)
             {
                 sb.AppendLine($"注册名称: {user.Name}");
@@ -1072,14 +1256,14 @@ public class OneBotCommand
                     sb.AppendLine("注册人不在此群中");
                 }
             }
-            await args.EventArgs.Reply(sb.ToString());
+            await args.EventArgs.Reply(sb.ToString().Trim());
         }
         var atlist = args.EventArgs.MessageContext.GetAts();
         if (args.Parameters.Count == 0 && atlist.Count > 0)
         {
             var target = atlist.First();
             await GetRegister(target.UserId);
-            
+
         }
         else if (args.Parameters.Count == 1)
         {
@@ -1108,7 +1292,7 @@ public class OneBotCommand
     [CommandMatch("注册列表", OneBotPermissions.QueryUserList)]
     private async Task RegisterList(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
             var users = MorMorAPI.TerrariaUserManager.GetUsers(server.Name);
             if (users == null || users.Count == 0)
@@ -1134,7 +1318,7 @@ public class OneBotCommand
     [CommandMatch("user", OneBotPermissions.UserAdmin)]
     private async Task User(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
             if (args.Parameters.Count == 2)
             {
@@ -1169,11 +1353,11 @@ public class OneBotCommand
     [CommandMatch("进度查询", OneBotPermissions.QueryProgress)]
     private async Task GameProgress(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
-            var api = await server.Progress();
+            var api = await server.QueryServerProgress();
             var body = new MessageBody();
-            if (api.IsSuccess)
+            if (api.Status)
             {
                 body.Add(MomoSegment.Image(ProgressImage.DrawImg(api.Progress, server.Name)));
             }
@@ -1196,13 +1380,13 @@ public class OneBotCommand
     {
         if (args.Parameters.Count == 1)
         {
-            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
             {
-                var api = await server.QueryInventory(args.Parameters[0]);
+                var api = await server.PlayerInventory(args.Parameters[0]);
                 var body = new MessageBody();
-                if (api.IsSuccess)
+                if (api.Status)
                 {
-                    body.Add(MomoSegment.Image(new InventoryImage().DrawImg(api.PlayerinventoryInfo, args.Parameters[0], server.Name)));
+                    body.Add(MomoSegment.Image(new InventoryImage().DrawImg(api.PlayerData, args.Parameters[0], server.Name)));
                 }
                 else
                 {
@@ -1232,14 +1416,14 @@ public class OneBotCommand
             await args.EventArgs.Reply("请输入要执行的命令!", true);
             return;
         }
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
             var cmd = "/" + string.Join(" ", args.Parameters);
-            var api = await server.ExecCommand(cmd);
+            var api = await server.Command(cmd);
             var body = new MessageBody();
-            if (api.IsSuccess)
+            if (api.Status)
             {
-                var cmdResult = $"[{server.Name}]命令执行结果:\n{string.Join("\n", api.Response)}";
+                var cmdResult = $"[{server.Name}]命令执行结果:\n{string.Join("\n", api.Params)}";
                 body.Add(cmdResult);
             }
             else
@@ -1259,26 +1443,26 @@ public class OneBotCommand
     [CommandMatch("在线排行", OneBotPermissions.OnlineRank)]
     private async Task OnlineRank(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
-            var api = await server.QueryOnlines();
+            var api = await server.OnlineRank();
             var body = new MessageBody();
-            if (api.IsSuccess)
+            if (api.Status)
             {
-                if (api.Rank.Count == 0)
+                if (api.OnlineRank.Count == 0)
                 {
                     await args.EventArgs.Reply("当前还没有数据记录", true);
                     return;
                 }
                 var sb = new StringBuilder($"[{server.Name}]在线排行:\n");
-                var rank = api.Rank.OrderByDescending(x => x.Duration);
-                foreach (var duration in rank)
+                var rank = api.OnlineRank.OrderByDescending(x => x.Value);
+                foreach (var (name, duration) in rank)
                 {
-                    var day = duration.Duration / (60 * 60 * 24);
-                    var hour = (duration.Duration - day * 60 * 60 * 24) / (60 * 60);
-                    var minute = (duration.Duration - day * 60 * 60 * 24 - hour * 60 * 60) / 60;
-                    var second = duration.Duration - day * 60 * 60 * 24 - hour * 60 * 60 - minute * 60;
-                    sb.Append($"[{duration.Name}]在线时长: ");
+                    var day = duration / (60 * 60 * 24);
+                    var hour = (duration - day * 60 * 60 * 24) / (60 * 60);
+                    var minute = (duration - day * 60 * 60 * 24 - hour * 60 * 60) / 60;
+                    var second = duration - day * 60 * 60 * 24 - hour * 60 * 60 - minute * 60;
+                    sb.Append($"[{name}]在线时长: ");
                     if (day > 0)
                         sb.Append($"{day}天");
                     if (hour > 0)
@@ -1306,11 +1490,11 @@ public class OneBotCommand
     [CommandMatch("死亡排行", OneBotPermissions.DeathRank)]
     private async Task DeathRank(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
-            var api = await server.DeatRank();
+            var api = await server.DeadRank();
             var body = new MessageBody();
-            if (api.IsSuccess)
+            if (api.Status)
             {
                 if (api.Rank.Count == 0)
                 {
@@ -1318,10 +1502,10 @@ public class OneBotCommand
                     return;
                 }
                 var sb = new StringBuilder($"[{server.Name}]死亡排行:\n");
-                var rank = api.Rank.OrderByDescending(x => x.Count);
-                foreach (var deathInfo in rank)
+                var rank = api.Rank.OrderByDescending(x => x.Value);
+                foreach (var (name, count) in rank)
                 {
-                    sb.AppendLine($"[{deathInfo.Name}]死亡次数: {deathInfo.Count}");
+                    sb.AppendLine($"[{name}]死亡次数: {count}");
                 }
                 body.Add(sb.ToString().Trim());
             }
@@ -1344,7 +1528,7 @@ public class OneBotCommand
     {
         if (args.Parameters.Count == 1)
         {
-            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
             {
                 switch (args.Parameters[0])
                 {
@@ -1380,8 +1564,6 @@ public class OneBotCommand
     [CommandMatch("查", OneBotPermissions.SelfInfo)]
     private async Task AcountInfo(CommandArgs args)
     {
-        try
-        { 
         var at = args.EventArgs.MessageContext.GetAts();
         if (at.Any())
         {
@@ -1397,12 +1579,6 @@ public class OneBotCommand
         {
             await args.EventArgs.Reply("查谁呢?", true);
         }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.ToString());
-        }
-        
     }
     #endregion
 
@@ -1428,7 +1604,7 @@ public class OneBotCommand
     [CommandMatch("启动", OneBotPermissions.StartTShock)]
     private async Task StartTShock(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
             if (server.Start(args.CommamdLine))
             {
@@ -1448,9 +1624,40 @@ public class OneBotCommand
     [CommandMatch("泰拉服务器重置", OneBotPermissions.StartTShock)]
     private async Task ResetTShock(CommandArgs args)
     {
-        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, out var server) && server != null)
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
-            await server.Reset(args.CommamdLine);
+            MorMorAPI.TerrariaUserManager.RemoveByServer(server.Name);
+            await server.Reset(args.CommamdLine, async type =>
+            {
+                switch (type)
+                {
+                    case RestServerType.WaitFile:
+                        {
+                            await args.EventArgs.Reply("正在等待上传地图，60秒后失效!");
+                            break;
+                        }
+                    case RestServerType.TimeOut:
+                        {
+                            await args.EventArgs.Reply("地图上传超时，自动创建地图。");
+                            break;
+                        }
+                    case RestServerType.Success:
+                        {
+                            await args.EventArgs.Reply("正在重置服务器!!");
+                            break;
+                        }
+                    case RestServerType.LoadFile:
+                        {
+                            await args.EventArgs.Reply("已接受到地图，正在上传服务器!!");
+                            break;
+                        }
+                    case RestServerType.UnLoadFile:
+                        {
+                            await args.EventArgs.Reply("上传的地图非国际正版，或地图不合法，请尽快重写上传!");
+                            break;
+                        }
+                }
+            });
         }
         else
         {

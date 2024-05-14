@@ -6,8 +6,8 @@ using MorMor.Configuration;
 using MorMor.DB.Manager;
 using MorMor.Event;
 using MorMor.Log;
+using MorMor.Net;
 using MorMor.Plugin;
-using MorMor.Terraria.Server;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -35,28 +35,41 @@ public class MorMorAPI
 
     internal static string UserLocationPath => Path.Combine(SAVE_PATH, "UserLocation.Json");
 
+    internal static string TerrariaShopPath => Path.Combine(SAVE_PATH, "Shop.Json");
+
     public static TextLog Log { get; internal set; }
 
-    public static MorMorSetting Setting { get; internal set; }
+    public static MorMorSetting Setting { get; internal set; } = new();
 
-    public static UserLocation UserLocation { get; internal set; }
+    public static UserLocation UserLocation { get; internal set; } = new();
+
+    public static TerrariaShop TerrariaShop { get; internal set; } = new();
 
     public static IMomoService Service { get; internal set; }
 
     public static async Task Star()
     {
+        var ConsoleInfo = @" 
+ /$$      /$$                     /$$      /$$                     /$$$$$$$              /$$    
+| $$$    /$$$                    | $$$    /$$$                    | $$__  $$            | $$    
+| $$$$  /$$$$  /$$$$$$   /$$$$$$ | $$$$  /$$$$  /$$$$$$   /$$$$$$ | $$  \ $$  /$$$$$$  /$$$$$$  
+| $$ $$/$$ $$ /$$__  $$ /$$__  $$| $$ $$/$$ $$ /$$__  $$ /$$__  $$| $$$$$$$  /$$__  $$|_  $$_/  
+| $$  $$$| $$| $$  \ $$| $$  \__/| $$  $$$| $$| $$  \ $$| $$  \__/| $$__  $$| $$  \ $$  | $$    
+| $$\  $ | $$| $$  | $$| $$      | $$\  $ | $$| $$  | $$| $$      | $$  \ $$| $$  | $$  | $$ /$$
+| $$ \/  | $$|  $$$$$$/| $$      | $$ \/  | $$|  $$$$$$/| $$      | $$$$$$$/|  $$$$$$/  |  $$$$/
+|__/     |__/ \______/ |__/      |__/     |__/ \______/ |__/      |_______/  \______/    \___/  ";
         if (!Directory.Exists(SAVE_PATH))
             Directory.CreateDirectory(SAVE_PATH);
         Log = new TextLog(Path.Combine(PATH, "log", $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log"));
+        Log.ConsoleInfo(ConsoleInfo, ConsoleColor.Green);
+        Utils.Utility.KillChrome();
         //读取Config
         LoadConfig();
         //初始化数据库
         InitDb();
         //扩展程序集
         AppDomain.CurrentDomain.AssemblyResolve += MappingPlugin.Resolve;
-        //加载插件
-        MappingPlugin.Initializer();
-        //启动服务
+        //启动机器人服务
         Service = await MomoServiceFactory.CreateService(new()
         {
             Host = Setting.Host,
@@ -64,10 +77,13 @@ public class MorMorAPI
             AccessToken = Setting.AccessToken,
             Log = Log
         }).Start();
+        new GithubService().Start<GithubWebHook>();
+        //加载插件
+        MappingPlugin.Initializer();
         //socket服务器启动
-        SocketServer.Start();
+        await TShockWebSocketServer.StartService();
         //Socket信息适配器
-        SocketServer.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
+        TShockWebSocketServer.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
         //群消息转发适配器
         Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
         //监听指令
@@ -78,6 +94,7 @@ public class MorMorAPI
     {
         Setting = Config.LoadConfig(ConfigPath, Setting);
         UserLocation = Config.LoadConfig(UserLocationPath, UserLocation);
+        TerrariaShop = Config.LoadConfig(TerrariaShopPath, TerrariaShop);
     }
 
     private static void InitDb()
@@ -93,7 +110,6 @@ public class MorMorAPI
                 }
             case "mysql":
                 {
-                    Console.WriteLine(66);
                     DB = new MySqlConnection()
                     {
                         ConnectionString = string.Format("Server={0};Port={1};Database={2};Uid={3};Pwd={4}",

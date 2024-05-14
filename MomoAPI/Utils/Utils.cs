@@ -1,4 +1,4 @@
-﻿namespace MomoAPI.Utils;
+namespace MomoAPI.Utils;
 
 public static class Utils
 {

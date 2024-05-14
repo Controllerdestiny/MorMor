@@ -1,8 +1,8 @@
-﻿using System.Net.Sockets;
+﻿using Fleck;
 
 namespace MorMor.EventArgs.Sockets;
 
 public class BaseSocketArgs
 {
-    public Socket Client { get; init; }
+    public IWebSocketConnection Client { get; init; }
 }

@@ -60,5 +60,9 @@ public enum SegmentType
     /// </summary>
     [Description("video")]
     Video,
+
+    [Description("music")]
+    Music,
+
     Ignore
 }

@@ -1,11 +1,11 @@
-﻿using System.Net.Sockets;
+﻿using Fleck;
 
 
 namespace MorMor.EventArgs.Sockets;
 
 public class SocketConnectArgs : BaseSocketArgs
 {
-    public SocketConnectArgs(Socket socket)
+    public SocketConnectArgs(IWebSocketConnection socket)
     {
         Client = socket;
     }

@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Text;
-using System.Threading.Tasks;
-using MorMor.Music.Music_QQ;
-using MorMor.Music.Music_163;
-using System.Xml.Linq;
 
 namespace MorMor.Music;
 
 
 public class MusicTool
 {
-    private static Dictionary<long, string> MusicLocal = new();
-    private static Dictionary<long, string> MusicName = new();
+    private static readonly Dictionary<long, string> MusicLocal = new();
+    private static readonly Dictionary<long, string> MusicName = new();
 
-    public static async Task<List<QQMusicData>> GetMusicQQList(string musicName)
+    public static async Task<List<QQ.MusicInfo>> GetMusicQQList(string musicName)
     {
-        var music = new Music_QQ.Music_QQ();
-        return await music.GetMusicListByName(musicName, new QQCookie());
+        return await QQ.MusicQQ.GetMusicList(musicName);
     }
 
     public static async Task<string> QQMusic(string musicName)
@@ -28,11 +21,43 @@ public class MusicTool
         int i = 1;
         list.ForEach(x =>
         {
-            ret += $"[{i}].{x.Name} -- {string.Join(",", x.Singers)}\n";
+            ret += $"[{i}].{x.song} -- {string.Join(",", x.singers)}\n";
             i++;
         });
         ret += "资源来自于QQ音乐";
         return ret;
+    }
+
+    public static async Task<string> GetMusicQQMarkdown(string musicName)
+    {
+        var list = await GetMusicQQList(musicName);
+        var sb = new StringBuilder($$"""<div align="center">""");
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.AppendLine("# QQ音乐");
+        for (int i = 0; i < list.Count; i++)
+        {
+            sb.AppendLine($"## `{i + 1}`- {list[i].song} -- {string.Join(",", list[i].singers)}");
+        }
+        sb.AppendLine();
+        sb.AppendLine($$"""</div>""");
+        return sb.ToString();
+    }
+
+    public static async Task<string> GetMusic163Markdown(string musicName)
+    {
+        var list = await GetMusic163List(musicName);
+        var sb = new StringBuilder($$"""<div align="center">""");
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.AppendLine("# 网易云音乐");
+        for (int i = 0; i < list.Count; i++)
+        {
+            sb.AppendLine($"## `{i + 1}`- {list[i].name} -- {string.Join(",", list[i].singers.Select(x => x.name))}");
+        }
+        sb.AppendLine();
+        sb.AppendLine($$"""</div>""");
+        return sb.ToString();
     }
 
     public static async Task<string> WangYiMusic(string musicName)
@@ -42,7 +67,7 @@ public class MusicTool
         int i = 1;
         list.ForEach(x =>
         {
-            ret += $"[{i}].{x.Name} -- {string.Join(",", x.Singers)}\n";
+            ret += $"[{i}].{x.name} -- {string.Join(",", x.singers.Select(x => x.name))}\n";
             i++;
         });
         ret += "资源来自于网易音乐";
@@ -50,34 +75,19 @@ public class MusicTool
 
     }
 
-    public static async Task<List<MusicData>> GetMusic163List(string musicName)
+    public static async Task<List<_163.MusicInfo>> GetMusic163List(string musicName)
     {
-        var music = new Music_163.Music_163();
-        return await music.GetMusicListByName(musicName);
+        return await _163.Music163.GetMusicList(musicName);
     }
 
-    public static async Task<QQMusicData> GetMusicQQ(string musicName, int index)
+    public static async Task<QQ.MusicData?> GetMusicQQ(string musicName, int index)
     {
-        Music_QQ.Music_QQ music_QQ = new();
-        return await music_QQ.GetMusic(new ChoiceMusicSetting()
-        {
-            Name = musicName,
-            Index = index,
-            Cookie = new QQCookie(),
-            br = 4
-        });
+        return await QQ.MusicQQ.GetMusic(musicName, index);
     }
 
-    public static async Task<QQMusicData> GetMusic163(string musicName, int index)
+    public static async Task<_163.MusicData?> GetMusic163(string musicName, int index)
     {
-        Music_QQ.Music_QQ music_QQ = new();
-        return await music_QQ.GetMusic(new ChoiceMusicSetting()
-        {
-            Name = musicName,
-            Index = index,
-            Cookie = new QQCookie(),
-            br = 4
-        });
+        return await _163.Music163.GetMusic(musicName, index);
     }
 
     public static void ChangeLocal(string local, long uin)
@@ -91,7 +101,7 @@ public class MusicTool
 
     public static string GetLocal(long uin)
     {
-        if(MusicLocal.TryGetValue(uin, out var music))
+        if (MusicLocal.TryGetValue(uin, out var music))
         {
             return music;
         }

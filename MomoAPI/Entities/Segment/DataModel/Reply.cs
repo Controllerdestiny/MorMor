@@ -6,5 +6,5 @@ public record Reply : BaseMessage
 {
     [JsonConverter(typeof(StringConverter))]
     [JsonProperty("id")]
-    public long Uid { get; internal set; }
+    public long Id { get; internal set; }
 }

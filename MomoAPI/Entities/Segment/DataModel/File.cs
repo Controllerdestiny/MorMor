@@ -9,4 +9,7 @@ public record File : BaseMessage
 
     [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
     public string Name { get; set; }
+
+    [JsonProperty("file_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string FileId { get; set; }
 }

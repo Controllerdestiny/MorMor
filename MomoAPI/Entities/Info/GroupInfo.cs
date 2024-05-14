@@ -2,17 +2,17 @@
 
 namespace MomoAPI.Entities.Info;
 
-public readonly struct GroupInfo
+public struct GroupInfo
 {
     [JsonProperty("group_name")]
-    public string Name { get; }
+    public string Name { get; init; }
 
     [JsonProperty("group_id")]
-    public int ID { get; }
+    public long ID { get; init; }
 
     [JsonProperty("member_count")]
-    public int MemberCount { get; }
+    public int MemberCount { get; init; }
 
     [JsonProperty("max_member_count")]
-    public int MaxMemberCount { get; }
+    public int MaxMemberCount { get; init; }
 }

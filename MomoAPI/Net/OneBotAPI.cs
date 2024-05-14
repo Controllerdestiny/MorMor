@@ -14,9 +14,41 @@ public class OneBotAPI
     {
 
     }
-    public async Task<(ApiStatus, JObject)> GetCookie(long groupid, string domain = "")
+
+    public async Task<(ApiStatus, Entities.Info.FileInfo)> GetFile(string fileid)
     {
-        return await ApiAdapter.GetCookie(groupid, domain);
+        return await ApiAdapter.GetFile(fileid);
+    }
+
+    public async Task<ApiStatus> EmojiLike(string msgId, string emojiid)
+    {
+        return await ApiAdapter.EmojiLike(msgId, emojiid);
+    }
+
+    public async Task<ApiStatus> ForwardMsgSignleGroup(long groupid, long msgId)
+    {
+        return await ApiAdapter.ForwardMsgSignleGroup(groupid, msgId);
+    }
+
+    public async Task<ApiStatus> ForwardMsgSignlePrivate(long userid, long msgId)
+    {
+        return await ApiAdapter.ForwardMsgSignlePrivate(userid, msgId);
+    }
+
+    public async Task<ApiStatus> MarkPrivateMsgAsRead(long userid)
+    {
+        return await ApiAdapter.MarkPrivateMsgAsRead(userid);
+    }
+
+    public async Task<ApiStatus> MarkGroupMsgAsRead(long groupid)
+    {
+        return await ApiAdapter.MarkGroupMsgAsRead(groupid);
+    }
+
+
+    public async Task<(ApiStatus, JObject)> GetCookie(string domain = "")
+    {
+        return await ApiAdapter.GetCookie(domain);
     }
 
     public async Task<(ApiStatus, long)> SendGroupMessage(long target, MessageBody body, TimeSpan? timeout = null)
@@ -46,7 +78,7 @@ public class OneBotAPI
 
     public async Task<(ApiStatus, GroupMemberInfo)> GetGroupMemberInfo(long groupid, long target, bool cache = false)
     {
-        return await GetGroupMemberInfo(groupid, target, cache);
+        return await ApiAdapter.GetGroupMemberInfo(groupid, target, cache);
     }
 
     public async Task<(ApiStatus, List<GroupMemberInfo>)> GetGroupMemberList(long groupid)
@@ -134,7 +166,7 @@ public class OneBotAPI
         return await ApiAdapter.CanSendRecord();
     }
 
-    internal static async ValueTask<(ApiStatus apiStatus, int messageId, string forwardId)> SendGroupForwardMsg(
+    public async ValueTask<(ApiStatus apiStatus, int messageId, string forwardId)> SendGroupForwardMsg(
         long groupId,
         IEnumerable<CustomNode> msgList,
         TimeSpan? timeout = null)
@@ -142,7 +174,7 @@ public class OneBotAPI
         return await ApiAdapter.SendGroupForwardMsg(groupId, msgList, timeout);
     }
 
-    internal static async ValueTask<(ApiStatus apiStatus, int messageId)> SendPrivateForwardMsg(
+    public async ValueTask<(ApiStatus apiStatus, int messageId)> SendPrivateForwardMsg(
         long userId,
         IEnumerable<CustomNode> msgList,
         TimeSpan? timeout = null)

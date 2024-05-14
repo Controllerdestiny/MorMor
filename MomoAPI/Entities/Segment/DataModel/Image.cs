@@ -17,6 +17,12 @@ public record Image : BaseMessage
     public string Url { get; init; }
 
     /// <summary>
+    /// 外显
+    /// </summary>
+    [JsonProperty("summary", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Summary { get; init; }
+
+    /// <summary>
     /// ID
     /// </summary>
     [JsonProperty("file_id", DefaultValueHandling = DefaultValueHandling.Ignore)]

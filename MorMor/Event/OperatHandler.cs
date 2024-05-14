@@ -2,6 +2,7 @@
 using MorMor.DB.Manager;
 using MorMor.Enumeration;
 using MorMor.EventArgs;
+using MorMor.Terraria.ChatCommand;
 
 namespace MorMor.Event;
 
@@ -16,6 +17,8 @@ public static class OperatHandler
     public static event EventCallBack<ReloadEventArgs, Task> OnReload;
 
     public static event EventCallBack<GroupMessageForwardArgs, Task> OnGroupMessageForward;
+
+    public static event EventCallBack<PlayerCommandArgs, Task> OnServerCommand;
 
     public static UserPermissionType UserPermission(AccountManager.Account account, string prem)
     {
@@ -47,5 +50,13 @@ public static class OperatHandler
     {
         if (OnReload != null)
             await OnReload(args);
+    }
+
+    internal static async Task<bool> ServerUserCommand(PlayerCommandArgs args)
+    {
+        if (OnServerCommand == null)
+            return false;
+        await OnServerCommand(args);
+        return args.Handler;
     }
 }

@@ -1,16 +1,24 @@
-﻿using MomoAPI.EventArgs;
+﻿
+using MomoAPI.EventArgs;
 using MomoAPI.Utils;
 using MorMor.Enumeration;
 using MorMor.EventArgs;
 using MorMor.EventArgs.Sockets;
-using MorMor.Model.Terraria.SocketMessageModel;
-using Newtonsoft.Json.Linq;
+using MorMor.Model.Socket;
+using MorMor.Model.Socket.Action;
+using MorMor.Model.Socket.PlayerMessage;
+using MorMor.Model.Socket.ServerMessage;
+using MorMor.Terraria.ChatCommand;
+using ProtoBuf;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 
 namespace MorMor.Event;
 
 public class TerrariaMsgReceiveHandler
 {
-    public delegate TResult EventCallBack<in TEventArgs, out TResult>(TEventArgs args) where TEventArgs : BaseMessage;
+    public delegate TResult EventCallBack<in TEventArgs, out TResult>(TEventArgs args) where TEventArgs : Model.Socket.BaseMessage;
 
     public static event EventCallBack<PlayerJoinMessage, Task>? OnPlayerJoin;
 
@@ -26,18 +34,47 @@ public class TerrariaMsgReceiveHandler
 
     public static event EventCallBack<BaseMessage, Task>? OnHeartBeat;
 
+    private static readonly Subject<(BaseAction, MemoryStream)> ApiSubject = new();
+
+    internal static async Task<T> GetResponse<T>(string serverName, string echo, TimeSpan? timeout = null)
+    {
+        if (timeout == null)
+            timeout = TimeSpan.FromSeconds(15);
+        var task = ApiSubject.Where(x => x.Item1.Echo == echo)
+        .Select(x => x.Item2)
+            .Timeout((TimeSpan)timeout)
+            .Take(1)
+            .ToTask()
+            .RunCatch(e =>
+            {
+                return null;
+            });
+        var stream = await task;
+        stream.Position = 0;
+        return Serializer.Deserialize<T>(stream);
+
+    }
+
     public static void Adapter(SocketReceiveMessageArgs args)
     {
         try
         {
-            var messageObj = JObject.Parse(args.Message);
-            if (messageObj.TryGetValue("message_type", out var type) && type != null)
+            args.Stream.Position = 0;
+            var baseMsg = Serializer.Deserialize<BaseMessage>(args.Stream);
+            if (baseMsg != null)
             {
-                switch (EnumConverter.GetFieldByDesc<SocketMessageType>(type.ToString()))
+                args.Stream.Position = 0;
+                switch (baseMsg.MessageType)
                 {
-                    case SocketMessageType.PlayerLeave:
+                    case PostMessageType.Action:
                         {
-                            var msg = messageObj.ToObject<PlayerLeaveMessage>();
+                            var msg = Serializer.Deserialize<BaseAction>(args.Stream);
+                            ApiSubject.OnNext((msg, args.Stream));
+                            break;
+                        }
+                    case PostMessageType.PlayerLeave:
+                        {
+                            var msg = Serializer.Deserialize<PlayerLeaveMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -47,9 +84,9 @@ public class TerrariaMsgReceiveHandler
                             }
                             break;
                         }
-                    case SocketMessageType.PlayerJoin:
+                    case PostMessageType.PlayerJoin:
                         {
-                            var msg = messageObj.ToObject<PlayerJoinMessage>();
+                            var msg = Serializer.Deserialize<PlayerJoinMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -59,9 +96,9 @@ public class TerrariaMsgReceiveHandler
                             }
                             break;
                         }
-                    case SocketMessageType.PlayerMessage:
+                    case PostMessageType.PlayerMessage:
                         {
-                            var msg = messageObj.ToObject<PlayerChatMessage>();
+                            var msg = Serializer.Deserialize<PlayerChatMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -71,9 +108,9 @@ public class TerrariaMsgReceiveHandler
                             }
                             break;
                         }
-                    case SocketMessageType.PlayerCommand:
+                    case PostMessageType.PlayerCommand:
                         {
-                            var msg = messageObj.ToObject<PlayerCommandMessage>();
+                            var msg = Serializer.Deserialize<PlayerCommandMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -83,9 +120,9 @@ public class TerrariaMsgReceiveHandler
                             }
                             break;
                         }
-                    case SocketMessageType.GamePostInit:
+                    case PostMessageType.GamePostInit:
                         {
-                            var msg = messageObj.ToObject<GameInitMessage>();
+                            var msg = Serializer.Deserialize<GameInitMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -95,9 +132,9 @@ public class TerrariaMsgReceiveHandler
                             }
                             break;
                         }
-                    case SocketMessageType.Connect:
+                    case PostMessageType.Connect:
                         {
-                            var msg = messageObj.ToObject<BaseMessage>();
+                            var msg = Serializer.Deserialize<BaseMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -106,9 +143,9 @@ public class TerrariaMsgReceiveHandler
                             }
                             break;
                         }
-                    case SocketMessageType.HeartBeat:
+                    case PostMessageType.HeartBeat:
                         {
-                            var msg = messageObj.ToObject<BaseMessage>();
+                            var msg = Serializer.Deserialize<BaseMessage>(args.Stream);
                             if (msg != null)
                             {
                                 msg.Client = args.Client;
@@ -120,34 +157,47 @@ public class TerrariaMsgReceiveHandler
                 }
             }
         }
-        catch
+        catch (Exception e)
         {
-            MorMorAPI.Log.ConsoleError($"{args.Client.RemoteEndPoint} 发送了一条无法解析的信息");
+            MorMorAPI.Log.ConsoleError($"{args.Client.ConnectionInfo.ClientIpAddress} 发送了一条无法解析的信息:{e.ToString()}");
         }
 
     }
 
     internal static async Task GroupMessageForwardAdapter(GroupMessageEventArgs args)
     {
+        if (args.MessageContext.Messages.Any(x => x.Type == MomoAPI.Enumeration.SegmentType.File))
+        {
+            try
+            {
+                var (status, fileinfo) = await args.OneBotAPI.GetFile(args.MessageContext.GetFileId());
+                var buffer = Convert.FromBase64String(fileinfo.Base64);
+                foreach (var server in MorMorAPI.Setting.Servers)
+                {
+                    if (server != null && server.WaitFile != null)
+                    {
+                        if (server.Groups.Contains(args.Group.Id))
+                        {
+                            server.WaitFile.TrySetResult(buffer);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                await Console.Out.WriteLineAsync(e.ToString());
+            }
+
+        }
         var text = args.MessageContext.GetText();
         if (string.IsNullOrEmpty(text))
             return;
-        var msg = new TerrariaMessageContext()
-        {
-            Type = SocketMessageType.PublicMsg,
-            Message = $"[群消息][{args.SenderInfo.Name}]: " + args.MessageContext.GetText(),
-            Color = new byte[3]
-            {
-                113,
-                133,
-                186
-            }
-        };
+
         var eventArgs = new GroupMessageForwardArgs()
         {
             Handler = false,
             GroupMessageEventArgs = args,
-            Context = msg,
+            Context = text,
         };
         if (!await OperatHandler.MessageForward(eventArgs))
         {
@@ -157,7 +207,7 @@ public class TerrariaMsgReceiveHandler
                 {
                     if (server.ForwardGroups.Contains(args.Group.Id))
                     {
-                        await server.SendMessage(msg);
+                        await server.Broadcast($"[群消息][{args.SenderInfo.Name}]: {text}", System.Drawing.Color.GreenYellow);
                     }
                 }
             }
@@ -181,7 +231,7 @@ public class TerrariaMsgReceiveHandler
         {
             server.Client = msg.Client;
         }
-        MorMorAPI.Log.ConsoleInfo($"Terraria Server {msg.ServerName} {msg.Client.RemoteEndPoint} 已连接...", ConsoleColor.Green);
+        MorMorAPI.Log.ConsoleInfo($"Terraria Server {msg.ServerName} {msg.Client.ConnectionInfo.ClientIpAddress} 已连接...", ConsoleColor.Green);
     }
 
     private static async void GameInitAdapter(GameInitMessage args)
@@ -195,9 +245,9 @@ public class TerrariaMsgReceiveHandler
         }
     }
 
-    private static void PlayerCommandMessageAdapter(PlayerCommandMessage args)
+    private static async void PlayerCommandMessageAdapter(PlayerCommandMessage args)
     {
-
+        await ChatCommandMananger.Hook.CommandAdapter(args);
     }
 
     private static async void PlayerMessageAdapter(PlayerChatMessage args)

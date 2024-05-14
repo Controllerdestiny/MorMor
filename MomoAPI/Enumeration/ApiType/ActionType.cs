@@ -14,7 +14,7 @@ public enum ActionType
     /// <summary>
     /// 获取cookie
     /// </summary>
-    [Description("get_cookie")]
+    [Description("get_cookies")]
     GetCookie,
 
     /// <summary>
@@ -178,6 +178,63 @@ public enum ActionType
     /// </summary>
     [Description("get_record")]
     GetRecord,
+    #endregion
+
+    #region LLOneBot 扩展API
+    /// <summary>
+    /// 设置头像 (未实现)
+    /// </summary>
+    [Description("set_qq_avatar")]
+    SetAvatar,
+
+    /// <summary>
+    /// 获取过滤群请求 (未实现)
+    /// </summary>
+    [Description("get_group_ignore_add_request")]
+    GroupIgnoreRequest,
+
+    /// <summary>
+    /// 下载群文件
+    /// </summary>
+    [Description("get_file")]
+    GetFile,
+
+    /// <summary>
+    /// 表情回应
+    /// </summary>
+    [Description("set_msg_emoji_like")]
+    EmojiLike,
+
+    /// <summary>
+    /// 转发单条消息到群
+    /// </summary>
+    [Description("forward_group_single_msg")]
+    ForwardSingleMsgToGroup,
+
+    /// <summary>
+    /// 转发单条消息到私聊
+    /// </summary>
+    [Description("forward_private_single_msg")]
+    ForwardSingleMsgToPrivate,
+
+    /// <summary>
+    /// 设置私聊消息已读
+    /// </summary>
+    [Description("mark_private_msg_as_read")]
+    MarkPrivateMsgRead,
+
+    /// <summary>
+    /// 设置私聊消息已读
+    /// </summary>
+    [Description("mark_group_msg_as_read")]
+    MarkGroupMsgRead,
+
+    /// <summary>
+    /// 获取官方BOTQQ号范围
+    /// </summary>
+    [Description("get_robot_uin_range")]
+    GetRobotRange,
+
     #endregion
 
     #region 目前支持的CQHTPP API

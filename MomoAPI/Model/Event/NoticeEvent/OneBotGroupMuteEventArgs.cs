@@ -1,5 +1,4 @@
-﻿using MomoAPI.Entities;
-using MomoAPI.Enumeration.EventParamType;
+﻿using MomoAPI.Enumeration.EventParamType;
 using MomoAPI.Utils;
 using Newtonsoft.Json;
 
@@ -11,7 +10,7 @@ internal class OneBotGroupMuteEventArgs : BaseObNoticeEventArgs
     [JsonProperty("sub_type")]
     [JsonConverter(typeof(EnumConverter))]
     public MuteType OperatorType { get; set; }
-        
+
     [JsonProperty("group_id")]
     public long GroupId { get; set; }
 

@@ -1,6 +1,5 @@
 ﻿using MomoAPI.Interface;
 using System.Diagnostics;
-using System.Drawing;
 
 namespace MomoAPI.Log;
 
@@ -18,7 +17,7 @@ public class LogWriter : ILog
     }
 
     private static void OutPutConsole(string msg, ConsoleColor color)
-    { 
+    {
         Console.ForegroundColor = color;
         Console.WriteLine(msg);
         Console.ResetColor();
