@@ -21,7 +21,7 @@ public class TShockWebSocketServer
     {
 
         //启动服务器
-        Server = new WebSocketServer($"ws://127.0.0.1:{MorMorAPI.Setting.SocketProt}/momo")
+        Server = new WebSocketServer($"ws://0.0.0.0:{MorMorAPI.Setting.SocketProt}/momo")
         {
             //出错后进行重启
             RestartAfterListenError = true
