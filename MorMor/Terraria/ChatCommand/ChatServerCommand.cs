@@ -12,12 +12,12 @@ public class ChatServerCommand
         if (args.Server == null) return;
         if (args.User == null)
         {
-            await args.Server.PrivateMsg("没有你的注册信息！", Color.DarkRed);
+            await args.Server.PrivateMsg(args.Name, "没有你的注册信息！", Color.DarkRed);
             return;
         }
         if (!args.Server.EnabledPrize)
         {
-            await args.Server.PrivateMsg("服务器未开启抽奖系统！", Color.DarkRed);
+            await args.Server.PrivateMsg(args.Name, "服务器未开启抽奖系统！", Color.DarkRed);
             return;
         }
         var count = 1;
@@ -29,7 +29,7 @@ public class ChatServerCommand
         var curr = MorMorAPI.CurrencyManager.Query(args.User.GroupID, args.User.Id);
         if (curr == null || curr.num < count * MorMorAPI.TerrariaPrize.Fess)
         {
-            await args.Server.PrivateMsg($"你的星币不足抽取{count}次", Color.Red);
+            await args.Server.PrivateMsg(args.Name, $"你的星币不足抽取{count}次", Color.Red);
             return;
         }
         MorMorAPI.CurrencyManager.Del(args.User.GroupID, args.User.Id, count * MorMorAPI.TerrariaPrize.Fess);
@@ -49,12 +49,12 @@ public class ChatServerCommand
         if (args.Server == null) return;
         if (args.Parameters.Count != 1)
         {
-            await args.Server.PrivateMsg($"语法错误:\n正确语法:/购买 [名称|ID]", Color.GreenYellow);
+            await args.Server.PrivateMsg(args.Name, $"语法错误:\n正确语法:/购买 [名称|ID]", Color.GreenYellow);
             return;
         }
         if (!args.Server.EnabledShop)
         {
-            await args.Server.PrivateMsg("服务器未开启商店系统！", Color.DarkRed);
+            await args.Server.PrivateMsg(args.Name, "服务器未开启商店系统！", Color.DarkRed);
             return;
         }
         if (args.User != null)
@@ -70,21 +70,21 @@ public class ChatServerCommand
                         if (res.Status)
                         {
                             MorMorAPI.CurrencyManager.Del(args.User.GroupID, args.User.Id, shop.Price);
-                            await args.Server.PrivateMsg("购买成功!", Color.GreenYellow);
+                            await args.Server.PrivateMsg(args.Name, "购买成功!", Color.GreenYellow);
                         }
                         else
                         {
-                            await args.Server.PrivateMsg("失败! 错误信息:\n" + res.Message, Color.GreenYellow);
+                            await args.Server.PrivateMsg(args.Name, "失败! 错误信息:\n" + res.Message, Color.GreenYellow);
                         }
                     }
                     else
                     {
-                        await args.Server.PrivateMsg("星币不足!", Color.GreenYellow);
+                        await args.Server.PrivateMsg(args.Name, "星币不足!", Color.GreenYellow);
                     }
                 }
                 else
                 {
-                    await args.Server.PrivateMsg("该商品不存在!", Color.GreenYellow);
+                    await args.Server.PrivateMsg(args.Name, "该商品不存在!", Color.GreenYellow);
                 }
             }
             else
@@ -98,27 +98,27 @@ public class ChatServerCommand
                         if (res.Status)
                         {
                             MorMorAPI.CurrencyManager.Del(args.User.GroupID, args.User.Id, shop.Price);
-                            await args.Server.PrivateMsg("购买成功!", Color.GreenYellow);
+                            await args.Server.PrivateMsg(args.Name, "购买成功!", Color.GreenYellow);
                         }
                         else
                         {
-                            await args.Server.PrivateMsg("失败! 错误信息:\n" + res.Message, Color.GreenYellow);
+                            await args.Server.PrivateMsg(args.Name, "失败! 错误信息:\n" + res.Message, Color.GreenYellow);
                         }
                     }
                     else
                     {
-                        await args.Server.PrivateMsg("星币不足!", Color.GreenYellow);
+                        await args.Server.PrivateMsg(args.Name, "星币不足!", Color.GreenYellow);
                     }
                 }
                 else
                 {
-                    await args.Server.PrivateMsg("该商品不存在!", Color.GreenYellow);
+                    await args.Server.PrivateMsg(args.Name, "该商品不存在!", Color.GreenYellow);
                 }
             }
         }
         else
         {
-            await args.Server.PrivateMsg("未找到你的注册信息!", Color.GreenYellow);
+            await args.Server.PrivateMsg(args.Name, "未找到你的注册信息!", Color.GreenYellow);
         }
         //}
         //else

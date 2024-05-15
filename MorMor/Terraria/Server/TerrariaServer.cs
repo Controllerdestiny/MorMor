@@ -138,20 +138,21 @@ public class TerrariaServer
         return await Broadcast(text, color.R, color.G, color.B);
     }
 
-    public async Task<BaseActionResponse> PrivateMsg(string text, byte R, byte G, byte B)
+    public async Task<BaseActionResponse> PrivateMsg(string name, string text, byte R, byte G, byte B)
     {
         var args = new PrivatMsgArgs()
         {
             ActionType = ActionType.PrivateMsg,
             Text = text,
+            Name = name,
             Color = [R, G, B]
         };
         return await RequestApi<PrivatMsgArgs, BaseActionResponse>(args);
     }
 
-    public async Task<BaseActionResponse> PrivateMsg(string text, Color color)
+    public async Task<BaseActionResponse> PrivateMsg(string name, string text, Color color)
     {
-        return await PrivateMsg(text, color.R, color.G, color.B);
+        return await PrivateMsg(name, text, color.R, color.G, color.B);
     }
 
     public async Task<PlayerOnlineRank> OnlineRank()
