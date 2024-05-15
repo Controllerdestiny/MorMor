@@ -6,6 +6,15 @@ namespace MorMor.Commands;
 
 internal static class CommandUtils
 {
+    public static bool ParseBool(string str)
+    {
+        return str switch
+        {
+            "true" or "开启" or "开" => true,
+            "false" or "关闭" or "关" => false,
+            _ => false,
+        };
+    }
     public static bool ClassConstructParamIsZerp(this ConstructorInfo[] constructors)
     {
         return constructors.Any(ctor => ctor.GetParameters().Length == 0);

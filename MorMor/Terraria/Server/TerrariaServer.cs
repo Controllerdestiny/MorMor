@@ -154,7 +154,7 @@ public class TerrariaServer
 
     public async Task<BaseActionResponse> PrivateMsg(string text, Color color)
     {
-        return await Broadcast(text, color.R, color.G, color.B);
+        return await PrivateMsg(text, color.R, color.G, color.B);
     }
 
     public async Task<PlayerOnlineRank> OnlineRank()
@@ -184,6 +184,43 @@ public class TerrariaServer
         return await RequestApi<BaseAction, UpLoadWorldFile>(args);
     }
 
+    public async Task<ServerStatus> ServerStatus()
+    {
+        var args = new BaseAction()
+        {
+            ActionType = ActionType.ServerStatus
+        };
+        return await RequestApi<BaseAction, ServerStatus>(args);
+    }
+
+    public async Task<BaseActionResponse> ReStartServer(Dictionary<string, string> startArgs)
+    {
+        var args = new ReStartServerArgs()
+        {
+            ActionType = ActionType.ReStartServer,
+            StartArgs = SpawnStartArgs(startArgs)
+        };
+        return await RequestApi<ReStartServerArgs, BaseActionResponse>(args);
+    }
+
+    public string SpawnStartArgs(Dictionary<string, string> startArgs)
+    {
+        var param = new Dictionary<string, string>
+        {
+            { "-autocreate", "3" },
+            { "-world", MapSavePath },
+            { "-port", Port.ToString() },
+            { "-lang", "7" },
+            { "-mode", "2" },
+            { "-players", "50" }
+        };
+        return string.Join(" ", param
+            .Concat(startArgs)
+            .GroupBy(x => x.Key)
+            .ToDictionary(x => x.Key, x => x.Last().Value)
+            .Select(x => $"{x.Key} {x.Value}"));
+    }
+
     public bool IsReWorld(byte[] buffer)
     {
         try
@@ -206,24 +243,10 @@ public class TerrariaServer
 
     public async Task<BaseActionResponse> Reset(Dictionary<string, string> startArgs, Action<RestServerType> OnWait)
     {
-        var param = new Dictionary<string, string>
-        {
-            { "-autocreate", "3" },
-            { "-world", MapSavePath },
-            { "-port", Port.ToString() },
-            { "-lang", "7" },
-            { "-mode", "2" },
-            { "-players", "50" }
-        };
-        var startArgsLine = string.Join(" ", param
-            .Concat(startArgs)
-            .GroupBy(x => x.Key)
-            .ToDictionary(x => x.Key, x => x.Last().Value)
-            .Select(x => $"{x.Key} {x.Value}"));
         var args = new RestServerArgs()
         {
             ActionType = ActionType.RestServer,
-            StartArgs = startArgsLine
+            StartArgs = SpawnStartArgs(startArgs),
         };
 
         if (startArgs.TryGetValue("-upload", out var file))
@@ -265,7 +288,7 @@ public class TerrariaServer
             using MemoryStream stream = new();
             Serializer.Serialize(stream, ApiParam);
             await Client.Send(stream.ToArray());
-            return await TerrariaMsgReceiveHandler.GetResponse<TResult>(Name, ApiParam.Echo, timeout);
+            return await TerrariaMsgReceiveHandler.GetResponse<TResult>(ApiParam.Echo, timeout);
         }
         return new TResult()
         {
@@ -277,25 +300,10 @@ public class TerrariaServer
 
     public bool Start(Dictionary<string, string> startArgs)
     {
-        var param = new Dictionary<string, string>
-        {
-            { "-autocreate", "3" },
-            { "-world", MapSavePath },
-            { "-port", Port.ToString() },
-            { "-lang", "7" },
-            { "-mode", "2" },
-            { "-players", "50" }
-        };
-        var startArgsLine = string.Join(" ", param
-            .Concat(startArgs)
-            .GroupBy(x => x.Key)
-            .ToDictionary(x => x.Key, x => x.Last().Value)
-            .Select(x => $"{x.Key} {x.Value}"));
-
         Process process = new();
         process.StartInfo.WorkingDirectory = TShockPath;
         process.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "TShock.Server.exe" : "TShock.Server";
-        process.StartInfo.Arguments = startArgsLine;
+        process.StartInfo.Arguments = SpawnStartArgs(startArgs);
         process.StartInfo.UseShellExecute = true;
         process.StartInfo.RedirectStandardInput = false;
         process.StartInfo.RedirectStandardOutput = false;

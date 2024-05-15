@@ -37,6 +37,8 @@ public class MorMorAPI
 
     internal static string TerrariaShopPath => Path.Combine(SAVE_PATH, "Shop.Json");
 
+    internal static string TerrariaPrizePath => Path.Combine(SAVE_PATH, "Prize.Json");
+
     public static TextLog Log { get; internal set; }
 
     public static MorMorSetting Setting { get; internal set; } = new();
@@ -44,6 +46,8 @@ public class MorMorAPI
     public static UserLocation UserLocation { get; internal set; } = new();
 
     public static TerrariaShop TerrariaShop { get; internal set; } = new();
+
+    public static TerrariaPrize TerrariaPrize { get; internal set; } = new();
 
     public static IMomoService Service { get; internal set; }
 
@@ -95,6 +99,15 @@ public class MorMorAPI
         Setting = Config.LoadConfig(ConfigPath, Setting);
         UserLocation = Config.LoadConfig(UserLocationPath, UserLocation);
         TerrariaShop = Config.LoadConfig(TerrariaShopPath, TerrariaShop);
+        TerrariaPrize = Config.LoadConfig(TerrariaPrizePath, TerrariaPrize);
+    }
+
+    internal static void ConfigChange()
+    {
+        Config.Write(ConfigPath, Setting);
+        Config.Write(UserLocationPath, UserLocation);
+        Config.Write(TerrariaShopPath, TerrariaShop);
+        Config.Write(TerrariaPrizePath, TerrariaPrize);
     }
 
     private static void InitDb()

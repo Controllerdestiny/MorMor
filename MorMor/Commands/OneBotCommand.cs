@@ -12,7 +12,6 @@ using MorMor.Music;
 using MorMor.Permission;
 using MorMor.Picture;
 using MorMor.Utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -111,11 +110,54 @@ public class OneBotCommand
     //}
     //#endregion
 
+    #region 配置设置
+    [CommandMatch("config", OneBotPermissions.SetConfig)]
+    private async Task SetConfig(CommandArgs args)
+    {
+        if (args.Parameters.Count < 2)
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法；{args.CommamdPrefix}{args.Name} [选项] [值]");
+            return;
+        }
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+        {
+            var status = CommandUtils.ParseBool(args.Parameters[1]);
+            switch (args.Parameters[0].ToLower())
+            {
+                case "prize":
+                    server.EnabledPrize = status;
+                    await args.EventArgs.Reply($"[{server.Name}]奖池状态设置为`{status}`");
+                    break;
+                case "shop":
+                    server.EnabledShop = status;
+                    await args.EventArgs.Reply($"[{server.Name}]商店状态设置为`{status}`");
+                    break;
+                default:
+                    await args.EventArgs.Reply($"[{args.Parameters[1]}]不可被设置!");
+                    break;
+            }
+            MorMorAPI.ConfigChange();
+        }
+        else
+        {
+            await args.EventArgs.Reply($"未切换服务器或，服务器不存在!");
+        }
+       
+    }
+    #endregion
+
     #region 泰拉商店
     [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop)]
     private async Task Shop(CommandArgs args)
     {
-        var sb = new StringBuilder("# 泰拉商店");
+        var sb = new StringBuilder();
+        sb.AppendLine($$"""<div align="center">""");
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.AppendLine("# 泰拉商店");
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.AppendLine("</div>");
         sb.AppendLine();
         sb.AppendLine("|商品ID|商品名称|数量|价格|");
         sb.AppendLine("|:--:|:--:|:--:|:--:|");
@@ -123,6 +165,31 @@ public class OneBotCommand
         foreach (var item in MorMorAPI.TerrariaShop.TrShop)
         {
             sb.AppendLine($"|{id}|{item.Name}|{item.num}|{item.Price}|");
+            id++;
+        }
+        await args.EventArgs.Reply(new MessageBody().MarkdownImage(sb.ToString()));
+    }
+    #endregion
+
+    #region 泰拉奖池
+    [CommandMatch("泰拉奖池", OneBotPermissions.TerrariaPrize)]
+    private async Task Prize(CommandArgs args)
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($$"""<div align="center">""");
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.AppendLine("# 泰拉奖池");
+        sb.AppendLine();
+        sb.AppendLine();
+        sb.AppendLine("</div>");
+        sb.AppendLine();
+        sb.AppendLine("|奖品ID|奖品名称|最大数量|最小数量|中奖概率|");
+        sb.AppendLine("|:--:|:--:|:--:|:--:|:--:|");
+        var id = 1;
+        foreach (var item in MorMorAPI.TerrariaPrize.Pool)
+        {
+            sb.AppendLine($"|{id}|{item.Name}|{item.Max}|{item.Min}|{item.Probability}％|");
             id++;
         }
         await args.EventArgs.Reply(new MessageBody().MarkdownImage(sb.ToString()));
@@ -319,10 +386,7 @@ public class OneBotCommand
         {
             try
             {
-
-                var server = MorMorAPI.Setting.GetServer("玄荒");
-                var res = await server?.Command(args.Parameters[0]);
-                await args.EventArgs.Reply(JsonConvert.SerializeObject(res));
+                var file = new HttpClient().GetByteArrayAsync("https://gitdl.cn/" + "");
             }
             catch (Exception ex)
             {
@@ -341,7 +405,7 @@ public class OneBotCommand
     private async Task VersionInfo(CommandArgs args)
     {
         var info = "名称: MorMor" +
-            "\n版本: V1.0.1.0" +
+            "\n版本: V2.0.0.1" +
             $"\n运行时长: {DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime:dd\\.hh\\:mm\\:ss}" +
             "\nMorMor是基于LLOneBot开发的 .NET平台机器人，主要功能为群管理以及TShock服务器管理" +
             "\n开源地址: https://github.com/Controllerdestiny/MorMor";
@@ -1054,24 +1118,64 @@ public class OneBotCommand
             await args.EventArgs.Reply("服务器列表空空如也!");
             return;
         }
-        var sb = new StringBuilder("服务器列表\n");
+        var sb = new StringBuilder();
+       
         foreach (var x in MorMorAPI.Setting.Servers)
         {
-            //var status = await x.Status();
-            sb.Append("[名称]: ");
-            sb.AppendLine(x.Name);
-            sb.Append("[地址]: ");
-            sb.AppendLine(x.IP);
-            sb.Append("[端口]: ");
-            sb.AppendLine(x.Port.ToString());
-            sb.Append("[版本]: ");
-            sb.AppendLine(x.Version);
-            sb.Append("[状态]: ");
-            //sb.AppendLine(status.Status != Enumeration.TerrariaApiStatus.DisposeConnect ? $"已运行 {status.UpTime}" : "无法连接");
-            sb.Append("[介绍]: ");
-            sb.AppendLine(x.Describe);
+            var status = await x.ServerStatus();
+            sb.AppendLine($$"""<div align="center">""");
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine($"# {x.Name}");
+            sb.AppendLine($"### 地址: {x.IP}");
+            sb.AppendLine($"### 端口: {x.Port}");
+            sb.AppendLine($"### 版本: {x.Version}");
+            sb.AppendLine($"### 介绍: {x.Describe}");
+            sb.AppendLine($"### 状态: {(status != null && status.Status ? $"已运行 {status.RunTime:dd\\.hh\\:mm\\:ss}" : "无法连接")}");
+            if (status != null && status.Status)
+            { 
+                sb.AppendLine($"### 地图大小: {status.WorldWidth}x{status.WorldHeight}");
+                sb.AppendLine($"### 地图名称: {status.WorldName}");
+                sb.AppendLine($"### 地图种子: {status.WorldSeed}");
+                sb.AppendLine($"### 地图ID: {status.WorldID}");
+                sb.AppendLine($"## 服务器插件");
+                sb.AppendLine($"|插件名称|插件作者|插件介绍");
+                sb.AppendLine($"|:-:|:-:|:-:|");
+                foreach (var plugin in status.Plugins)
+                {
+                    sb.AppendLine($"|{plugin.Name}|{plugin.Author}|{plugin.Description}");
+                }
+            }
+            sb.AppendLine();
+            sb.AppendLine();
+            sb.AppendLine("</div>");
         }
-        await args.EventArgs.Reply(sb.ToString().Trim());
+        await args.EventArgs.Reply(new MessageBody().MarkdownImage(sb.ToString()));
+    }
+    #endregion
+
+    #region 重启服务器
+    [CommandMatch("重启服务器", OneBotPermissions.ResetTShock)]
+    private async Task ReStartServer(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+        {
+            var api = await server.ReStartServer(args.CommamdLine);
+            var body = new MessageBody();
+            if (api.Status)
+            {
+                body.Add("正在重启服务器，请稍后...");
+            }
+            else
+            {
+                body.Add(api.Message);
+            }
+            await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
     }
     #endregion
 

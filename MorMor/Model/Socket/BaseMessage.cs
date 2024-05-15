@@ -4,6 +4,7 @@ using MorMor.Model.Socket.Action;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
 using MorMor.Terraria;
+using Newtonsoft.Json;
 using ProtoBuf;
 
 namespace MorMor.Model.Socket;
@@ -20,9 +21,12 @@ public class BaseMessage
 
     [ProtoMember(3)] public string Token { get; set; } = string.Empty;
 
+    [JsonIgnore]
     public bool Handler { get; set; }
 
+    [JsonIgnore]
     public IWebSocketConnection Client { get; set; }
 
+    [JsonIgnore]
     public TerrariaServer? TerrariaServer => MorMorAPI.Setting.GetServer(ServerName);
 }

@@ -1,6 +1,4 @@
-﻿
-using MomoAPI.EventArgs;
-using MomoAPI.Utils;
+﻿using MomoAPI.EventArgs;
 using MorMor.Enumeration;
 using MorMor.EventArgs;
 using MorMor.EventArgs.Sockets;
@@ -18,7 +16,7 @@ namespace MorMor.Event;
 
 public class TerrariaMsgReceiveHandler
 {
-    public delegate TResult EventCallBack<in TEventArgs, out TResult>(TEventArgs args) where TEventArgs : Model.Socket.BaseMessage;
+    public delegate TResult EventCallBack<in TEventArgs, out TResult>(TEventArgs args);
 
     public static event EventCallBack<PlayerJoinMessage, Task>? OnPlayerJoin;
 
@@ -36,23 +34,142 @@ public class TerrariaMsgReceiveHandler
 
     private static readonly Subject<(BaseAction, MemoryStream)> ApiSubject = new();
 
-    internal static async Task<T> GetResponse<T>(string serverName, string echo, TimeSpan? timeout = null)
+    private static readonly Dictionary<PostMessageType, EventCallBack<ServerMsgArgs, Task>> _action = new()
     {
-        if (timeout == null)
-            timeout = TimeSpan.FromSeconds(15);
-        var task = ApiSubject.Where(x => x.Item1.Echo == echo)
-        .Select(x => x.Item2)
-            .Timeout((TimeSpan)timeout)
-            .Take(1)
-            .ToTask()
-            .RunCatch(e =>
-            {
-                return null;
-            });
-        var stream = await task;
-        stream.Position = 0;
-        return Serializer.Deserialize<T>(stream);
+        { PostMessageType.Action, ActionHandler },
+        { PostMessageType.PlayerJoin, PlayerJoinHandler },
+        { PostMessageType.PlayerLeave, PlayerLeaveHandler },
+        { PostMessageType.PlayerCommand, PlayerCommandHandler },
+        { PostMessageType.PlayerMessage, PlayerMessageHandler },
+        { PostMessageType.GamePostInit, GamePostInitHandler },
+        { PostMessageType.Connect, ConnectHandler },
+        { PostMessageType.HeartBeat, HeartBeatHandler },
+    };
 
+    private static async Task PlayerMessageHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<PlayerChatMessage>(args.Stream);
+        data.Client = args.Client;
+        OnPlayerChat?.Invoke(data);
+        if (!data.Handler && data.TerrariaServer != null)
+        {
+            foreach (var group in data.TerrariaServer.ForwardGroups)
+            {
+                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{data.TerrariaServer.Name}] {data.Name}: {data.Text}");
+            }
+        }
+    }
+
+    private static async Task HeartBeatHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<BaseMessage>(args.Stream);
+        data.Client = args.Client;
+        OnHeartBeat?.Invoke(data);
+        var server = MorMorAPI.Setting.GetServer(data.ServerName);
+        if (server != null)
+        {
+            server.Client = data.Client;
+        }
+        await Task.CompletedTask;
+    }
+
+    private static async Task ConnectHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<BaseMessage>(args.Stream);
+        data.Client = args.Client;
+        OnConnect?.Invoke(data);
+        var server = MorMorAPI.Setting.GetServer(data.ServerName);
+        if (server != null)
+        {
+            server.Client = data.Client;
+        }
+        MorMorAPI.Log.ConsoleInfo($"Terraria Server {data.ServerName} {data.Client.ConnectionInfo.ClientIpAddress} 已连接...", ConsoleColor.Green);
+        await Task.CompletedTask;
+    }
+
+    private static async Task GamePostInitHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<GameInitMessage>(args.Stream);
+        data.Client = args.Client;
+        OnGameInit?.Invoke(data);
+        if (!data.Handler && data.TerrariaServer != null)
+        {
+            foreach (var group in data.TerrariaServer.ForwardGroups)
+            {
+                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{data.TerrariaServer.Name}]服务器初始化已完成..");
+            }
+        }
+    }
+
+    private static async Task PlayerCommandHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<PlayerCommandMessage>(args.Stream);
+        data.Client = args.Client;
+        OnPlayerCommand?.Invoke(data);
+        if (!data.Handler)
+        {
+            await ChatCommandMananger.Hook.CommandAdapter(data);
+        }
+    }
+
+    private static async Task PlayerLeaveHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<PlayerLeaveMessage>(args.Stream);
+        data.Client = args.Client;
+        OnPlayerLeave?.Invoke(data);
+        if (!data.Handler && data.TerrariaServer != null)
+        {
+            foreach (var group in data.TerrariaServer.ForwardGroups)
+            {
+                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{data.TerrariaServer.Name}] {data.Name}离开服务器..");
+            }
+        }
+    }
+
+    private static async Task PlayerJoinHandler(ServerMsgArgs args)
+    {
+        var data = Serializer.Deserialize<PlayerJoinMessage>(args.Stream);
+        data.Client = args.Client;
+        OnPlayerJoin?.Invoke(data);
+        if (!data.Handler && data.TerrariaServer != null)
+        {
+            foreach (var group in data.TerrariaServer.ForwardGroups)
+            {
+                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{data.TerrariaServer.Name}] {data.Name}进入服务器..");
+            }
+        }
+    }
+
+    private static async Task ActionHandler(ServerMsgArgs args)
+    {
+        var msg = Serializer.Deserialize<BaseAction>(args.Stream);
+        ApiSubject.OnNext((msg, args.Stream));
+        await Task.CompletedTask;
+    }
+
+    internal static async Task<T?> GetResponse<T>(string echo, TimeSpan? timeout = null) where T : Model.Socket.Action.Response.BaseActionResponse, new()
+    {
+        try
+        {
+            if (timeout == null)
+                timeout = TimeSpan.FromSeconds(15);
+            var task = ApiSubject.Where(x => x.Item1.Echo == echo)
+            .Select(x => x.Item2)
+                .Timeout((TimeSpan)timeout)
+                .Take(1)
+                .ToTask();
+            var stream = await task;
+            stream.Position = 0;
+            return Serializer.Deserialize<T>(stream);
+        }
+        catch(Exception ex)
+        {
+            return new T()
+            {
+                Status = false,
+                Message = $"与服务器通信发生错误:{ex.Message}"
+            };
+        }
     }
 
     public static void Adapter(SocketReceiveMessageArgs args)
@@ -61,107 +178,22 @@ public class TerrariaMsgReceiveHandler
         {
             args.Stream.Position = 0;
             var baseMsg = Serializer.Deserialize<BaseMessage>(args.Stream);
-            if (baseMsg != null)
+            if (_action.TryGetValue(baseMsg.MessageType, out var action))
             {
                 args.Stream.Position = 0;
-                switch (baseMsg.MessageType)
+                action(new()
                 {
-                    case PostMessageType.Action:
-                        {
-                            var msg = Serializer.Deserialize<BaseAction>(args.Stream);
-                            ApiSubject.OnNext((msg, args.Stream));
-                            break;
-                        }
-                    case PostMessageType.PlayerLeave:
-                        {
-                            var msg = Serializer.Deserialize<PlayerLeaveMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnPlayerLeave?.Invoke(msg);
-                                if (!msg.Handler)
-                                    PlayerLeaveMessageAdapter(msg);
-                            }
-                            break;
-                        }
-                    case PostMessageType.PlayerJoin:
-                        {
-                            var msg = Serializer.Deserialize<PlayerJoinMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnPlayerJoin?.Invoke(msg);
-                                if (!msg.Handler)
-                                    PlayerJoinMessageAdapter(msg);
-                            }
-                            break;
-                        }
-                    case PostMessageType.PlayerMessage:
-                        {
-                            var msg = Serializer.Deserialize<PlayerChatMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnPlayerChat?.Invoke(msg);
-                                if (!msg.Handler)
-                                    PlayerMessageAdapter(msg);
-                            }
-                            break;
-                        }
-                    case PostMessageType.PlayerCommand:
-                        {
-                            var msg = Serializer.Deserialize<PlayerCommandMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnPlayerCommand?.Invoke(msg);
-                                if (!msg.Handler)
-                                    PlayerCommandMessageAdapter(msg);
-                            }
-                            break;
-                        }
-                    case PostMessageType.GamePostInit:
-                        {
-                            var msg = Serializer.Deserialize<GameInitMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnGameInit?.Invoke(msg);
-                                if (!msg.Handler)
-                                    GameInitAdapter(msg);
-                            }
-                            break;
-                        }
-                    case PostMessageType.Connect:
-                        {
-                            var msg = Serializer.Deserialize<BaseMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnConnect?.Invoke(msg);
-                                ConnectAdapter(msg);
-                            }
-                            break;
-                        }
-                    case PostMessageType.HeartBeat:
-                        {
-                            var msg = Serializer.Deserialize<BaseMessage>(args.Stream);
-                            if (msg != null)
-                            {
-                                msg.Client = args.Client;
-                                OnHeartBeat?.Invoke(msg);
-                                HeartBeat(msg);
-                            }
-                            break;
-                        }
-                }
+                    Client = args.Client,
+                    Stream = args.Stream,
+                    BaseMessage = baseMsg
+                });
             }
         }
-        catch (Exception e)
+        catch(Exception ex)
         {
-            MorMorAPI.Log.ConsoleError($"{args.Client.ConnectionInfo.ClientIpAddress} 发送了一条无法解析的信息:{e.ToString()}");
+            MorMorAPI.Log.ConsoleError($"解析信息是出现错误:{ex.Message}");
         }
-
+    
     }
 
     internal static async Task GroupMessageForwardAdapter(GroupMessageEventArgs args)
@@ -213,73 +245,5 @@ public class TerrariaMsgReceiveHandler
             }
         }
 
-    }
-
-    private static void HeartBeat(BaseMessage msg)
-    {
-        var server = MorMorAPI.Setting.GetServer(msg.ServerName);
-        if (server != null)
-        {
-            server.Client = msg.Client;
-        }
-    }
-
-    private static void ConnectAdapter(BaseMessage msg)
-    {
-        var server = MorMorAPI.Setting.GetServer(msg.ServerName);
-        if (server != null)
-        {
-            server.Client = msg.Client;
-        }
-        MorMorAPI.Log.ConsoleInfo($"Terraria Server {msg.ServerName} {msg.Client.ConnectionInfo.ClientIpAddress} 已连接...", ConsoleColor.Green);
-    }
-
-    private static async void GameInitAdapter(GameInitMessage args)
-    {
-        if (args.TerrariaServer != null)
-        {
-            foreach (var group in args.TerrariaServer.ForwardGroups)
-            {
-                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{args.TerrariaServer.Name}]服务器初始化已完成..");
-            }
-        }
-    }
-
-    private static async void PlayerCommandMessageAdapter(PlayerCommandMessage args)
-    {
-        await ChatCommandMananger.Hook.CommandAdapter(args);
-    }
-
-    private static async void PlayerMessageAdapter(PlayerChatMessage args)
-    {
-        if (args.TerrariaServer != null)
-        {
-            foreach (var group in args.TerrariaServer.ForwardGroups)
-            {
-                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{args.TerrariaServer.Name}] {args.Name}: {args.Text}");
-            }
-        }
-    }
-
-    private static async void PlayerJoinMessageAdapter(PlayerJoinMessage args)
-    {
-        if (args.TerrariaServer != null)
-        {
-            foreach (var group in args.TerrariaServer.ForwardGroups)
-            {
-                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{args.TerrariaServer.Name}] {args.Name}进入服务器..");
-            }
-        }
-    }
-
-    private static async void PlayerLeaveMessageAdapter(PlayerLeaveMessage args)
-    {
-        if (args.TerrariaServer != null)
-        {
-            foreach (var group in args.TerrariaServer.ForwardGroups)
-            {
-                await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{args.TerrariaServer.Name}] {args.Name}离开服务器..");
-            }
-        }
     }
 }

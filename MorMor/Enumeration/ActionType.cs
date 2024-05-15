@@ -54,12 +54,22 @@ public enum ActionType
     RegisterAccount,
 
     /// <summary>
-    /// 服务器重置}
+    /// 服务器重置
     /// </summary>
     RestServer,
 
     /// <summary>
     /// 上传世界地图
     /// </summary>
-    UpLoadWorld
+    UpLoadWorld,
+
+    /// <summary>
+    /// 重启服务器
+    /// </summary>
+    ReStartServer,
+
+    /// <summary>
+    /// 服务器状态
+    /// </summary>
+    ServerStatus
 }

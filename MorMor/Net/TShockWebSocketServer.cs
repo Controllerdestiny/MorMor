@@ -1,5 +1,4 @@
-﻿
-using Fleck;
+﻿using Fleck;
 using MorMor.EventArgs.Sockets;
 
 
