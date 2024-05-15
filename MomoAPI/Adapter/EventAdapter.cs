@@ -77,6 +77,7 @@ public class EventAdapter
     {
         if (messageObj.TryGetValue("post_type", out var message) && message != null)
         {
+            OneBotAPI.Instance.BotId = messageObj.Value<long>("self_id");
             switch (message.ToString())
             {
                 case "message":

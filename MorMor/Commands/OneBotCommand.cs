@@ -1,6 +1,7 @@
 ﻿using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment;
+using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Configuration;
 using MorMor.Enumeration;
@@ -419,21 +420,7 @@ public class OneBotCommand
     [CommandMatch("test", OneBotPermissions.Account)]
     private async Task Test(CommandArgs args)
     {
-        if (args.Parameters.Count == 1)
-        {
-            try
-            {
-                var file = new HttpClient().GetByteArrayAsync("https://gitdl.cn/" + "");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
 
-        }
-        //     return;
-        //var (_,cookie) = await args.EventArgs.OneBotAPI.GetCookie(args.Parameters[0]);
-        //await args.EventArgs.Reply(JsonConvert.SerializeObject(cookie, Formatting.Indented));
     }
     #endregion
 

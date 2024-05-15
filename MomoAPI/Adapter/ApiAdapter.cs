@@ -449,9 +449,9 @@ internal class ApiAdapter
         return (status, obj["data"]?["file"]?.ToString() ?? "");
     }
 
-    public static async Task<(ApiStatus, JObject)> GetCookie(string domain = "qq.qun.com")
+    public static async Task<(ApiStatus, CookieInfo)> GetCookie(string domain = "qun.qq.com")
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JObject res) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetCookie,
             ApiParams = new
@@ -459,7 +459,19 @@ internal class ApiAdapter
                 domain,
             }
         });
-        return (status, obj);
+        var Info = new CookieInfo();
+        var cookie = res["data"]?["cookies"]?.ToString();
+        Info.Cookie = cookie;
+        if (!string.IsNullOrEmpty(cookie))
+        {
+            var val = cookie.Split(";");
+            if (val.Length == 2)
+            {
+                Info.Pskey = val[0][6..];
+                Info.Skey = val[1][5..];
+            }
+        }
+        return (status, Info);
     }
 
     public static async Task<(ApiStatus, Entities.Info.FileInfo)> GetFile(string fileid)

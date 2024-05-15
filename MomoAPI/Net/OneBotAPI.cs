@@ -10,6 +10,8 @@ namespace MomoAPI.Net;
 public class OneBotAPI
 {
     public static readonly OneBotAPI Instance = new();
+
+    public long BotId { get; set; }
     private OneBotAPI()
     {
 
@@ -46,7 +48,7 @@ public class OneBotAPI
     }
 
 
-    public async Task<(ApiStatus, JObject)> GetCookie(string domain = "")
+    public async Task<(ApiStatus, CookieInfo)> GetCookie(string domain = "qun.qq.com")
     {
         return await ApiAdapter.GetCookie(domain);
     }
