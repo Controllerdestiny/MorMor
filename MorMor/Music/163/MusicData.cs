@@ -16,7 +16,7 @@ public class Singer
     /// <summary>
     /// 
     /// </summary>
-    public int id { get; set; }
+    public long id { get; set; }
 }
 
 public class MusicData
@@ -32,7 +32,7 @@ public class MusicData
     /// <summary>
     /// 
     /// </summary>
-    public int id { get; set; }
+    public long id { get; set; }
     /// <summary>
     /// 
     /// </summary>

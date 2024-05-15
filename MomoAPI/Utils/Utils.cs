@@ -29,17 +29,6 @@ public static class Utils
             MusicType._163 => "163",
             _ => "qq"
         };
-        //var args = new Dictionary<string, string>()
-        //{
-        //    { "type", signtype },
-        //    { "musicUrl", AudioUrl },
-        //    { "jumpUrl", jumpUrl },
-        //    { "title", song },
-        //    { "get", "yes" },
-        //    { "singer", singer },
-        //    { "preview", imageUrl },
-        //};
-       
         var (status, res) = OneBotAPI.Instance.GetCookie("qzone.qq.com").Result;
         var args = new Dictionary<string, string>()
         {
