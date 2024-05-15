@@ -1,9 +1,9 @@
-﻿namespace MomoAPI.Util;
+﻿namespace MomoAPI.Extensions;
 
 /// <summary>
 /// <para>DateTime和时间戳的转换</para>
 /// </summary>
-public static class TimeConvert
+public static class TimeExtension
 {
     private static readonly DateTime _unixStartTime = new(1970,
                                                           1,

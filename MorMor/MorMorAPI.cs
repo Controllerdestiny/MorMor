@@ -102,7 +102,7 @@ public class MorMorAPI
         TerrariaPrize = Config.LoadConfig(TerrariaPrizePath, TerrariaPrize);
     }
 
-    internal static void ConfigChange()
+    internal static void ConfigSave()
     {
         Config.Write(ConfigPath, Setting);
         Config.Write(UserLocationPath, UserLocation);

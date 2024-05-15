@@ -1,4 +1,5 @@
 ﻿using MomoAPI.Entities.Segment;
+using MomoAPI.Enumeration;
 using Newtonsoft.Json;
 using System.Collections;
 
@@ -80,6 +81,24 @@ public class MessageBody : IList<MomoSegment>
     public MessageBody Music(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
     {
         Add(MomoSegment.Music(jumpUrl, AudioUrl, imageUrl, song, singer));
+        return this;
+    }
+
+    public MessageBody Music_QQ(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        Add(MomoSegment.Music_QQ(jumpUrl, AudioUrl, imageUrl, song, singer));
+        return this;
+    }
+
+    public MessageBody Music_163(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        Add(MomoSegment.Music_163(jumpUrl, AudioUrl, imageUrl, song, singer));
+        return this;
+    }
+
+    public MessageBody CustomMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        Add(MomoSegment.CustomMusic(type, jumpUrl, AudioUrl, imageUrl, song, singer));
         return this;
     }
 

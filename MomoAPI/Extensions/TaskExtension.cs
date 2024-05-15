@@ -1,9 +1,9 @@
-﻿namespace MomoAPI.Utils;
+﻿namespace MomoAPI.Extensions;
 
 /// <summary>
 /// 扩展方法
 /// </summary>
-public static class Extensions
+public static class TaskExtension
 {
     /// <summary>
     /// 运行并捕捉错误

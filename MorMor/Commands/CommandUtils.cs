@@ -6,6 +6,24 @@ namespace MorMor.Commands;
 
 internal static class CommandUtils
 {
+    public static async Task SendImagsEmoji(string url, CommandArgs args)
+    {
+        var at = args.EventArgs.MessageContext.GetAts();
+        long target = -1;
+        if (at.Count > 0)
+        {
+            target = at.First().UserId;
+        }
+        else
+        { 
+            if(args.Parameters.Count > 0)
+            {
+                _ = long.TryParse(args.Parameters[0], out target);
+            }
+        }
+        if (target != -1)
+            await args.EventArgs.Reply(new MessageBody().Image(url + "?QQ=" + target));
+    }
     public static bool ParseBool(string str)
     {
         return str switch

@@ -1,4 +1,4 @@
-﻿using MomoAPI.Utils;
+﻿using MomoAPI.Converter;
 using Newtonsoft.Json;
 
 namespace MomoAPI.Entities.Segment.DataModel;

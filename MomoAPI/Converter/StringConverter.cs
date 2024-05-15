@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace MomoAPI.Utils;
+namespace MomoAPI.Converter;
 
 internal class StringConverter : JsonConverter
 {

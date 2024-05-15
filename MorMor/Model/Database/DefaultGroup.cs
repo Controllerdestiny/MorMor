@@ -27,7 +27,8 @@ public class DefaultGroup : Group
         OneBotPermissions.Music,
         OneBotPermissions.EmojiLike,
         OneBotPermissions.TerrariaShop,
-        OneBotPermissions.TerrariaPrize
+        OneBotPermissions.TerrariaPrize,
+        OneBotPermissions.ImageEmoji
     };
     public DefaultGroup() : base(MorMorAPI.Setting.DefaultPermGroup)
     {

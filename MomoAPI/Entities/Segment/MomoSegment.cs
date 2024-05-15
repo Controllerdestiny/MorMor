@@ -1,4 +1,4 @@
-﻿using MomoAPI.Entities.Segment.DataModel;
+using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration;
 using MomoAPI.Model.API;
 using MomoAPI.Utils;
@@ -136,15 +136,21 @@ public class MomoSegment
         });
     }
 
-    //public static MomoSegment Music_QQ(string musicUrl, string picUlr, string song, string singer)
-    //{
-    //    return Music("QQ音乐", musicUrl, picUlr, song, singer);
-    //}
+    public static MomoSegment CustomMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+       var data = Utils.Utils.SignMusic(type, jumpUrl, AudioUrl, imageUrl, song, singer);
+       return Json(data);
+    }
 
-    //public static MomoSegment Music_163(string musicUrl, string picUlr, string song, string singer)
-    //{
-    //    return Music("网易云音乐", musicUrl, picUlr, song, singer);
-    //}
+    public static MomoSegment Music_QQ(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        return CustomMusic(MusicType.QQ, jumpUrl, AudioUrl, imageUrl, song, singer);
+    }
+
+    public static MomoSegment Music_163(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        return CustomMusic(MusicType._163, jumpUrl, AudioUrl, imageUrl, song, singer);
+    }
 
     public static implicit operator MomoSegment(string text)
     {

@@ -12,6 +12,7 @@ using MorMor.Music;
 using MorMor.Permission;
 using MorMor.Picture;
 using MorMor.Utils;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -110,6 +111,42 @@ public class OneBotCommand
     //}
     //#endregion
 
+    #region 捣药
+    [CommandMatch("捣药", OneBotPermissions.ImageEmoji)]
+    private async Task ImageEmojiOne(CommandArgs args)
+    {
+        var url = "https://oiapi.net/API/Face_Pound";
+        await CommandUtils.SendImagsEmoji(url, args);
+    }
+    #endregion
+
+    #region 咬你
+    [CommandMatch("咬你", OneBotPermissions.ImageEmoji)]
+    private async Task ImageEmojiTwo(CommandArgs args)
+    {
+        var url = "https://oiapi.net/API/Face_Suck";
+        await CommandUtils.SendImagsEmoji(url, args);
+    }
+    #endregion
+
+    #region 顶
+    [CommandMatch("顶", OneBotPermissions.ImageEmoji)]
+    private async Task ImageEmojiThree(CommandArgs args)
+    {
+        var url = "https://oiapi.net/API/Face_Play";
+        await CommandUtils.SendImagsEmoji(url, args);
+    }
+    #endregion
+
+    #region 拍
+    [CommandMatch("拍", OneBotPermissions.ImageEmoji)]
+    private async Task ImageEmojiFour(CommandArgs args)
+    {
+        var url = "https://oiapi.net/API/Face_Pat";
+        await CommandUtils.SendImagsEmoji(url, args);
+    }
+    #endregion
+
     #region 配置设置
     [CommandMatch("config", OneBotPermissions.SetConfig)]
     private async Task SetConfig(CommandArgs args)
@@ -136,7 +173,7 @@ public class OneBotCommand
                     await args.EventArgs.Reply($"[{args.Parameters[1]}]不可被设置!");
                     break;
             }
-            MorMorAPI.ConfigChange();
+            MorMorAPI.ConfigSave();
         }
         else
         {
@@ -327,7 +364,7 @@ public class OneBotCommand
                             await args.EventArgs.Reply(
                             [
 
-                                MomoSegment.Music(music.url,music.music,music.picture,music.song,string.Join(",",music.singers))
+                                MomoSegment.Music_QQ(music.url,music.music,music.picture,music.song,string.Join(",",music.singers))
                             ]) ;
                         }
                         catch (Exception ex)
@@ -344,7 +381,7 @@ public class OneBotCommand
                             var music = await MusicTool.GetMusic163(musicName, id);
                             await args.EventArgs.Reply(
                             [
-                                MomoSegment.Music(
+                                MomoSegment.Music_163(
                                 music.jumpurl,
                                 music.url,
                                 music.picurl,

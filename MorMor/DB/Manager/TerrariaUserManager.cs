@@ -89,7 +89,8 @@ public class TerrariaUserManager
                 Id = id,
                 Server = Server,
                 Password = Password,
-                Name = Name
+                Name = Name,
+                GroupID = groupid
             });
         }
         else

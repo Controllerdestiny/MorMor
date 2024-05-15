@@ -1,6 +1,6 @@
 using MomoAPI.Enumeration;
 using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Util;
+using MomoAPI.Extensions;
 using MomoAPI.Utils;
 using Newtonsoft.Json;
 
