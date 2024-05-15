@@ -1,9 +1,9 @@
-﻿using Fleck;
-using MorMor.Enumeration;
+﻿using MorMor.Enumeration;
 using MorMor.Event;
 using MorMor.Model.Socket.Action;
 using MorMor.Model.Socket.Action.Receive;
 using MorMor.Model.Socket.Action.Response;
+using MorMor.Net;
 using Newtonsoft.Json;
 using ProtoBuf;
 using System.Diagnostics;
@@ -61,9 +61,6 @@ public class TerrariaServer
 
     [JsonIgnore]
     public TaskCompletionSource<byte[]>? WaitFile { get; set; }
-
-    [JsonIgnore]
-    public IWebSocketConnection Client { get; internal set; }
 
     public async Task<ServerCommand> Command(string cmd)
     {
@@ -281,14 +278,21 @@ public class TerrariaServer
 
     public async Task<TResult> RequestApi<In, TResult>(In ApiParam, TimeSpan? timeout = null) where In : BaseAction where TResult : BaseActionResponse, new()
     {
+        var Client = WebSocketConnectManager.GetConnent(Name);
         if (Client != null && Client.IsAvailable)
         {
             ApiParam.Echo = Guid.NewGuid().ToString();
             ApiParam.ServerName = Name;
+            ApiParam.MessageType = PostMessageType.Action;
             using MemoryStream stream = new();
             Serializer.Serialize(stream, ApiParam);
             await Client.Send(stream.ToArray());
-            return await TerrariaMsgReceiveHandler.GetResponse<TResult>(ApiParam.Echo, timeout);
+            return await TerrariaMsgReceiveHandler.GetResponse<TResult>(ApiParam.Echo, timeout) ?? new()
+            {
+                Status = false,
+                ServerName = Name,
+                Message = "服务器未连接!"
+            };
         }
         return new TResult()
         {

@@ -17,9 +17,4 @@ public class BaseActionResponse : BaseAction
     [ProtoMember(6)] public string Message { get; set; }
 
     [ProtoMember(7)] public bool Status { get; set; }
-
-    public BaseActionResponse() : base()
-    {
-    }
-
 }

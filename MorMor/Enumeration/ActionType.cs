@@ -71,5 +71,5 @@ public enum ActionType
     /// <summary>
     /// 服务器状态
     /// </summary>
-    ServerStatus
+    ServerStatus,
 }

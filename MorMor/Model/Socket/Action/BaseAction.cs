@@ -19,10 +19,4 @@ public class BaseAction : BaseMessage
     [ProtoMember(4)] public ActionType ActionType { get; set; }
 
     [ProtoMember(5)] public string Echo { get; set; }
-
-    public BaseAction()
-    {
-        MessageType = PostMessageType.Action;
-    }
-
 }

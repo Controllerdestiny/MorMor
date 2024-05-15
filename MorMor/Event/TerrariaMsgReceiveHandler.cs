@@ -6,6 +6,7 @@ using MorMor.Model.Socket;
 using MorMor.Model.Socket.Action;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
+using MorMor.Net;
 using MorMor.Terraria.ChatCommand;
 using ProtoBuf;
 using System.Reactive.Linq;
@@ -49,7 +50,6 @@ public class TerrariaMsgReceiveHandler
     private static async Task PlayerMessageHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<PlayerChatMessage>(args.Stream);
-        data.Client = args.Client;
         OnPlayerChat?.Invoke(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
@@ -63,34 +63,23 @@ public class TerrariaMsgReceiveHandler
     private static async Task HeartBeatHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<BaseMessage>(args.Stream);
-        data.Client = args.Client;
         OnHeartBeat?.Invoke(data);
-        var server = MorMorAPI.Setting.GetServer(data.ServerName);
-        if (server != null)
-        {
-            server.Client = data.Client;
-        }
+        WebSocketConnectManager.Add(data.ServerName, args.Client);
         await Task.CompletedTask;
     }
 
     private static async Task ConnectHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<BaseMessage>(args.Stream);
-        data.Client = args.Client;
         OnConnect?.Invoke(data);
-        var server = MorMorAPI.Setting.GetServer(data.ServerName);
-        if (server != null)
-        {
-            server.Client = data.Client;
-        }
-        MorMorAPI.Log.ConsoleInfo($"Terraria Server {data.ServerName} {data.Client.ConnectionInfo.ClientIpAddress} 已连接...", ConsoleColor.Green);
+        WebSocketConnectManager.Add(data.ServerName, args.Client);
+        MorMorAPI.Log.ConsoleInfo($"Terraria Server {data.ServerName} {args.Client.ConnectionInfo.ClientIpAddress} 已连接...", ConsoleColor.Green);
         await Task.CompletedTask;
     }
 
     private static async Task GamePostInitHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<GameInitMessage>(args.Stream);
-        data.Client = args.Client;
         OnGameInit?.Invoke(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
@@ -104,7 +93,6 @@ public class TerrariaMsgReceiveHandler
     private static async Task PlayerCommandHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<PlayerCommandMessage>(args.Stream);
-        data.Client = args.Client;
         OnPlayerCommand?.Invoke(data);
         if (!data.Handler)
         {
@@ -115,7 +103,6 @@ public class TerrariaMsgReceiveHandler
     private static async Task PlayerLeaveHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<PlayerLeaveMessage>(args.Stream);
-        data.Client = args.Client;
         OnPlayerLeave?.Invoke(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
@@ -129,7 +116,6 @@ public class TerrariaMsgReceiveHandler
     private static async Task PlayerJoinHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<PlayerJoinMessage>(args.Stream);
-        data.Client = args.Client;
         OnPlayerJoin?.Invoke(data);
         if (!data.Handler && data.TerrariaServer != null)
         {

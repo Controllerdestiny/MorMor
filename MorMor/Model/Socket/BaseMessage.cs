@@ -15,7 +15,7 @@ namespace MorMor.Model.Socket;
 [ProtoInclude(103, typeof(GameInitMessage))]
 public class BaseMessage
 {
-    [ProtoMember(1)] public PostMessageType MessageType { get; set; }
+    [ProtoMember(1)] public PostMessageType MessageType { get; set; } = PostMessageType.Action;
 
     [ProtoMember(2)] public string ServerName { get; set; }
 
@@ -23,9 +23,6 @@ public class BaseMessage
 
     [JsonIgnore]
     public bool Handler { get; set; }
-
-    [JsonIgnore]
-    public IWebSocketConnection Client { get; set; }
 
     [JsonIgnore]
     public TerrariaServer? TerrariaServer => MorMorAPI.Setting.GetServer(ServerName);
