@@ -23,7 +23,7 @@ public class TerrariaUserManager
     }
     private readonly IDbConnection database;
 
-    public List<User> Users;
+    public readonly List<User> Users = [];
 
     public TerrariaUserManager()
     {

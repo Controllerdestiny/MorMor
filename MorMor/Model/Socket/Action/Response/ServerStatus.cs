@@ -21,5 +21,7 @@ public class ServerStatus : BaseActionResponse
 
     [ProtoMember(14)] public TimeSpan RunTime { get; set; }
 
-    [ProtoMember(15)] public List<PluginInfo> Plugins { get; set; }
+    [ProtoMember(15)] public string TShockPath { get; set; }
+
+    [ProtoMember(16)] public List<PluginInfo> Plugins { get; set; }
 }

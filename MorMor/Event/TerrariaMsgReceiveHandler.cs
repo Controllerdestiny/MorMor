@@ -164,7 +164,9 @@ public class TerrariaMsgReceiveHandler
         {
             args.Stream.Position = 0;
             var baseMsg = Serializer.Deserialize<BaseMessage>(args.Stream);
-            if (_action.TryGetValue(baseMsg.MessageType, out var action))
+            if (baseMsg.TerrariaServer != null 
+                && baseMsg.Token == baseMsg.TerrariaServer.Token 
+                &&_action.TryGetValue(baseMsg.MessageType, out var action))
             {
                 args.Stream.Position = 0;
                 action(new()

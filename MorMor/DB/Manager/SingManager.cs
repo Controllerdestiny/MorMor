@@ -19,7 +19,7 @@ public class SignManager
 
     private readonly IDbConnection database;
 
-    public readonly List<Sign> Signs;
+    public readonly List<Sign> Signs = [];
 
     public SignManager()
     {

@@ -18,7 +18,7 @@ public class CurrencyManager
 
     private readonly IDbConnection database;
 
-    private readonly List<Currency> Currencys;
+    private readonly List<Currency> Currencys = [];
 
     public CurrencyManager()
     {

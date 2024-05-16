@@ -12,7 +12,7 @@ public class GroupMananger
 
     private readonly DefaultGroup DefaultGroup = new();
 
-    public List<Group> Groups;
+    public readonly List<Group> Groups = [];
     public GroupMananger()
     {
         database = MorMorAPI.DB;
@@ -83,7 +83,7 @@ public class GroupMananger
     }
 
 
-    public bool HasGroup(string Name)
+    public bool HasGroup(string? Name)
     {
         return Groups.Any(x => x.Name == Name);
     }

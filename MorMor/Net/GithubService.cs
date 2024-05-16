@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.Extensions.Primitives;
+using MorMor.Model.NetworkOption;
 using Octokit.Webhooks;
 using System.Net;
 using System.Text;
@@ -17,9 +18,11 @@ public class GithubService
         HttpListener = new HttpListener();
     }
 
-    public void Start<T>() where T : WebhookEventProcessor, new()
+    public void Start<T>(WebhookOption option) where T : WebhookEventProcessor, new()
     {
-        HttpListener.Prefixes.Add("http://*:7000/update/");
+        if (!option.Enable)
+            return;
+        HttpListener.Prefixes.Add($"http://*:{option.Port}{option.Path}");
         HttpListener.Start();
         WebhookEventProcessor = new T();
         HttpListener.BeginGetContext(OnContext, null);

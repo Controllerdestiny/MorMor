@@ -81,7 +81,7 @@ public class MorMorAPI
             AccessToken = Setting.AccessToken,
             Log = Log
         }).Start();
-        new GithubService().Start<GithubWebHook>();
+        new GithubService().Start<GithubWebHook>(Setting.WebhookOption);
         //加载插件
         MappingPlugin.Initializer();
         //socket服务器启动
@@ -117,7 +117,8 @@ public class MorMorAPI
             case "sqlite":
                 {
                     string sql = Path.Combine(PATH, Setting.DbPath);
-                    Directory.CreateDirectory(Path.GetDirectoryName(sql)!);
+                    Directory.CreateDirectory(Path.GetDirectoryName(sql));
+                    Console.WriteLine(string.Format("Data Source={0}", sql));
                     DB = new SqliteConnection(string.Format("Data Source={0}", sql));
                     break;
                 }

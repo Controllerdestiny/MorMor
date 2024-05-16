@@ -20,13 +20,13 @@ public class TerrariaServer
     [JsonProperty("服务器IP")]
     public string IP { get; set; } = "";
 
-    [JsonProperty("服务器端口号")]
+    [JsonProperty("实际端口")]
     public ushort Port { get; set; } = 7777;
 
-    [JsonProperty("服务器转发端口号")]
+    [JsonProperty("显示端口")]
     public ushort NatProt { get; set; } = 7777;
 
-    [JsonProperty("服务器令牌")]
+    [JsonProperty("通信令牌")]
     public string Token { get; set; } = "";
 
     [JsonProperty("注册默认组")]
@@ -44,8 +44,8 @@ public class TerrariaServer
     [JsonProperty("Tshock路径")]
     public string TShockPath { get; set; } = "C:/Users/Administrator/Desktop/tshock/";
 
-    [JsonProperty("地图存放路径")]
-    public string MapSavePath { get; set; } = "C:/Users/Administrator/Desktop/tshock/world/地图.wld";
+    [JsonProperty("地图名称")]
+    public string MapName { get; set; } = "玄荒.wld";
 
     [JsonProperty("服务器说明")]
     public string Describe { get; set; } = "正常玩法服务器";
@@ -203,10 +203,12 @@ public class TerrariaServer
 
     public string SpawnStartArgs(Dictionary<string, string> startArgs)
     {
+        var status = ServerStatus().Result;
+        var world = status.Status ? Path.Combine(status.TShockPath, "world", MapName) : Path.Combine(TShockPath, "world", MapName);
         var param = new Dictionary<string, string>
         {
             { "-autocreate", "3" },
-            { "-world", MapSavePath },
+            { "-world",  world },
             { "-port", Port.ToString() },
             { "-lang", "7" },
             { "-mode", "2" },
@@ -247,7 +249,7 @@ public class TerrariaServer
             StartArgs = SpawnStartArgs(startArgs),
         };
 
-        if (startArgs.TryGetValue("-upload", out var file))
+        if (startArgs.TryGetValue("-upload", out var _))
         {
             var now = DateTime.Now;
             WaitFile = new();
@@ -285,6 +287,7 @@ public class TerrariaServer
             ApiParam.Echo = Guid.NewGuid().ToString();
             ApiParam.ServerName = Name;
             ApiParam.MessageType = PostMessageType.Action;
+            ApiParam.Token = Token;
             using MemoryStream stream = new();
             Serializer.Serialize(stream, ApiParam);
             await Client.Send(stream.ToArray());

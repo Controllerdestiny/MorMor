@@ -35,7 +35,7 @@ public class AccountManager
 
     private readonly IDbConnection database;
 
-    public List<Account> Accounts { get; }
+    public List<Account> Accounts { get; } = [];
 
     public AccountManager()
     {

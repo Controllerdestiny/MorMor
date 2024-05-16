@@ -4,21 +4,16 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Octokit.Webhooks;
 using Octokit.Webhooks.Events;
+using Octokit.Webhooks.Events.PullRequest;
 using Octokit.Webhooks.Events.Release;
 using Octokit.Webhooks.Events.Star;
 using System.Text;
 namespace MorMor.Net;
 
-internal class GithubWebHook : WebhookEventProcessor
+public class GithubWebHook : WebhookEventProcessor
 {
-    public List<long> Groups = [994731943, 232109072];
-    public async Task SendGroupMsg(MessageBody body)
-    {
-        var (_, groups) = await MomoAPI.Net.OneBotAPI.Instance.GetGroupList();
-        await SendGroupMsg(body, groups.Select(x => x.ID).ToList());
-    }
 
-    public async Task SendGroupMsg(MessageBody body, List<long> groups)
+    public async Task SendGroupMsg(MessageBody body, IEnumerable<long> groups)
     {
         foreach (var group in groups)
         {
@@ -28,8 +23,15 @@ internal class GithubWebHook : WebhookEventProcessor
 
     protected override async Task ProcessReleaseWebhookAsync(WebhookHeaders headers, ReleaseEvent releaseEvent, ReleaseAction action)
     {
-        if (action == "edited")
+        MorMorAPI.Setting.WebhookOption.GithubActions.TryGetValue(WebhookEventType.Release, out var group);
+
+        if (!MorMorAPI.Setting.WebhookOption.GithubActions.TryGetValue(WebhookEventType.Release, out var groups)
+            || groups == null
+            || groups.Count == 0)
+            return;
+        if (action == ReleaseAction.Edited || action == ReleaseAction.Released)
         {
+            await Console.Out.WriteLineAsync("触发");
             try
             {
                 var repName = releaseEvent.Repository?.FullName;
@@ -47,8 +49,8 @@ internal class GithubWebHook : WebhookEventProcessor
                 if (!string.IsNullOrEmpty(download))
                 {
                     var file = await client.GetByteArrayAsync("https://gitdl.cn/" + download);
-                    await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()), Groups);
-                    await SendGroupMsg(new MessageBody().File("base64://" + Convert.ToBase64String(file), $"({Guid.NewGuid().ToString()[..8]})Plugins.zip"), Groups);
+                    await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()), groups);
+                    await SendGroupMsg(new MessageBody().File("base64://" + Convert.ToBase64String(file), $"({Guid.NewGuid().ToString()[..8]})Plugins.zip"), groups);
                 }
             }
             catch (Exception ex)
@@ -61,44 +63,56 @@ internal class GithubWebHook : WebhookEventProcessor
 
     protected override async Task ProcessStarWebhookAsync(WebhookHeaders headers, StarEvent starEvent, StarAction action)
     {
-        var msg = $"用户 {starEvent.Sender?.Login} Stared 仓库 {starEvent.Repository?.FullName} 共计({starEvent.Repository?.StargazersCount})个Star";
-        await SendGroupMsg(msg);
+        if (!MorMorAPI.Setting.WebhookOption.GithubActions.TryGetValue(WebhookEventType.Star, out var groups)
+            || groups == null
+            || groups.Count == 0)
+            return;
+            var msg = $"用户 {starEvent.Sender?.Login} Stared 仓库 {starEvent.Repository?.FullName} 共计({starEvent.Repository?.StargazersCount})个Star";
+        await SendGroupMsg(msg, groups);
     }
-    //protected override async Task ProcessPushWebhookAsync(WebhookHeaders headers, PushEvent pushEvent)
-    //{
-    //    if (pushEvent.Pusher.Name != "github-actions[bot]")
-    //    {
-    //        var repName = pushEvent.Repository?.FullName;
-    //        var sb = new StringBuilder($"# Push Github 仓库 {repName}");
-    //        foreach (var commit in pushEvent.Commits)
-    //        {
-    //            sb.AppendLine();
-    //            sb.AppendLine($"### {commit.Message}");
-    //            sb.AppendLine($"- 用户名: `{commit.Author.Username}`");
-    //            sb.AppendLine($"- 添加文件: {(commit.Added.Any() ? string.Join(" ", commit.Added.Select(x => $"`{x}`")) : "无")}");
-    //            sb.AppendLine($"- 删除文件: {(commit.Removed.Any() ? string.Join(" ", commit.Removed.Select(x => $"`{x}`")) : "无")}");
-    //            sb.AppendLine($"- 更改文件: {(commit.Modified.Any() ? string.Join(" ", commit.Modified.Select(x => $"`{x}`")) : "无")}");
-    //        }
-    //        await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()));
-    //    }
-    //}
+    protected override async Task ProcessPushWebhookAsync(WebhookHeaders headers, PushEvent pushEvent)
+    {
+        if (!MorMorAPI.Setting.WebhookOption.GithubActions.TryGetValue(WebhookEventType.Push, out var groups)
+            || groups == null
+            || groups.Count == 0)
+            return;
+        if (pushEvent.Pusher.Name != "github-actions[bot]")
+        {
+            var repName = pushEvent.Repository?.FullName;
+            var sb = new StringBuilder($"# Push Github 仓库 {repName}");
+            foreach (var commit in pushEvent.Commits)
+            {
+                sb.AppendLine();
+                sb.AppendLine($"### {commit.Message}");
+                sb.AppendLine($"- 用户名: `{commit.Author.Username}`");
+                sb.AppendLine($"- 添加文件: {(commit.Added.Any() ? string.Join(" ", commit.Added.Select(x => $"`{x}`")) : "无")}");
+                sb.AppendLine($"- 删除文件: {(commit.Removed.Any() ? string.Join(" ", commit.Removed.Select(x => $"`{x}`")) : "无")}");
+                sb.AppendLine($"- 更改文件: {(commit.Modified.Any() ? string.Join(" ", commit.Modified.Select(x => $"`{x}`")) : "无")}");
+            }
+            await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()), groups);
+        }
+    }
 
-    //protected override async Task ProcessPullRequestWebhookAsync(WebhookHeaders headers, PullRequestEvent pullRequestEvent, PullRequestAction action)
-    //{
-    //    if (action == PullRequestAction.Opened)
-    //    { 
-    //        var title = pullRequestEvent.PullRequest.Title;
-    //        var userName = pullRequestEvent.PullRequest.User.Login;
-    //        var repName = pullRequestEvent.Repository?.FullName;
-    //        var sb = new StringBuilder($"# Pull Request Github 仓库 {repName}");
-    //        sb.AppendLine();
-    //        sb.AppendLine($"## {title}");
-    //        sb.AppendLine($"- 发起者: `{userName}`");
-    //        sb.AppendLine($"```");
-    //        sb.AppendLine(pullRequestEvent.PullRequest.Body);
-    //        sb.AppendLine($"```");
-    //        await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()));
-    //    }
+    protected override async Task ProcessPullRequestWebhookAsync(WebhookHeaders headers, PullRequestEvent pullRequestEvent, PullRequestAction action)
+    {
+        if (!MorMorAPI.Setting.WebhookOption.GithubActions.TryGetValue(WebhookEventType.PullRequest, out var groups)
+            || groups == null
+            || groups.Count == 0)
+            return;
+        if (action == PullRequestAction.Opened)
+        {
+            var title = pullRequestEvent.PullRequest.Title;
+            var userName = pullRequestEvent.PullRequest.User.Login;
+            var repName = pullRequestEvent.Repository?.FullName;
+            var sb = new StringBuilder($"# Pull Request Github 仓库 {repName}");
+            sb.AppendLine();
+            sb.AppendLine($"## {title}");
+            sb.AppendLine($"- 发起者: `{userName}`");
+            sb.AppendLine($"```");
+            sb.AppendLine(pullRequestEvent.PullRequest.Body);
+            sb.AppendLine($"```");
+            await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()), groups);
+        }
 
-    //}
+    }
 }

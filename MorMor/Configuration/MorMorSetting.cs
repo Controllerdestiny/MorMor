@@ -1,4 +1,5 @@
-﻿using MorMor.Terraria;
+﻿using MorMor.Model.NetworkOption;
+using MorMor.Terraria;
 using Newtonsoft.Json;
 
 namespace MorMor.Configuration;
@@ -55,6 +56,9 @@ public class MorMorSetting
 
     [JsonProperty("Socket服务器端口号")]
     public int SocketProt { get; init; } = 6000;
+
+    [JsonProperty("Webhook配置")]
+    public WebhookOption WebhookOption { get; init; } = new();
 
     [JsonProperty("服务器列表")]
     public List<TerrariaServer> Servers { get; } = new();

@@ -13,7 +13,6 @@ using MorMor.Music;
 using MorMor.Permission;
 using MorMor.Picture;
 using MorMor.Utils;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -23,6 +22,70 @@ namespace MorMor.Commands;
 
 public class OneBotCommand
 {
+    #region 捣药
+    [CommandMatch("github", OneBotPermissions.SetConfig)]
+    private async Task GitHubActionManager(CommandArgs args)
+    {
+        string? MatchAction()
+        {
+            var subcmd = args.Parameters[0];
+            var type = args.Parameters[1];
+            var msg = $"{subcmd} {type} Success!";
+            switch (type)
+            {
+                case "release":
+                    return Octokit.Webhooks.WebhookEventType.Release;
+                case "pr":
+                    return Octokit.Webhooks.WebhookEventType.PullRequest;
+                case "push":
+                    return Octokit.Webhooks.WebhookEventType.Push;
+                case "star":
+                    return Octokit.Webhooks.WebhookEventType.Star;
+                default:
+                    return null;
+            }
+        }
+        if (args.Parameters.Count == 2)
+        {
+            var subcmd = args.Parameters[0];
+            var type = args.Parameters[1];
+            var res = MatchAction();
+            if (args.Parameters[0].ToLower() == "add")
+            {
+                if (res != null)
+                {
+                    MorMorAPI.Setting.WebhookOption.Add(res, args.EventArgs.Group.Id);
+                    await args.EventArgs.Reply($"{subcmd} {type} Success!");
+                }
+                else
+                {
+                    await args.EventArgs.Reply($"未知的事件类型:{type}!");
+                }
+            }
+            else if (args.Parameters[0].ToLower() == "remove")
+            {
+                if (res != null)
+                {
+                    MorMorAPI.Setting.WebhookOption.Remove(res, args.EventArgs.Group.Id);
+                    await args.EventArgs.Reply($"{subcmd} {type} Success!");
+                }
+                else
+                {
+                    await args.EventArgs.Reply($"未知的事件类型:{type}!");
+                }
+            }
+            else
+            {
+                await args.EventArgs.Reply($"子命令错误!");
+            }
+            MorMorAPI.ConfigSave();
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误，正确语法:{args.CommamdPrefix}{args.Name} [add|del] [release|pr|star|push]");
+        }
+    }
+    #endregion
     //#region 购买商品
     //[CommandMatch("购买", OneBotPermissions.TerrariaShop)]
     //private async Task ShopBuy(CommandArgs args)
@@ -1152,7 +1215,7 @@ public class OneBotCommand
             sb.AppendLine();
             sb.AppendLine($"# {x.Name}");
             sb.AppendLine($"### 地址: {x.IP}");
-            sb.AppendLine($"### 端口: {x.Port}");
+            sb.AppendLine($"### 端口: {x.NatProt}");
             sb.AppendLine($"### 版本: {x.Version}");
             sb.AppendLine($"### 介绍: {x.Describe}");
             sb.AppendLine($"### 状态: {(status != null && status.Status ? $"已运行 {status.RunTime:dd\\.hh\\:mm\\:ss}" : "无法连接")}");
