@@ -53,6 +53,8 @@ public class TerrariaMsgReceiveHandler
         OnPlayerChat?.Invoke(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
+            if (data.Text.Length >= data.TerrariaServer.MsgMaxLength)
+                return;
             foreach (var group in data.TerrariaServer.ForwardGroups)
             {
                 await MomoAPI.Net.OneBotAPI.Instance.SendGroupMessage(group, $"[{data.TerrariaServer.Name}] {data.Name}: {data.Text}");
@@ -164,9 +166,9 @@ public class TerrariaMsgReceiveHandler
         {
             args.Stream.Position = 0;
             var baseMsg = Serializer.Deserialize<BaseMessage>(args.Stream);
-            if (baseMsg.TerrariaServer != null 
-                && baseMsg.Token == baseMsg.TerrariaServer.Token 
-                &&_action.TryGetValue(baseMsg.MessageType, out var action))
+            if (baseMsg.TerrariaServer != null
+                && baseMsg.Token == baseMsg.TerrariaServer.Token
+                && _action.TryGetValue(baseMsg.MessageType, out var action))
             {
                 args.Stream.Position = 0;
                 action(new()
@@ -175,6 +177,13 @@ public class TerrariaMsgReceiveHandler
                     Stream = args.Stream,
                     BaseMessage = baseMsg
                 });
+            }
+            else
+            { 
+                if(baseMsg.TerrariaServer == null)
+                    MorMorAPI.Log.ConsoleError($"接受到{baseMsg.ServerName} 的连接请求但，在配置文件中没有找到{baseMsg.ServerName}服务器!");
+                if (baseMsg.Token != baseMsg.TerrariaServer?.Token)
+                    MorMorAPI.Log.ConsoleError($"{baseMsg.ServerName} 的Token 与配置文件不匹配!");
             }
         }
         catch(Exception ex)
@@ -223,7 +232,7 @@ public class TerrariaMsgReceiveHandler
         {
             foreach (var server in MorMorAPI.Setting.Servers)
             {
-                if (server != null)
+                if (server != null && text.Length <= server.MsgMaxLength)
                 {
                     if (server.ForwardGroups.Contains(args.Group.Id))
                     {

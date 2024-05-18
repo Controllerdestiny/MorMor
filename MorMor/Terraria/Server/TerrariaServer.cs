@@ -32,8 +32,14 @@ public class TerrariaServer
     [JsonProperty("注册默认组")]
     public string DefaultGroup { get; set; } = "default";
 
-    [JsonProperty("货币兑换比例")]
-    public int ExchangeRate { get; set; } = 40000;
+    [JsonProperty("注册名字大长度")]
+    public int RegisterNameMax { get; set; } = 10;
+
+    [JsonProperty("转发消息最大长度")]
+    public int MsgMaxLength { get; set; } = 50;
+
+    [JsonProperty("注册名称仅中文")]
+    public bool RegisterNameLimit { get; set; } = true;
 
     [JsonProperty("是否开启商店")]
     public bool EnabledShop { get; set; }
@@ -52,6 +58,8 @@ public class TerrariaServer
 
     [JsonProperty("服务器版本")]
     public string Version { get; set; } = "1.4.4.9";
+
+    
 
     [JsonProperty("所属群")]
     public HashSet<long> Groups { get; set; } = new();

@@ -1,9 +1,7 @@
-﻿
-using MorMor.Utils;
+﻿using MorMor.Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
-using SkiaSharp;
 
 namespace MorMor.Terraria.Picture;
 

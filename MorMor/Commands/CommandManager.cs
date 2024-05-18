@@ -131,10 +131,9 @@ public class CommandManager
         foreach (var perm in command.Permission)
         {
             if (args.Account.HasPermission(perm))
-            {
+            { 
                 if (!await OperatHandler.UserCommand(args))
                 {
-
                     await command.CallBack(args);
                     MorMorAPI.Log.ConsoleInfo($"group:{args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Cyan);
                 }
@@ -172,7 +171,7 @@ public class CommandManager
                                 var method = instance?.GetType().GetMethod(m.Name, flag);
                                 if (method != null)
                                 {
-                                    Add(new(attribute.Name, method.CreateDelegate<Command.CommandCallBack>(instance), attribute.Permission));
+                                    Add(new(attribute.Name, method.CreateDelegate<Command.CommandCallBack>(instance), attribute.Permission)) ;
                                 }
                             }
                             else

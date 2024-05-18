@@ -17,6 +17,7 @@ public static class Utils
             foreach (var (key, val) in args)
                 param[key] = val;
         uriBuilder.Query = param.ToString();
+        //await Console.Out.WriteLineAsync(uriBuilder.ToString());
         return await HttpClient.GetStringAsync(uriBuilder.ToString());
     }
 
@@ -42,12 +43,13 @@ public static class Utils
             { "format", signtype },
             { "url", AudioUrl },
             { "jump", jumpUrl },
-            { "song", song.Replace(",", " ") },
+            { "song", song },
             { "singer", singer },
             { "cover", imageUrl },
             { "p_skey", res.Pskey },
             { "uin", OneBotAPI.Instance.BotId.ToString() },
         };
+        //var s = HttpGet(url, args).Result;
         var result = HttpPost(url, args).Result;
         var data = JObject.Parse(result);
         return JsonConvert.SerializeObject(data?["data"]);

@@ -1,4 +1,8 @@
-﻿namespace MorMor.Commands;
+﻿
+
+using MorMor.Attributes;
+
+namespace MorMor.Commands;
 
 public class Command
 {
@@ -14,13 +18,13 @@ public class Command
     {
         Name = name;
         CallBack = callBack;
-        Permission = permission.ToList();
+        Permission = [.. permission];
     }
 
     public Command(string name, CommandCallBack callBack, params string[] permission)
     {
-        Name = new() { name };
+        Name = [name];
         CallBack = callBack;
-        Permission = permission.ToList();
+        Permission = [.. permission];
     }
 }

@@ -1,4 +1,5 @@
-﻿using MomoAPI.Entities;
+﻿
+using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment;
 using MorMor.Attributes;
@@ -13,6 +14,7 @@ using MorMor.Permission;
 using MorMor.Terraria.Picture;
 using MorMor.Utils;
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -85,94 +87,6 @@ public class OneBotCommand
         }
     }
     #endregion
-    //#region 购买商品
-    //[CommandMatch("购买", OneBotPermissions.TerrariaShop)]
-    //private async Task ShopBuy(CommandArgs args)
-    //{
-    //    if (args.Parameters.Count != 1)
-    //    {
-    //        await args.EventArgs.Reply($"语法错误:\n正确语法:{args.CommamdPrefix}{args.Name} [名称|ID]", true);
-    //        return;
-    //    }
-    //    if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
-    //    {
-    //        var user = MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name);
-    //        if (user != null)
-    //        {
-    //            var online = await server.ServerOnline();
-    //            if (!online.Players.Any(x=>x.Name == user.Name))
-    //            {
-    //                await args.EventArgs.Reply("玩家不在线! 请进入服务器后购买!", true);
-    //                return;
-    //            }
-    //            if (int.TryParse(args.Parameters[0], out var id))
-    //            {
-    //                if (MorMorAPI.TerrariaShop.TryGetShop(id, out var shop) && shop != null)
-    //                {
-    //                    var curr = MorMorAPI.CurrencyManager.Query(args.EventArgs.Group.Id, args.EventArgs.Sender.Id);
-    //                    if (curr != null && curr.num >= shop.Price)
-    //                    {
-    //                        var res = await server.Command($"/g {shop.ID} {user.Name} {shop.num}");
-    //                        if (res.Status)
-    //                        {
-    //                            MorMorAPI.CurrencyManager.Del(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, shop.Price);
-    //                            await args.EventArgs.Reply("购买成功!", true);
-    //                        }
-    //                        else
-    //                        {
-    //                            await args.EventArgs.Reply("失败! 错误信息:\n" + res.Message, true);
-    //                        }
-    //                    }
-    //                    else
-    //                    {
-    //                        await args.EventArgs.Reply("星币不足!", true);
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    await args.EventArgs.Reply("该商品不存在!", true);
-    //                }
-    //            }
-    //            else
-    //            {
-    //                if (MorMorAPI.TerrariaShop.TryGetShop(args.Parameters[0], out var shop) && shop != null)
-    //                {
-    //                    var curr = MorMorAPI.CurrencyManager.Query(args.EventArgs.Group.Id, args.EventArgs.Sender.Id);
-    //                    if (curr != null && curr.num >= shop.Price)
-    //                    {
-    //                        var res = await server.Command($"/g {shop.ID} {user.Name} {shop.num}");
-    //                        if (res.Status)
-    //                        {
-    //                            MorMorAPI.CurrencyManager.Del(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, shop.Price);
-    //                            await args.EventArgs.Reply("购买成功!", true);
-    //                        }
-    //                        else
-    //                        {
-    //                            await args.EventArgs.Reply("失败! 错误信息:\n" + res.Message, true);
-    //                        }
-    //                    }
-    //                    else
-    //                    {
-    //                        await args.EventArgs.Reply("星币不足!", true);
-    //                    }
-    //                }
-    //                else
-    //                {
-    //                    await args.EventArgs.Reply("该商品不存在!", true);
-    //                }
-    //            }
-    //        }
-    //        else
-    //        {
-    //            await args.EventArgs.Reply("未找到你的注册信息!", true);
-    //        }
-    //    }
-    //    else
-    //    {
-    //        await args.EventArgs.Reply("服务器不存在或未切换到服务器!", true);
-    //    }
-    //}
-    //#endregion
 
     #region 捣药
     [CommandMatch("捣药", OneBotPermissions.ImageEmoji)]
@@ -702,8 +616,46 @@ public class OneBotCommand
     }
     #endregion
 
+    #region 绑定账号
+    [CommandMatch("绑定", OneBotPermissions.RegisterUser)]
+    private async Task BindAccount(CommandArgs args)
+    {
+        if (!MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) || server == null)
+        {
+            await args.EventArgs.Reply("服务器不存在或，未切换至一个服务器！", true);
+            return;
+        }
+        if (args.Parameters.Count == 1)
+        {
+            var userName = args.Parameters[0];
+            var token = Guid.NewGuid().ToString()[..8];
+            CommandUtils.AddTempData(args.EventArgs.Group.Id, userName, token);
+            MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com", "绑定账号验证码", $"您的验证码为: {token}");
+            await args.EventArgs.Reply($"绑定账号 {userName} => {args.EventArgs.Sender.Id} 至{server.Name}服务器!" +
+                $"\n请在之后进行使用/绑定 验证 [令牌]" +
+                $"\n验证令牌已发送至你的邮箱点击下方链接可查看" +
+                $"\nhttps://wap.mail.qq.com/home/index");
+        }
+        else if (args.Parameters.Count == 2 && args.Parameters[0] == "验证")
+        {
+            if (CommandUtils.GetTempData(args.EventArgs.Group.Id, args.Parameters[1]))
+            {
+                try
+                {
+                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, server.Name, args.Parameters[0], "");
+                    await args.EventArgs.Reply($"验证完成！\n已绑定账号至{server.Name}服务器!", true);
+                }
+                catch (Exception ex)
+                {
+                    await args.EventArgs.Reply(ex.Message, true);
+                }
+            }
+        }
+    }
+    #endregion
+
     #region 权限组管理
-    [CommandMatch("group", OneBotPermissions.Group)]
+[CommandMatch("group", OneBotPermissions.Group)]
     private async Task Group(CommandArgs args)
     {
         if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "add")
@@ -1271,10 +1223,10 @@ public class OneBotCommand
     {
         if (args.Parameters.Count == 1)
         {
-            var server = MorMorAPI.Setting.GetServer(args.Parameters[0]);
+            var server = MorMorAPI.Setting.GetServer(args.Parameters[0], args.EventArgs.Group.Id);
             if (server == null)
             {
-                await args.EventArgs.Reply("你切换的服务器不存在!", true);
+                await args.EventArgs.Reply("你切换的服务器不存在! 请检查服务器名称是否正确，此群是否配置服务器!", true);
                 return;
             }
             MorMorAPI.UserLocation.Change(args.EventArgs.Sender.Id, server);
@@ -1341,54 +1293,54 @@ public class OneBotCommand
     {
         if (args.Parameters.Count == 1)
         {
-            if (args.Parameters[0].Length > 19)
+            if (!MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) || server == null)
             {
-                await args.EventArgs.Reply("注册的人物名称不能大于19个字符!", true);
+                await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
                 return;
             }
-            if (!new Regex("^[a-zA-Z\u4E00-\u9FA5]+$").IsMatch(args.Parameters[0]))
+            if (args.Parameters[0].Length > server.RegisterNameMax)
+            {
+                await args.EventArgs.Reply($"注册的人物名称不能大于{server.RegisterNameMax}个字符!", true);
+                return;
+            }
+            if (!new Regex("^[a-zA-Z\u4E00-\u9FA5]+$").IsMatch(args.Parameters[0]) && server.RegisterNameLimit)
             {
                 await args.EventArgs.Reply("注册的人物名称不能包含中文以及字母以外的字符", true);
                 return;
             }
-            if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+           
+            var pass = Guid.NewGuid().ToString()[..8];
+            try
             {
-                var pass = Guid.NewGuid().ToString()[..8];
-                try
+                MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, server.Name, args.Parameters[0], pass);
+                var api = await server.Register(args.Parameters[0], pass);
+                var body = new MessageBody();
+                if (api.Status)
                 {
-                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, server.Name, args.Parameters[0], pass);
-                    var api = await server.Register(args.Parameters[0], pass);
-                    var body = new MessageBody();
-                    if (api.Status)
-                    {
-                        MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
-                            $"{server.Name}服务器注册密码",
-                            $"您的注册密码是:{pass}<br>请注意保存不要暴露给他人");
-                        body.Add($"注册成功!" +
-                            $"\n注册服务器: {server.Name}" +
-                            $"\n注册名称: {args.Parameters[0]}" +
-                            $"\n注册账号: {args.EventArgs.Sender.Id}" +
-                            $"\n注册人昵称: {args.EventArgs.SenderInfo.Name}" +
-                            $"\n注册密码已发送至QQ邮箱请点击下方链接查看" +
-                            $"\nhttps://wap.mail.qq.com/home/index");
-                    }
-                    else
-                    {
-                        MorMorAPI.TerrariaUserManager.Remove(server.Name, args.Parameters[0]);
-                        body.Add(string.IsNullOrEmpty(api.Message) ? "无法连接服务器！" : api.Message);
-                    }
-                    await args.EventArgs.Reply(body);
+                    MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
+                        $"{server.Name}服务器注册密码",
+                        $"您的注册密码是:{pass}<br>请注意保存不要暴露给他人");
+                    body.Add($"注册成功!" +
+                        $"\n注册服务器: {server.Name}" +
+                        $"\n注册名称: {args.Parameters[0]}" +
+                        $"\n注册账号: {args.EventArgs.Sender.Id}" +
+                        $"\n注册人昵称: {args.EventArgs.SenderInfo.Name}" +
+                        $"\n注册密码已发送至QQ邮箱请点击下方链接查看" +
+                        $"\nhttps://wap.mail.qq.com/home/index");
                 }
-                catch (TerrariaUserException ex)
+                else
                 {
-                    await args.EventArgs.Reply(ex.Message);
+                    MorMorAPI.TerrariaUserManager.Remove(server.Name, args.Parameters[0]);
+                    body.Add(string.IsNullOrEmpty(api.Message) ? "无法连接服务器！" : api.Message);
                 }
+                await args.EventArgs.Reply(body);
+            }
+            catch (TerrariaUserException ex)
+            {
+                await args.EventArgs.Reply(ex.Message);
+            }
 
-            }
-            else
-            {
-                await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
-            }
+                
         }
         else
         {

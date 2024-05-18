@@ -5,7 +5,6 @@ using System.Data;
 
 namespace MorMor.DB.Manager;
 
-
 public class TerrariaUserManager
 {
     public class User
@@ -47,7 +46,7 @@ public class TerrariaUserManager
 
     private List<User> GetUsers()
     {
-        List<User> users = new();
+        List<User> users = [];
         using var read = database.QueryReader("select * from `User`");
         while (read.Read())
         {
