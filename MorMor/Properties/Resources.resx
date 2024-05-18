@@ -16486,6 +16486,120 @@
   <data name="999" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\999.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="bg1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg1.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg10" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg10.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg11" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg11.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg12" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg12.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg13" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg13.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg14" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg14.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg15" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg15.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg16.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg17" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg17.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg18" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg18.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg19" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg19.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg2.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg20" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg20.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg21" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg21.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg22" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg22.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg23" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg23.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg24.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg25" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg25.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg26" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg26.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg27" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg27.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg28" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg28.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg29" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg29.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg3.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg30" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg30.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg31" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg31.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg32" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg32.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg33" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg33.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg34" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg34.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg35" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg35.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg36" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg36.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg4.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg5.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg6" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg6.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg7" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg7.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg8" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg8.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="bg9" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\bg9.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="simhei" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\simhei.ttf;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="Slot" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Slot.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="世界吞噬怪" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\世界吞噬怪.jpg;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>

@@ -1,7 +1,6 @@
 ﻿using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment;
-using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Configuration;
 using MorMor.Enumeration;
@@ -11,7 +10,7 @@ using MorMor.Exceptions;
 using MorMor.Extensions;
 using MorMor.Music;
 using MorMor.Permission;
-using MorMor.Picture;
+using MorMor.Terraria.Picture;
 using MorMor.Utils;
 using Newtonsoft.Json.Linq;
 using System.Text;
@@ -1550,7 +1549,9 @@ public class OneBotCommand
             var body = new MessageBody();
             if (api.Status)
             {
-                body.Add(MomoSegment.Image(ProgressImage.DrawImg(api.Progress, server.Name)));
+                var stream = ProgressImage.Start(api.Progress, server.Name);
+                var base64 = Convert.ToBase64String(stream.ToArray());
+                body.Add(MomoSegment.Image("base64://" + base64));
             }
             else
             {
@@ -1577,7 +1578,10 @@ public class OneBotCommand
                 var body = new MessageBody();
                 if (api.Status)
                 {
-                    body.Add(MomoSegment.Image(new InventoryImage().DrawImg(api.PlayerData, args.Parameters[0], server.Name)));
+                    var ms = DrawInventory.Start(api.PlayerData!, api.PlayerData!.Username, api.ServerName);
+                    var base64 = Convert.ToBase64String(ms.ToArray());
+                    body.Add(MomoSegment.Image($"base64://{base64}"));
+                    //body.Add(MomoSegment.Image(new InventoryImage().DrawImg(api.PlayerData, args.Parameters[0], server.Name)));
                 }
                 else
                 {

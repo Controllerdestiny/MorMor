@@ -20,6 +20,13 @@ public static class Utils
         return await HttpClient.GetStringAsync(uriBuilder.ToString());
     }
 
+    public static async Task<string> HttpPost(string url, Dictionary<string, string>? args = null)
+    {
+        FormUrlEncodedContent form = new(args);
+        var content = await HttpClient.PostAsync(url, form);
+        return await content.Content.ReadAsStringAsync();
+    }
+
     internal static string SignMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
     {
         var url = "https://oiapi.net/API/QQMusicJSONArk";
@@ -35,13 +42,13 @@ public static class Utils
             { "format", signtype },
             { "url", AudioUrl },
             { "jump", jumpUrl },
-            { "song", song },
+            { "song", song.Replace(",", " ") },
             { "singer", singer },
             { "cover", imageUrl },
             { "p_skey", res.Pskey },
             { "uin", OneBotAPI.Instance.BotId.ToString() },
         };
-        var result = HttpGet(url, args).Result;
+        var result = HttpPost(url, args).Result;
         var data = JObject.Parse(result);
         return JsonConvert.SerializeObject(data?["data"]);
     }
