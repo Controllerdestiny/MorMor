@@ -1,5 +1,4 @@
-﻿
-using MomoAPI.Entities;
+﻿using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment;
 using MorMor.Attributes;
@@ -14,13 +13,13 @@ using MorMor.Permission;
 using MorMor.Terraria.Picture;
 using MorMor.Utils;
 using Newtonsoft.Json.Linq;
-using System.ComponentModel;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 
 namespace MorMor.Commands;
 
+[CommandSeries]
 public class OneBotCommand
 {
     #region 捣药
@@ -156,7 +155,7 @@ public class OneBotCommand
         {
             await args.EventArgs.Reply($"未切换服务器或，服务器不存在!");
         }
-       
+
     }
     #endregion
 
@@ -253,7 +252,7 @@ public class OneBotCommand
 
     #region 点歌
     [CommandMatch("点歌", OneBotPermissions.Music)]
-    private static async Task Music(CommandArgs args)
+    private async Task Music(CommandArgs args)
     {
         if (args.Parameters.Count > 0)
         {
@@ -342,7 +341,7 @@ public class OneBotCommand
                             [
 
                                 MomoSegment.Music_QQ(music.url,music.music,music.picture,music.song,string.Join(",",music.singers))
-                            ]) ;
+                            ]);
                         }
                         catch (Exception ex)
                         {
@@ -655,7 +654,7 @@ public class OneBotCommand
     #endregion
 
     #region 权限组管理
-[CommandMatch("group", OneBotPermissions.Group)]
+    [CommandMatch("group", OneBotPermissions.Group)]
     private async Task Group(CommandArgs args)
     {
         if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "add")
@@ -1157,7 +1156,7 @@ public class OneBotCommand
             return;
         }
         var sb = new StringBuilder();
-       
+
         foreach (var x in MorMorAPI.Setting.Servers)
         {
             var status = await x.ServerStatus();
@@ -1171,7 +1170,7 @@ public class OneBotCommand
             sb.AppendLine($"### 介绍: {x.Describe}");
             sb.AppendLine($"### 状态: {(status != null && status.Status ? $"已运行 {status.RunTime:dd\\.hh\\:mm\\:ss}" : "无法连接")}");
             if (status != null && status.Status)
-            { 
+            {
                 sb.AppendLine($"### 地图大小: {status.WorldWidth}x{status.WorldHeight}");
                 sb.AppendLine($"### 地图名称: {status.WorldName}");
                 sb.AppendLine($"### 地图种子: {status.WorldSeed}");
@@ -1308,7 +1307,7 @@ public class OneBotCommand
                 await args.EventArgs.Reply("注册的人物名称不能包含中文以及字母以外的字符", true);
                 return;
             }
-           
+
             var pass = Guid.NewGuid().ToString()[..8];
             try
             {
@@ -1340,7 +1339,7 @@ public class OneBotCommand
                 await args.EventArgs.Reply(ex.Message);
             }
 
-                
+
         }
         else
         {
@@ -1366,6 +1365,44 @@ public class OneBotCommand
             }
             await args.EventArgs.Reply($"{server.Name}上未找到你的注册信息。");
             return;
+        }
+        await args.EventArgs.Reply("服务器无效或未切换至一个有效服务器!");
+    }
+    #endregion
+
+    #region 重置密码
+    [CommandMatch("重置密码", OneBotPermissions.SelfPassword)]
+    private async Task ResetPassword(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+        {
+            try
+            {
+                var user = MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name);
+
+                if (user != null)
+                {
+                    var pwd = Guid.NewGuid().ToString()[..8];
+                    var res = await server.ResetPlayerPwd(user.Name, pwd);
+                    if (!res.Status)
+                    {
+                        await args.EventArgs.Reply("无法连接到服务器更改密码!");
+                        return;
+                    }
+                    MorMorAPI.TerrariaUserManager.ResetPassword(args.EventArgs.Sender.Id, server.Name, pwd);
+                    MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com",
+                                $"{server.Name}服密码重置",
+                                $"您的新注册是: {pwd}<br>请注意保存不要暴露给他人");
+                    await args.EventArgs.Reply("密码重置成功已发送至你的QQ邮箱。", true);
+                    return;
+                }
+                await args.EventArgs.Reply($"{server.Name}上未找到你的注册信息。");
+                return;
+            }
+            catch (Exception ex)
+            {
+                await args.EventArgs.Reply(ex.Message, true);
+            }
         }
         await args.EventArgs.Reply("服务器无效或未切换至一个有效服务器!");
     }

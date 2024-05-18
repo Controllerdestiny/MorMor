@@ -56,7 +56,7 @@ public enum ActionType
     /// <summary>
     /// 服务器重置
     /// </summary>
-    RestServer,
+    ResetServer,
 
     /// <summary>
     /// 上传世界地图
@@ -72,4 +72,9 @@ public enum ActionType
     /// 服务器状态
     /// </summary>
     ServerStatus,
+
+    /// <summary>
+    /// 重置玩家密码
+    /// </summary>
+    ResetPassword
 }

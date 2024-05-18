@@ -150,7 +150,7 @@ public class TerrariaMsgReceiveHandler
             stream.Position = 0;
             return Serializer.Deserialize<T>(stream);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return new T()
             {
@@ -179,18 +179,18 @@ public class TerrariaMsgReceiveHandler
                 });
             }
             else
-            { 
-                if(baseMsg.TerrariaServer == null)
+            {
+                if (baseMsg.TerrariaServer == null)
                     MorMorAPI.Log.ConsoleError($"接受到{baseMsg.ServerName} 的连接请求但，在配置文件中没有找到{baseMsg.ServerName}服务器!");
                 if (baseMsg.Token != baseMsg.TerrariaServer?.Token)
                     MorMorAPI.Log.ConsoleError($"{baseMsg.ServerName} 的Token 与配置文件不匹配!");
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             MorMorAPI.Log.ConsoleError($"解析信息是出现错误:{ex.Message}");
         }
-    
+
     }
 
     internal static async Task GroupMessageForwardAdapter(GroupMessageEventArgs args)

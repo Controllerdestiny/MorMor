@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MorMor.Music._163;
+﻿namespace MorMor.Music._163;
 
 //如果好用，请收藏地址，帮忙分享。
 public class Singer

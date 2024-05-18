@@ -1,5 +1,4 @@
 ﻿using MomoAPI.EventArgs;
-using MomoAPI.Utils;
 using MorMor.Attributes;
 using MorMor.Event;
 using System.Reflection;
@@ -119,7 +118,14 @@ public class CommandManager
                 {
                     if (command.Name.Contains(cmdName))
                     {
-                        await RunCommandCallback(new CommandArgs(cmdName, args, prefix, cmdParam, ParseCommandLine(cmdParam), account), command);
+                        try
+                        {
+                            await RunCommandCallback(new CommandArgs(cmdName, args, prefix, cmdParam, ParseCommandLine(cmdParam), account), command);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.ToString());
+                        }
                     }
                 }
             }
@@ -131,7 +137,7 @@ public class CommandManager
         foreach (var perm in command.Permission)
         {
             if (args.Account.HasPermission(perm))
-            { 
+            {
                 if (!await OperatHandler.UserCommand(args))
                 {
                     await command.CallBack(args);
@@ -144,44 +150,32 @@ public class CommandManager
         await args.EventArgs.Reply("你无权使用此命令！");
     }
 
+
     public void MappingCommands(Assembly assembly)
     {
-        Dictionary<Type, object> types = new();
-        assembly.GetTypes().ForEach(x =>
+        var flag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
+        Dictionary<Type, MethodInfo[]> mapping = assembly.GetExportedTypes()
+            .Where(x => x.IsDefined(typeof(CommandSeries)))
+            .Select(type => (type, type.GetMethods(flag)
+            .Where(m => m.IsDefined(typeof(CommandMatch)) && m.CommandParamPares(typeof(CommandArgs)))
+            .ToArray()))
+            .ToDictionary(method => method.type, method => method.Item2);
+        foreach (var (cls, methods) in mapping)
         {
-            if (!x.IsAbstract && !x.IsInterface)
+            var instance = Activator.CreateInstance(cls);
+            if (instance == null)
+                continue;
+            foreach (var method in methods)
             {
-                var flag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
-                //加载程序集所有类
-                x.GetMethods(flag).ForEach(m =>
+                var attr = method.GetCustomAttribute<CommandMatch>()!;
+                if (method.IsStatic)
                 {
-                    //参数是否匹配
-                    if (m.CommandParamPares(typeof(CommandArgs)))
-                    {
-                        //获取特性
-                        var attribute = m.GetCustomAttribute<CommandMatch>();
-                        if (attribute != null)
-                        {
-                            //方法非静态
-                            if (!m.IsStatic && x.GetConstructors().ClassConstructParamIsZerp())
-                            {
-                                var instance = types.TryGetValue(x, out var obj) && obj != null ? obj : Activator.CreateInstance(x);
-                                //缓存对象
-                                types[x] = instance;
-                                var method = instance?.GetType().GetMethod(m.Name, flag);
-                                if (method != null)
-                                {
-                                    Add(new(attribute.Name, method.CreateDelegate<Command.CommandCallBack>(instance), attribute.Permission)) ;
-                                }
-                            }
-                            else
-                            {
-                                Add(new(attribute.Name, m.CreateDelegate<Command.CommandCallBack>(), attribute.Permission));
-                            }
-                        }
-                    }
-                });
+                    Add(new(attr.Name, method.CreateDelegate<Command.CommandCallBack>(), attr.Permission));
+                    continue;
+                }
+                var _method = instance.GetType().GetMethod(method.Name, flag)!;
+                Add(new(attr.Name, _method.CreateDelegate<Command.CommandCallBack>(instance), attr.Permission));
             }
-        });
+        }
     }
 }

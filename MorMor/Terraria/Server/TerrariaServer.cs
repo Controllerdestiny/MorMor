@@ -59,7 +59,7 @@ public class TerrariaServer
     [JsonProperty("服务器版本")]
     public string Version { get; set; } = "1.4.4.9";
 
-    
+
 
     [JsonProperty("所属群")]
     public HashSet<long> Groups { get; set; } = new();
@@ -199,6 +199,17 @@ public class TerrariaServer
         return await RequestApi<BaseAction, ServerStatus>(args);
     }
 
+    public async Task<BaseActionResponse> ResetPlayerPwd(string name, string pwd)
+    {
+        var args = new PlayerPasswordResetArgs()
+        {
+            ActionType = ActionType.ResetPassword,
+            Name = name,
+            Password = pwd
+        };
+        return await RequestApi<PlayerPasswordResetArgs, BaseActionResponse>(args);
+    }
+
     public async Task<BaseActionResponse> ReStartServer(Dictionary<string, string> startArgs)
     {
         var args = new ReStartServerArgs()
@@ -229,7 +240,7 @@ public class TerrariaServer
             .Select(x => $"{x.Key} {x.Value}"));
     }
 
-    public bool IsReWorld(byte[] buffer)
+    public static bool IsReWorld(byte[] buffer)
     {
         try
         {
@@ -251,12 +262,11 @@ public class TerrariaServer
 
     public async Task<BaseActionResponse> Reset(Dictionary<string, string> startArgs, Action<RestServerType> OnWait)
     {
-        var args = new RestServerArgs()
+        var args = new ResetServerArgs()
         {
-            ActionType = ActionType.RestServer,
+            ActionType = ActionType.ResetServer,
             StartArgs = SpawnStartArgs(startArgs),
         };
-
         if (startArgs.TryGetValue("-upload", out var _))
         {
             var now = DateTime.Now;
@@ -276,7 +286,7 @@ public class TerrariaServer
                 args.FileBuffer = buffer;
                 OnWait(RestServerType.LoadFile);
             }
-            catch (Exception ex)
+            catch
             {
                 WaitFile = null;
                 OnWait(RestServerType.TimeOut);
@@ -284,7 +294,7 @@ public class TerrariaServer
             WaitFile = null;
         }
         OnWait(RestServerType.Success);
-        return await RequestApi<RestServerArgs, BaseActionResponse>(args);
+        return await RequestApi<ResetServerArgs, BaseActionResponse>(args);
     }
 
     public async Task<TResult> RequestApi<In, TResult>(In ApiParam, TimeSpan? timeout = null) where In : BaseAction where TResult : BaseActionResponse, new()

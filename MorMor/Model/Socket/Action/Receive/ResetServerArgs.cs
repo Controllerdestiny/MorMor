@@ -3,7 +3,7 @@
 namespace MorMor.Model.Socket.Action.Receive;
 
 [ProtoContract]
-public class RestServerArgs : BaseAction
+public class ResetServerArgs : BaseAction
 {
     [ProtoMember(5)] public List<string> RestCommamd { get; set; }
 

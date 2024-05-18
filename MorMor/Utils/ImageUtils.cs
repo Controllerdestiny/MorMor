@@ -58,14 +58,14 @@ internal class ImageUtils
         var intervalX = 40;
         var intervalY = 350;
         var i = 0;
-        foreach(var (prog, status) in progress)
+        foreach (var (prog, status) in progress)
         {
             if (i >= darwCount)
                 return;
             var res = Properties.Resources.ResourceManager.GetObject(prog);
             if (res is byte[] buffer)
             {
-                
+
                 DrawImage(image, slot, sourceX, sourceY);
                 DrawImage(image, textSlot, sourceX, sourceY + slot.Height + intervalX);
                 using var itemPng = Image.Load(buffer);
@@ -73,7 +73,7 @@ internal class ImageUtils
                 DrawImage(image, itemPng, ((slot.Width - itemPng.Width) / 2) + sourceX, ((slot.Height - itemPng.Height) / 2) + sourceY);
                 var text = status ? "已击杀" : "未击杀";
                 var color = status ? Color.GreenYellow : Color.White;
-                DrawText(image, text, sourceX + 30 , sourceY + slot.Height + intervalX + textSlot.Height / 3 , 110, color);
+                DrawText(image, text, sourceX + 30, sourceY + slot.Height + intervalX + textSlot.Height / 3, 110, color);
             }
             if ((i + 1) % maxLineCount == 0)
             {

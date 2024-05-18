@@ -1,8 +1,4 @@
-﻿
-
-using MorMor.Attributes;
-
-namespace MorMor.Commands;
+﻿namespace MorMor.Commands;
 
 public class Command
 {

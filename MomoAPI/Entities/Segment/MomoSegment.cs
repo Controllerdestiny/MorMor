@@ -138,8 +138,8 @@ public class MomoSegment
 
     public static MomoSegment CustomMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
     {
-       var data = Utils.Utils.SignMusic(type, jumpUrl, AudioUrl, imageUrl, song, singer);
-       return Json(data);
+        var data = Utils.Utils.SignMusic(type, jumpUrl, AudioUrl, imageUrl, song, singer);
+        return Json(data);
     }
 
     public static MomoSegment Music_QQ(string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)

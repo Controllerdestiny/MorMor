@@ -26,7 +26,7 @@ public class WebhookOption
                 GithubActions[eventType].Add(groupid);
         }
         else
-        { 
+        {
             GithubActions[eventType] = [groupid];
         }
     }

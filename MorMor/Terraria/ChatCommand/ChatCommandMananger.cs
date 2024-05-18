@@ -1,10 +1,8 @@
-﻿using MomoAPI.Utils;
-using MorMor.Attributes;
+﻿using MorMor.Attributes;
 using MorMor.Commands;
 using MorMor.Event;
 using MorMor.Model.Socket.PlayerMessage;
 using System.Reflection;
-
 
 namespace MorMor.Terraria.ChatCommand;
 
@@ -41,45 +39,32 @@ internal class ChatCommandMananger
         }
     }
 
-    internal void MappingCommands(Assembly assembly)
+    public void MappingCommands(Assembly assembly)
     {
-        Dictionary<Type, object> types = new();
-        assembly.GetTypes().ForEach(x =>
+        var flag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
+        Dictionary<Type, MethodInfo[]> mapping = assembly.GetExportedTypes()
+            .Where(x => x.IsDefined(typeof(CommandSeries)))
+            .Select(type => (type, type.GetMethods(flag)
+            .Where(m => m.IsDefined(typeof(CommandMatch)) && m.CommandParamPares(typeof(PlayerCommandArgs)))
+            .ToArray()))
+            .ToDictionary(method => method.type, method => method.Item2);
+        foreach (var (cls, methods) in mapping)
         {
-            if (!x.IsAbstract && !x.IsInterface)
+            var instance = Activator.CreateInstance(cls);
+            if (instance == null)
+                continue;
+            foreach (var method in methods)
             {
-                var flag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
-                //加载程序集所有类
-                x.GetMethods(flag).ForEach(m =>
+                var attr = method.GetCustomAttribute<CommandMatch>()!;
+                if (method.IsStatic)
                 {
-                    //参数是否匹配
-                    if (m.CommandParamPares(typeof(PlayerCommandArgs)))
-                    {
-                        //获取特性
-                        var attribute = m.GetCustomAttribute<CommandMatch>();
-                        if (attribute != null)
-                        {
-                            //方法非静态
-                            if (!m.IsStatic && x.GetConstructors().ClassConstructParamIsZerp())
-                            {
-                                var instance = types.TryGetValue(x, out var obj) && obj != null ? obj : Activator.CreateInstance(x);
-                                //缓存对象
-                                types[x] = instance;
-                                var method = instance?.GetType().GetMethod(m.Name, flag);
-                                if (method != null)
-                                {
-                                    Add(new(attribute.Name, method.CreateDelegate<ChatCommand.CommandCallBack>(instance), attribute.Permission));
-                                }
-                            }
-                            else
-                            {
-                                Add(new(attribute.Name, m.CreateDelegate<ChatCommand.CommandCallBack>(), attribute.Permission));
-                            }
-                        }
-                    }
-                });
+                    Add(new(attr.Name, method.CreateDelegate<ChatCommand.CommandCallBack>(), attr.Permission));
+                    continue;
+                }
+                var _method = instance.GetType().GetMethod(method.Name, flag)!;
+                Add(new(attr.Name, _method.CreateDelegate<ChatCommand.CommandCallBack>(instance), attr.Permission));
             }
-        });
+        }
     }
 
     private async Task RunCommandCallback(PlayerCommandArgs args, ChatCommand command)
@@ -96,7 +81,5 @@ internal class ChatCommandMananger
                 return;
             }
         }
-        //MorMorAPI.Log.ConsoleInfo($"group: {args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 试图使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Yellow);
-        //await args.EventArgs.Reply("你无权使用此命令！");
     }
 }

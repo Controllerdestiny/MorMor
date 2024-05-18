@@ -7,7 +7,7 @@ namespace MorMor.Configuration;
 public class MorMorSetting
 {
     [JsonProperty("指令前缀")]
-    public List<string> CommamdPrefix { get; init; } = new();
+    public List<string> CommamdPrefix { get; init; } = [];
 
     [JsonProperty("权限所有者")]
     public long OwnerId { get; set; } = 523321293;
@@ -18,7 +18,7 @@ public class MorMorSetting
     [JsonProperty("监听端口")]
     public int Port { get; init; } = 5000;
 
-    [JsonProperty("监听令牌")]
+    [JsonProperty("OneBot令牌")]
     public string AccessToken { get; set; } = "";
 
     [JsonProperty("数据库类型")]
@@ -42,19 +42,19 @@ public class MorMorSetting
     [JsonProperty("数据库密码")]
     public string DbPassword { get; init; } = "";
 
-    [JsonProperty("用户默认权限组")]
+    [JsonProperty("Bot用户默认权限组")]
     public string DefaultPermGroup { get; init; } = "default";
 
-    [JsonProperty("邮箱服务地址")]
+    [JsonProperty("邮箱STMP地址")]
     public string MailHost { get; init; } = "";
 
-    [JsonProperty("发件人邮箱")]
+    [JsonProperty("STMP邮箱")]
     public string SenderMail { get; init; } = "";
 
-    [JsonProperty("发件人邮箱密码")]
+    [JsonProperty("STMP授权码")]
     public string SenderPwd { get; init; } = "";
 
-    [JsonProperty("Socket服务器端口号")]
+    [JsonProperty("TShockSocket通信端口")]
     public int SocketProt { get; init; } = 6000;
 
     [JsonProperty("Webhook配置")]

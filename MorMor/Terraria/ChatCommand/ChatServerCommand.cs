@@ -4,6 +4,7 @@ using System.Drawing;
 
 namespace MorMor.Terraria.ChatCommand;
 
+[CommandSeries]
 public class ChatServerCommand
 {
     [CommandMatch("抽", OneBotPermissions.TerrariaPrize)]
@@ -23,7 +24,7 @@ public class ChatServerCommand
         var count = 1;
         if (args.Parameters.Count > 0)
             _ = int.TryParse(args.Parameters[0], out count);
-        if(count > 50)
+        if (count > 50)
             count = 50;
         var prizes = MorMorAPI.TerrariaPrize.Nexts(count);
         var curr = MorMorAPI.CurrencyManager.Query(args.User.GroupID, args.User.Id);

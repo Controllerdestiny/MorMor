@@ -6,7 +6,7 @@ namespace MorMor.Commands;
 
 internal static class CommandUtils
 {
-    private static readonly Dictionary<long, List<Tuple<string,string>>> temp = [];
+    private static readonly Dictionary<long, List<Tuple<string, string>>> temp = [];
     public static void AddTempData(long groupid, string name, string token)
     {
         if (temp.TryGetValue(groupid, out var list) && list != null)
@@ -22,7 +22,7 @@ internal static class CommandUtils
     public static bool GetTempData(long groupid, string token)
     {
         if (temp.TryGetValue(groupid, out var list) && list != null)
-        { 
+        {
             return list.Any(x => x.Item2 == token);
         }
         return false;
@@ -37,8 +37,8 @@ internal static class CommandUtils
             target = at.First().UserId;
         }
         else
-        { 
-            if(args.Parameters.Count > 0)
+        {
+            if (args.Parameters.Count > 0)
             {
                 _ = long.TryParse(args.Parameters[0], out target);
             }

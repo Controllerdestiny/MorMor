@@ -27,7 +27,7 @@ public class Music163
         var url = $"{Uri}?name={name}&n={id}";
         var result = await client.GetStringAsync(url);
         var data = JsonConvert.DeserializeObject<ApiResult>(result);
-        if (data != null && data.code == 0  )
+        if (data != null && data.code == 0)
         {
             return data.data;
         }

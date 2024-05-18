@@ -15,7 +15,7 @@ public class TerrariaUserManager
 
         public string Server { get; init; }
 
-        public string Password { get; init; }
+        public string Password { get; internal set; }
 
         public long GroupID { get; init; }
 
@@ -32,7 +32,7 @@ public class TerrariaUserManager
             new SqlColumn("Server", MySqlDbType.VarChar) { Unique = true, Length = 100 },
             new SqlColumn("Name", MySqlDbType.VarChar) { Length = 100 },
             new SqlColumn("GroupID", MySqlDbType.Int64) { Length = 100 },
-            new SqlColumn("Password", MySqlDbType.VarChar) { Unique = true, Length = 100 }
+            new SqlColumn("Password", MySqlDbType.VarChar) { Length = 100 }
             );
 
         var create = new SqlTableCreator(database,
@@ -96,6 +96,13 @@ public class TerrariaUserManager
         {
             throw new TerrariaUserException("更新至数据库失败!");
         }
+    }
+    public void ResetPassword(long id, string servername, string pwd)
+    {
+        var user = GetUserById(id, servername) ?? throw new GroupException("删除权限指向的目标组不存在!");
+        if (database.Query("UPDATE `User` SET `Password` = @0 WHERE `User`.`Server` = @1 AND `User`.`ID` = @2", pwd, servername, id) != 1)
+            throw new GroupException("添加至数据库失败!");
+        user.Password = pwd;
     }
 
     public void Remove(string Server, string Name)

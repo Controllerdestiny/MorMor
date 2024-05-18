@@ -92,6 +92,7 @@ public class MorMorAPI
         Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
+
     }
 
     internal static void LoadConfig()

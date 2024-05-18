@@ -7,7 +7,7 @@ namespace MorMor.Model.Socket.Action.Response;
 
 public class ServerStatus : BaseActionResponse
 {
-    [ProtoMember(8)]  public string WorldName { get; set; }
+    [ProtoMember(8)] public string WorldName { get; set; }
 
     [ProtoMember(9)] public int WorldWidth { get; set; }
 

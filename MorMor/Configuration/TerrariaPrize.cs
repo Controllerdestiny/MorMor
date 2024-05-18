@@ -1,6 +1,5 @@
 using MorMor.Model.Terraria;
 using Newtonsoft.Json;
-using System.Diagnostics.Tracing;
 
 namespace MorMor.Configuration;
 
@@ -11,7 +10,7 @@ public class TerrariaPrize
 
     [JsonProperty("奖池内容")]
     public List<Prize> Pool = [];
-    
+
     public Prize Next()
     {
         Random random = new Random();
@@ -32,13 +31,13 @@ public class TerrariaPrize
     public List<Prize> Nexts(int count)
     {
         var res = new List<Prize>();
-        for(int i = 0; i < count; i++)
+        for (int i = 0; i < count; i++)
         {
             res.Add(Next());
         }
         return res;
     }
-    
+
     public bool Add(string name, int id, int rate, int max, int min)
     {
         if (Pool.Any(x => x.Name == name || x.ID == id))

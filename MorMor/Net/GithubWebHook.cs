@@ -67,7 +67,7 @@ public class GithubWebHook : WebhookEventProcessor
             || groups == null
             || groups.Count == 0)
             return;
-            var msg = $"用户 {starEvent.Sender?.Login} Stared 仓库 {starEvent.Repository?.FullName} 共计({starEvent.Repository?.StargazersCount})个Star";
+        var msg = $"用户 {starEvent.Sender?.Login} Stared 仓库 {starEvent.Repository?.FullName} 共计({starEvent.Repository?.StargazersCount})个Star";
         await SendGroupMsg(msg, groups);
     }
     protected override async Task ProcessPushWebhookAsync(WebhookHeaders headers, PushEvent pushEvent)
