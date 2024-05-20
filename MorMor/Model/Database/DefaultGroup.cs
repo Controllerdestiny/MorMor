@@ -4,8 +4,8 @@ namespace MorMor.Model.Database;
 
 public class DefaultGroup : Group
 {
-    public override List<string> permissions => new()
-    {
+    public List<string> Selfpermissions =
+    [
         OneBotPermissions.Sign,
         OneBotPermissions.Help,
         OneBotPermissions.Jrrp,
@@ -28,9 +28,30 @@ public class DefaultGroup : Group
         OneBotPermissions.EmojiLike,
         OneBotPermissions.TerrariaShop,
         OneBotPermissions.TerrariaPrize,
-        OneBotPermissions.ImageEmoji
-    };
+        OneBotPermissions.ImageEmoji,
+        OneBotPermissions.SelfPassword
+    ];
+
+    public override void NegatePermission(string permission)
+    {
+        base.NegatePermission(permission);
+    }
+    public override void RemovePermission(string permission)
+    {
+        base.RemovePermission(permission);
+    }
+
+    public override bool HasPermission(string permission)
+    {
+        return base.HasPermission(permission);
+    }
+    public override void AddPermission(string permission)
+    {
+        base.AddPermission(permission);
+    }
     public DefaultGroup() : base(MorMorAPI.Setting.DefaultPermGroup)
     {
+        if (permissions.Count == 0)
+            SetPermission(Selfpermissions);
     }
 }

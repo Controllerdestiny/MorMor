@@ -57,6 +57,7 @@ public class GroupMananger
         if (!group.permissions.Contains(perm))
         {
             group.AddPermission(perm);
+            Console.WriteLine(group.Permssion);
             if (database.Query("UPDATE `grouplist` SET `Permission` = @0 WHERE `grouplist`.`Name` = @1", group.Permssion, groupName) != 1)
             {
                 group.RemovePermission(perm);
@@ -122,7 +123,7 @@ public class GroupMananger
 
     public List<Group> GetGroups()
     {
-        List<Group> list = new();
+        List<Group> list = [];
         using var read = database.QueryReader("select * from `grouplist`");
         while (read.Read())
         {
@@ -131,6 +132,10 @@ public class GroupMananger
             var Parent = read.Get<string>("Parent");
             if (GroupName == "superadmin")
                 list.Add(new SuperAdminGroup());
+            else if (GroupName == MorMorAPI.Setting.DefaultPermGroup)
+            {
+                list.Add(DefaultGroup);
+            }
             else if (!string.IsNullOrEmpty("parent"))
                 list.Add(new Group(GroupName, new Group(Parent), permssions));
             else

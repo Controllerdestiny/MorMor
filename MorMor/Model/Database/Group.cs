@@ -8,7 +8,7 @@ public class Group
 
     private List<string> negatedpermissions { get; set; } = new();
 
-    public virtual List<string> permissions { get; set; } = new();
+    public List<string> permissions { get; set; } = new();
 
     public Group Parent { get; set; }
 
@@ -35,7 +35,7 @@ public class Group
         Permssion = permissions;
     }
 
-    public void AddPermission(string permission)
+    public virtual void AddPermission(string permission)
     {
         if (permission.StartsWith("!"))
         {
@@ -50,7 +50,7 @@ public class Group
         }
     }
 
-    public void NegatePermission(string permission)
+    public virtual void NegatePermission(string permission)
     {
         // Avoid duplicates
         if (!negatedpermissions.Contains(permission))
@@ -67,7 +67,7 @@ public class Group
         permission.ForEach(p => AddPermission(p));
     }
 
-    public void RemovePermission(string permission)
+    public virtual void RemovePermission(string permission)
     {
         if (permission.StartsWith("!"))
         {
