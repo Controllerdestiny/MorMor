@@ -32,6 +32,9 @@ public class TerrariaServer
     [JsonProperty("注册默认组")]
     public string DefaultGroup { get; set; } = "default";
 
+    [JsonProperty("最大注册数量")]
+    public int RegisterMaxCount { get; set; } = 1;
+
     [JsonProperty("注册名字大长度")]
     public int RegisterNameMax { get; set; } = 10;
 

@@ -78,7 +78,7 @@ internal static class CommandUtils
         var userid = uin;
         var serverName = MorMorAPI.UserLocation.TryGetServer(userid, groupid, out var server) ? server?.Name ?? "NULL" : "NULL";
         var bindUser = MorMorAPI.TerrariaUserManager.GetUserById(userid, serverName);
-        var bindName = bindUser == null ? "NULL" : bindUser.Name;
+        var bindName = bindUser.Count == 0 ? "NULL" : string.Join(",", bindUser.Select(x => x.Name));
         //var api = server != null ? (await server.QueryEconomicBank(bindName)): null;
         var signInfo = MorMorAPI.SignManager.Query(groupid, userid);
         var sign = signInfo != null ? signInfo.Date : 0;

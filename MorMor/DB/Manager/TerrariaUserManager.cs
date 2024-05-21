@@ -2,6 +2,7 @@
 using MorMor.Extensions;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.Xml.Linq;
 
 namespace MorMor.DB.Manager;
 
@@ -28,9 +29,9 @@ public class TerrariaUserManager
     {
         database = MorMorAPI.DB;
         var table = new SqlTable("User",
-            new SqlColumn("ID", MySqlDbType.Int64) { Unique = true, Length = 100 },
-            new SqlColumn("Server", MySqlDbType.VarChar) { Unique = true, Length = 100 },
-            new SqlColumn("Name", MySqlDbType.VarChar) { Length = 100 },
+            new SqlColumn("ID", MySqlDbType.Int64) { Length = 100 },
+            new SqlColumn("Server", MySqlDbType.VarChar) {  Length = 100 },
+            new SqlColumn("Name", MySqlDbType.VarChar) { Unique = true, Length = 100 },
             new SqlColumn("GroupID", MySqlDbType.Int64) { Length = 100 },
             new SqlColumn("Password", MySqlDbType.VarChar) { Length = 100 }
             );
@@ -74,7 +75,7 @@ public class TerrariaUserManager
 
     public void Add(long id, long groupid, string Server, string Name, string Password)
     {
-        if (Users.Any(x => x.Id == id && x.Server == Server))
+        if (Users.Any(x => x.Id == id && x.Name == Name && x.Server == Server))
             throw new TerrariaUserException("此用户已经注册过了!");
         //搜索名字和服务器
         var user = GetUsersByName(Name, Server);
@@ -97,10 +98,10 @@ public class TerrariaUserManager
             throw new TerrariaUserException("更新至数据库失败!");
         }
     }
-    public void ResetPassword(long id, string servername, string pwd)
+    public void ResetPassword(long id, string servername, string name, string pwd)
     {
-        var user = GetUserById(id, servername) ?? throw new GroupException("删除权限指向的目标组不存在!");
-        if (database.Query("UPDATE `User` SET `Password` = @0 WHERE `User`.`Server` = @1 AND `User`.`ID` = @2", pwd, servername, id) != 1)
+        var user = GetUserById(id, servername,name) ?? throw new GroupException("删除权限指向的目标组不存在!");
+        if (database.Query("UPDATE `User` SET `Password` = @0 WHERE `User`.`Server` = @1 AND `User`.`ID` = @2 AND `User`.`Name` = @3", pwd, servername, id, name) != 1)
             throw new GroupException("添加至数据库失败!");
         user.Password = pwd;
     }
@@ -139,9 +140,14 @@ public class TerrariaUserManager
         return Users.FindAll(f => f.Id == id);
     }
 
-    public User? GetUserById(long id, string server)
+    public List<User> GetUserById(long id, string server)
     {
-        return Users.Find(f => f.Server == server && f.Id == id);
+        return Users.FindAll(f => f.Server == server && f.Id == id);
+    }
+
+    public User? GetUserById(long id, string server, string name)
+    {
+        return Users.Find(f => f.Server == server && f.Name == name && f.Id == id);
     }
 
     public User? GetUsersByName(string name, string server)

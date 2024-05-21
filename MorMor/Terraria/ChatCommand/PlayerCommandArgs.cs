@@ -17,7 +17,7 @@ public class PlayerCommandArgs : System.EventArgs
 
     public TerrariaServer? Server => MorMorAPI.Setting.GetServer(ServerName);
 
-    public TerrariaUserManager.User? User => MorMorAPI.TerrariaUserManager.GetUsersByName(Name);
+    public TerrariaUserManager.User? User => MorMorAPI.TerrariaUserManager.GetUsersByName(ServerName, Name);
 
     public AccountManager.Account Account => MorMorAPI.AccountManager.GetAccountNullDefault(User == null ? 0 : User.Id);
 
