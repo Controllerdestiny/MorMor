@@ -2,6 +2,7 @@
 using MorMor.Commands;
 using MorMor.Event;
 using MorMor.Model.Socket.PlayerMessage;
+using System.Drawing;
 using System.Reflection;
 
 namespace MorMor.Terraria.ChatCommand;
@@ -33,7 +34,16 @@ internal class ChatCommandMananger
             {
                 if (command.Name.Contains(cmdName))
                 {
-                    await RunCommandCallback(new PlayerCommandArgs(args.Name, args.ServerName, cmdParam), command);
+                    try
+                    {
+                        await RunCommandCallback(new PlayerCommandArgs(args.Name, args.ServerName, cmdParam), command);
+                    }
+                    catch (Exception ex)
+                    {
+                        MorMorAPI.Log.ConsoleError(ex.ToString());
+                        if (args.TerrariaServer != null)
+                            await args.TerrariaServer.PrivateMsg(args.Name, ex.Message, Color.DarkRed);
+                    }
                 }
             }
         }

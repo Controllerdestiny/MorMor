@@ -124,7 +124,8 @@ public class CommandManager
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine(ex.ToString());
+                            MorMorAPI.Log.ConsoleError(ex.ToString());
+                            await args.Reply(ex.Message, true);
                         }
                     }
                 }

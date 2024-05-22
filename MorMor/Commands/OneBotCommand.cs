@@ -404,7 +404,7 @@ public class OneBotCommand
     private async Task VersionInfo(CommandArgs args)
     {
         var info = "名称: MorMor" +
-            "\n版本: V2.0.0.1" +
+            "\n版本: V2.0.1.2" +
             $"\n运行时长: {DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime:dd\\.hh\\:mm\\:ss}" +
             "\nMorMor是基于LLOneBot开发的 .NET平台机器人，主要功能为群管理以及TShock服务器管理" +
             "\n开源地址: https://github.com/Controllerdestiny/MorMor";
@@ -622,6 +622,11 @@ public class OneBotCommand
         if (!MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) || server == null)
         {
             await args.EventArgs.Reply("服务器不存在或，未切换至一个服务器！", true);
+            return;
+        }
+        if (MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name).Count >= server.RegisterMaxCount)
+        {
+            await args.EventArgs.Reply($"同一个服务器上绑定账户不能超过{server.RegisterMaxCount}个", true);
             return;
         }
         if (args.Parameters.Count == 1)
@@ -1309,7 +1314,7 @@ public class OneBotCommand
             }
             if (MorMorAPI.TerrariaUserManager.GetUserById(args.EventArgs.Sender.Id, server.Name).Count >= server.RegisterMaxCount)
             {
-                await args.EventArgs.Reply($"同一个服务器上注册账户不能超过{server.RegisterMaxCount}", true);
+                await args.EventArgs.Reply($"同一个服务器上注册账户不能超过{server.RegisterMaxCount}个", true);
                 return;
             }
             var pass = Guid.NewGuid().ToString()[..8];
@@ -1448,6 +1453,7 @@ public class OneBotCommand
                 {
                     sb.AppendLine("注册人不在此群中");
                 }
+                sb.AppendLine("");
             }
             await args.EventArgs.Reply(sb.ToString().Trim());
         }
