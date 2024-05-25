@@ -175,6 +175,16 @@ public class TerrariaServer
         return await RequestApi<BaseAction, PlayerOnlineRank>(args);
     }
 
+    public async Task<BaseActionResponse> ReplyConnectStatus(SocketConnentType status = SocketConnentType.Success)
+    {
+        var args = new SocketConnectStatusArgs()
+        {
+            ActionType = ActionType.ConnectStatus,
+            Status = status
+        };
+        return await RequestApi<SocketConnectStatusArgs, BaseActionResponse>(args);
+    }
+
     public async Task<DeadRank> DeadRank()
     {
         var args = new BaseAction()

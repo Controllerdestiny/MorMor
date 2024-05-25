@@ -18,13 +18,16 @@ internal static class CommandUtils
             temp[groupid] = [new Tuple<string, string>(name, token)];
         }
     }
-
-    public static bool GetTempData(long groupid, string token)
+   
+    public static bool GetTempData(long groupid, string token, out string? name)
     {
         if (temp.TryGetValue(groupid, out var list) && list != null)
         {
-            return list.Any(x => x.Item2 == token);
+            var res = list.Find(x => x.Item2 == token);
+            name = res?.Item1;
+            return res == null;
         }
+        name = null;
         return false;
     }
 

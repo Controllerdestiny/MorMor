@@ -21,7 +21,7 @@ public class MusicTool
         int i = 1;
         list.ForEach(x =>
         {
-            ret += $"[{i}].{x.song} -- {string.Join(",", x.singers)}\n";
+            ret += $"[{i}].{x.song} -- {x.singer}\n";
             i++;
         });
         ret += "资源来自于QQ音乐";
@@ -37,7 +37,7 @@ public class MusicTool
         sb.AppendLine("# QQ音乐");
         for (int i = 0; i < list.Count; i++)
         {
-            sb.AppendLine($"## `{i + 1}`- {list[i].song} -- {string.Join(",", list[i].singers)}");
+            sb.AppendLine($"## `{i + 1}`- {list[i].song} -- {list[i].singer}");
         }
         sb.AppendLine();
         sb.AppendLine($$"""</div>""");

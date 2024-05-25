@@ -4,15 +4,17 @@ namespace MorMor.Music.QQ;
 
 public class MusicQQ
 {
-    private const string Uri = "https://oiapi.net/API/QQ_Music/";
+    private const string Uri = "https://api.lolimi.cn/API/yiny/";
     public static async Task<List<MusicInfo>> GetMusicList(string name)
     {
         var ret = new List<MusicInfo>();
-        var client = new HttpClient();
-        var url = $"{Uri}?msg={name}";
-        var result = await client.GetStringAsync(url);
-        var data = JsonConvert.DeserializeObject<MusicList>(result);
-        if (data != null && data.code == 1)
+        var param = new Dictionary<string, string>()
+        {
+            { "word", name },
+        };
+        var res = MomoAPI.Utils.Utils.HttpGet(Uri, param).Result;
+        var data = JsonConvert.DeserializeObject<MusicList>(res);
+        if (data != null && data.code == 200)
         {
             return data.data;
         }
@@ -21,11 +23,15 @@ public class MusicQQ
 
     public static async Task<MusicData?> GetMusic(string name, int id)
     {
-        var client = new HttpClient();
-        var url = $"{Uri}?msg={name}&n={id}";
-        var result = await client.GetStringAsync(url);
-        var data = JsonConvert.DeserializeObject<Music>(result);
-        if (data != null && data.code == 1)
+        var param = new Dictionary<string, string>()
+        {
+            { "word", name },
+            { "n", id.ToString()},
+            { "q", "4"}
+        };
+        var res = await MomoAPI.Utils.Utils.HttpGet(Uri, param);
+        var data = JsonConvert.DeserializeObject<Music>(res);
+        if (data != null && data.code == 200)
         {
             return data.data;
         }

@@ -76,5 +76,8 @@ public enum ActionType
     /// <summary>
     /// 重置玩家密码
     /// </summary>
-    ResetPassword
+    ResetPassword,
+
+    //连接状态
+    ConnectStatus
 }

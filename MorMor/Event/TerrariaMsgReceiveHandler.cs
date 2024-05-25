@@ -4,6 +4,7 @@ using MorMor.EventArgs;
 using MorMor.EventArgs.Sockets;
 using MorMor.Model.Socket;
 using MorMor.Model.Socket.Action;
+using MorMor.Model.Socket.Action.Receive;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
 using MorMor.Net;
@@ -65,18 +66,18 @@ public class TerrariaMsgReceiveHandler
     private static async Task HeartBeatHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<BaseMessage>(args.Stream);
-        OnHeartBeat?.Invoke(data);
         WebSocketConnectManager.Add(data.ServerName, args.Client);
+        OnHeartBeat?.Invoke(data);
         await Task.CompletedTask;
     }
 
     private static async Task ConnectHandler(ServerMsgArgs args)
     {
         var data = Serializer.Deserialize<BaseMessage>(args.Stream);
-        OnConnect?.Invoke(data);
         WebSocketConnectManager.Add(data.ServerName, args.Client);
+        OnConnect?.Invoke(data);
         MorMorAPI.Log.ConsoleInfo($"Terraria Server {data.ServerName} {args.Client.ConnectionInfo.ClientIpAddress} 已连接...", ConsoleColor.Green);
-        await Task.CompletedTask;
+        await data.TerrariaServer!.ReplyConnectStatus();
     }
 
     private static async Task GamePostInitHandler(ServerMsgArgs args)
@@ -160,7 +161,7 @@ public class TerrariaMsgReceiveHandler
         }
     }
 
-    public static void Adapter(SocketReceiveMessageArgs args)
+    public static async void Adapter(SocketReceiveMessageArgs args)
     {
         try
         {
@@ -171,7 +172,7 @@ public class TerrariaMsgReceiveHandler
                 && _action.TryGetValue(baseMsg.MessageType, out var action))
             {
                 args.Stream.Position = 0;
-                action(new()
+                await action(new()
                 {
                     Client = args.Client,
                     Stream = args.Stream,
@@ -180,10 +181,34 @@ public class TerrariaMsgReceiveHandler
             }
             else
             {
+                var echo = Guid.NewGuid().ToString();
+                using var ms = new MemoryStream();
+                var response = new SocketConnectStatusArgs()
+                {
+                    ServerName = baseMsg.ServerName,
+                    ActionType = ActionType.ConnectStatus,
+                    Token = baseMsg.Token,
+                    Echo = echo,
+                };
                 if (baseMsg.TerrariaServer == null)
+                {
                     MorMorAPI.Log.ConsoleError($"接受到{baseMsg.ServerName} 的连接请求但，在配置文件中没有找到{baseMsg.ServerName}服务器!");
-                if (baseMsg.Token != baseMsg.TerrariaServer?.Token)
+                    response.Status = SocketConnentType.ServerNull;
+
+                }
+                else if (baseMsg.Token != baseMsg.TerrariaServer?.Token)
+                {
+                    response.Status = SocketConnentType.VerifyError;
                     MorMorAPI.Log.ConsoleError($"{baseMsg.ServerName} 的Token 与配置文件不匹配!");
+                }
+                else
+                {
+                    MorMorAPI.Log.ConsoleError($"{baseMsg.ServerName} 未知连接错误!");
+                    response.Status = SocketConnentType.Error;
+                }
+                Serializer.Serialize(ms, response);
+                await args.Client.Send(ms.ToArray());
+                args.Client.Close(1000);
             }
         }
         catch (Exception ex)

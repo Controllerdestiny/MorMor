@@ -340,7 +340,7 @@ public class OneBotCommand
                             await args.EventArgs.Reply(
                             [
 
-                                MomoSegment.Music_QQ(music.url,music.music,music.picture,music.song,string.Join(",",music.singers))
+                                MomoSegment.Music_QQ(music.link,music.url,music.cover,music.song,music.singer)
                             ]);
                         }
                         catch (Exception ex)
@@ -395,7 +395,7 @@ public class OneBotCommand
     [CommandMatch("test", OneBotPermissions.Account)]
     private async Task Test(CommandArgs args)
     {
-
+        await args.EventArgs.Reply(args.EventArgs.MessageContext.Messages);
     }
     #endregion
 
@@ -642,11 +642,11 @@ public class OneBotCommand
         }
         else if (args.Parameters.Count == 2 && args.Parameters[0] == "验证")
         {
-            if (CommandUtils.GetTempData(args.EventArgs.Group.Id, args.Parameters[1]))
+            if (CommandUtils.GetTempData(args.EventArgs.Group.Id, args.Parameters[1], out var name))
             {
                 try
                 {
-                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, server.Name, args.Parameters[0], "");
+                    MorMorAPI.TerrariaUserManager.Add(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, server.Name, name, "");
                     await args.EventArgs.Reply($"验证完成！\n已绑定账号至{server.Name}服务器!", true);
                 }
                 catch (Exception ex)

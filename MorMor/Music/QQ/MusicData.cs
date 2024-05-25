@@ -6,39 +6,43 @@ public class MusicData
     /// <summary>
     /// 
     /// </summary>
-    public int songid { get; set; }
+    public int id { get; set; }
     /// <summary>
-    /// 夜曲
+    /// 花海
     /// </summary>
     public string song { get; set; }
     /// <summary>
     /// 
     /// </summary>
-    public List<string> singers { get; set; }
-    /// <summary>
-    /// 十一月的萧邦
-    /// </summary>
-    public string album { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string mid { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string picture { get; set; }
+    public string subtitle { get; set; }
     /// <summary>
     /// 周杰伦
     /// </summary>
     public string singer { get; set; }
     /// <summary>
-    /// 
+    /// 魔杰座
     /// </summary>
-    public string url { get; set; }
+    public string album { get; set; }
+    /// <summary>
+    /// 付费
+    /// </summary>
+    public string pay { get; set; }
     /// <summary>
     /// 
     /// </summary>
-    public string music { get; set; }
+    public string time { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string bpm { get; set; }
+    /// <summary>
+    /// 臻品母带2.0
+    /// </summary>
+    public string quality { get; set; }
+    /// <summary>
+    /// 4分24秒
+    /// </summary>
+    public string interval { get; set; }
     /// <summary>
     /// 
     /// </summary>
@@ -46,11 +50,19 @@ public class MusicData
     /// <summary>
     /// 
     /// </summary>
-    public int time { get; set; }
+    public string kbps { get; set; }
     /// <summary>
     /// 
     /// </summary>
-    public int br { get; set; }
+    public string cover { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string link { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string url { get; set; }
 }
 
 public class Music
@@ -59,10 +71,6 @@ public class Music
     /// 
     /// </summary>
     public int code { get; set; }
-    /// <summary>
-
-    /// </summary>
-    public string message { get; set; }
     /// <summary>
     /// 
     /// </summary>
