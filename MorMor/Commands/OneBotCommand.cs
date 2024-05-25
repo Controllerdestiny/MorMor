@@ -654,6 +654,10 @@ public class OneBotCommand
                     await args.EventArgs.Reply(ex.Message, true);
                 }
             }
+            else
+            {
+                await args.EventArgs.Reply($"请先输入{args.CommamdPrefix}{args.Name} [名称] 在进行验证", true);
+            }
         }
     }
     #endregion

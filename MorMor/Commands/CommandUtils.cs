@@ -25,7 +25,7 @@ internal static class CommandUtils
         {
             var res = list.Find(x => x.Item2 == token);
             name = res?.Item1;
-            return res == null;
+            return res != null;
         }
         name = null;
         return false;
