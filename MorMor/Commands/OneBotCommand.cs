@@ -22,8 +22,8 @@ namespace MorMor.Commands;
 [CommandSeries]
 public class OneBotCommand
 {
-    #region 捣药
-    [CommandMatch("github", OneBotPermissions.SetConfig)]
+    #region Git Setting
+    [CommandMatch("git", OneBotPermissions.SetConfig)]
     private async Task GitHubActionManager(CommandArgs args)
     {
         string? MatchAction()
@@ -50,7 +50,7 @@ public class OneBotCommand
             var subcmd = args.Parameters[0];
             var type = args.Parameters[1];
             var res = MatchAction();
-            if (args.Parameters[0].ToLower() == "add")
+            if (args.Parameters[0].ToLower() == "listen")
             {
                 if (res != null)
                 {
@@ -82,7 +82,7 @@ public class OneBotCommand
         }
         else
         {
-            await args.EventArgs.Reply($"语法错误，正确语法:{args.CommamdPrefix}{args.Name} [add|del] [release|pr|star|push]");
+            await args.EventArgs.Reply($"语法错误，正确语法:{args.CommamdPrefix}{args.Name} [listen|remove] [release|pr|star|push]");
         }
     }
     #endregion
@@ -243,7 +243,7 @@ public class OneBotCommand
         var tasks = new List<Task>();
         foreach (var id in emojis)
         {
-            tasks.Add(args.EventArgs.OneBotAPI.EmojiLike(messageid.ToString(), id));
+            tasks.Add(args.EventArgs.OneBotAPI.EmojiLike(messageid, id));
         }
         await Task.WhenAll(tasks);
 
@@ -431,6 +431,33 @@ public class OneBotCommand
         }
         var commands = CommandManager.Hook.commands.Select(x => args.CommamdPrefix + x.Name.First()).ToList();
         Show(commands);
+    }
+    #endregion
+
+    #region 签到排行
+    [CommandMatch("签到排行", OneBotPermissions.Sign)]
+    private async Task SignRank(CommandArgs args)
+    {
+        try
+        {
+            var signs = MorMorAPI.SignManager.Signs.Where(x=>x.GroupID == args.EventArgs.Group.Id).OrderByDescending(x => x.Date).Take(10);
+            var sb = new StringBuilder("签到排行\n\n");
+            int i = 1;
+            foreach (var sign in signs)
+            {
+                sb.AppendLine($"签到排名: {i}");
+                sb.AppendLine($"账号: {sign.UserId}");
+                sb.AppendLine($"时长: {sign.Date}");
+                sb.AppendLine();
+                i++;
+            }
+            
+            await args.EventArgs.Reply(sb.ToString().Trim());
+        }
+        catch (Exception e)
+        {
+            await args.EventArgs.Reply(e.Message);
+        }
     }
     #endregion
 

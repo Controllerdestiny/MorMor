@@ -22,7 +22,7 @@ public class OneBotAPI
         return await ApiAdapter.GetFile(fileid);
     }
 
-    public async Task<ApiStatus> EmojiLike(string msgId, string emojiid)
+    public async Task<ApiStatus> EmojiLike(long msgId, string emojiid)
     {
         return await ApiAdapter.EmojiLike(msgId, emojiid);
     }

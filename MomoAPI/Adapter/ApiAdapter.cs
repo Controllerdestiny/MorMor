@@ -6,7 +6,9 @@ using MomoAPI.Enumeration.ApiType;
 using MomoAPI.Enumeration.EventParamType;
 using MomoAPI.Model.API;
 using MomoAPI.Net;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Threading.Channels;
 
 namespace MomoAPI.Adapter;
 
@@ -487,7 +489,7 @@ internal class ApiAdapter
         return (status, data["data"]?.ToObject<Entities.Info.FileInfo>() ?? new());
     }
 
-    public static async Task<ApiStatus> EmojiLike(string msgId, string emojiid)
+    public static async Task<ApiStatus> EmojiLike(long msgId, string emojiid)
     {
         var (status, data) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
