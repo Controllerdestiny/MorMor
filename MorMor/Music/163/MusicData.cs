@@ -1,62 +1,31 @@
-﻿namespace MorMor.Music._163;
-
-//如果好用，请收藏地址，帮忙分享。
-public class Singer
-{
-    /// <summary>
-    /// 李克勤
-    /// </summary>
-    public string name { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public long id { get; set; }
-}
+﻿namespace MomoAPI.Music._163;
 
 public class MusicData
 {
-    /// <summary>
-    /// 月半小夜曲
-    /// </summary>
-    public string name { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string picurl { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public long id { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public List<Singer> singers { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string url { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string jumpurl { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string pay { get; set; }
-}
+    public string Name { get; }
 
-public class ApiResult
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    public int code { get; set; }
-    /// <summary>
-    /// 获取成功
-    /// </summary>
-    public string message { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public MusicData data { get; set; }
+    public long ID { get; }
+
+    public string Picture { get; }
+
+    public List<string> Singers { get; }
+
+    public string JumpUrl { get; }
+
+    public string MusicUrl { get; private set; } = string.Empty;
+
+    public MusicData(string name, long iD, string picUrl, List<string> singers, string musicUrl = "")
+    {
+        Name = name;
+        ID = iD;
+        Picture = picUrl;
+        Singers = singers;
+        JumpUrl = $"https://music.163.com/#/song?id={ID}";
+        MusicUrl = musicUrl;
+    }
+
+    internal void SetMusicUrl(string url)
+    {
+        MusicUrl = url;
+    }
 }

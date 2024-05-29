@@ -119,7 +119,6 @@ public class MorMorAPI
                 {
                     string sql = Path.Combine(PATH, Setting.DbPath);
                     Directory.CreateDirectory(Path.GetDirectoryName(sql));
-                    Console.WriteLine(string.Format("Data Source={0}", sql));
                     DB = new SqliteConnection(string.Format("Data Source={0}", sql));
                     break;
                 }

@@ -12,6 +12,7 @@ namespace MorMor.Model.Socket.Action.Response;
 [ProtoInclude(407, typeof(ServerOnline))]
 [ProtoInclude(408, typeof(UpLoadWorldFile))]
 [ProtoInclude(409, typeof(ServerStatus))]
+[ProtoInclude(410, typeof(QueryAccount))]
 public class BaseActionResponse : BaseAction
 {
     [ProtoMember(6)] public string Message { get; set; }

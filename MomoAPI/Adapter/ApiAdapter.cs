@@ -462,15 +462,15 @@ internal class ApiAdapter
             }
         });
         var Info = new CookieInfo();
-        var cookie = res["data"]?["cookies"]?.ToString();
+        var cookie = res["data"]?["cookies"]?.ToString()!;
         Info.Cookie = cookie;
         if (!string.IsNullOrEmpty(cookie))
         {
             var val = cookie.Split(";");
-            if (val.Length == 2)
+            if (val.Length >= 2)
             {
-                Info.Pskey = val[0][6..];
-                Info.Skey = val[1][5..];
+                Info.Pskey = val[0][7..];
+                Info.Skey = val[1][6..];
             }
         }
         return (status, Info);

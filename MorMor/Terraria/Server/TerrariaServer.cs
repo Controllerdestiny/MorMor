@@ -223,6 +223,16 @@ public class TerrariaServer
         return await RequestApi<PlayerPasswordResetArgs, BaseActionResponse>(args);
     }
 
+    public async Task<QueryAccount> QueryAccount(string? name = null)
+    {
+        var args = new QueryAccountArgs()
+        {
+            ActionType = ActionType.Account,
+            Target = name,
+        };
+        return await RequestApi<QueryAccountArgs, QueryAccount>(args);
+    }
+
     public async Task<BaseActionResponse> ReStartServer(Dictionary<string, string> startArgs)
     {
         var args = new ReStartServerArgs()

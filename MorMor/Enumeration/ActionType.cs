@@ -78,6 +78,13 @@ public enum ActionType
     /// </summary>
     ResetPassword,
 
-    //连接状态
-    ConnectStatus
+    /// <summary>
+    /// 连接状态
+    /// </summary>
+    ConnectStatus,
+
+    /// <summary>
+    /// 查询用户
+    /// </summary>
+    Account
 }

@@ -12,7 +12,7 @@ public class MusicQQ
         {
             { "word", name },
         };
-        var res = MomoAPI.Utils.Utils.HttpGet(Uri, param).Result;
+        var res = await MomoAPI.Utils.Utils.HttpGet(Uri, param);
         var data = JsonConvert.DeserializeObject<MusicList>(res);
         if (data != null && data.code == 200)
         {

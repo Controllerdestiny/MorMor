@@ -53,7 +53,7 @@ public class MusicTool
         sb.AppendLine("# 网易云音乐");
         for (int i = 0; i < list.Count; i++)
         {
-            sb.AppendLine($"## `{i + 1}`- {list[i].name} -- {string.Join(",", list[i].singers.Select(x => x.name))}");
+            sb.AppendLine($"## `{i + 1}`- {list[i].Name} -- {string.Join(",", list[i].Singers)}");
         }
         sb.AppendLine();
         sb.AppendLine($$"""</div>""");
@@ -67,7 +67,7 @@ public class MusicTool
         int i = 1;
         list.ForEach(x =>
         {
-            ret += $"[{i}].{x.name} -- {string.Join(",", x.singers.Select(x => x.name))}\n";
+            ret += $"[{i}].{x.Name} -- {string.Join(",", x.Singers)}\n";
             i++;
         });
         ret += "资源来自于网易音乐";
@@ -75,9 +75,9 @@ public class MusicTool
 
     }
 
-    public static async Task<List<_163.MusicInfo>> GetMusic163List(string musicName)
+    public static async Task<List<MomoAPI.Music._163.MusicData>> GetMusic163List(string musicName)
     {
-        return await _163.Music163.GetMusicList(musicName);
+        return await new MomoAPI.Music._163.Music_163().GetMusicListByName(musicName);
     }
 
     public static async Task<QQ.MusicData?> GetMusicQQ(string musicName, int index)
@@ -85,9 +85,9 @@ public class MusicTool
         return await QQ.MusicQQ.GetMusic(musicName, index);
     }
 
-    public static async Task<_163.MusicData?> GetMusic163(string musicName, int index)
+    public static async Task<MomoAPI.Music._163.MusicData?> GetMusic163(string musicName, int index)
     {
-        return await _163.Music163.GetMusic(musicName, index);
+        return await new MomoAPI.Music._163.Music_163().GetMusic(musicName, index);
     }
 
     public static void ChangeLocal(string local, long uin)

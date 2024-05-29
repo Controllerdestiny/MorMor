@@ -358,11 +358,11 @@ public class OneBotCommand
                             await args.EventArgs.Reply(
                             [
                                 MomoSegment.Music_163(
-                                music.jumpurl,
-                                music.url,
-                                music.picurl,
-                                music.name,
-                                string.Join(",",music.singers.Select(x => x.name)))
+                                music.JumpUrl,
+                                music.MusicUrl,
+                                music.Picture,
+                                music.Name,
+                                string.Join(",",music.Singers))
                             ]);
                         }
                         catch (Exception ex)
@@ -431,6 +431,7 @@ public class OneBotCommand
         }
         var commands = CommandManager.Hook.commands.Select(x => args.CommamdPrefix + x.Name.First()).ToList();
         Show(commands);
+        await Task.CompletedTask;
     }
     #endregion
 
@@ -497,6 +498,41 @@ public class OneBotCommand
         reloadArgs.Message.Add("沫沫配置文件重读成功!");
         await OperatHandler.Reload(reloadArgs);
         await args.EventArgs.Reply(reloadArgs.Message);
+    }
+    #endregion
+
+    #region Terraria账号信息
+    [CommandMatch("ui", OneBotPermissions.QueryUserList)]
+    private async Task UserInfo(CommandArgs args)
+    {
+        if (!MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) || server == null)
+        {
+            await args.EventArgs.Reply("服务器不存在或，未切换至一个服务器！", true);
+            return;
+        }
+        if (args.Parameters.Count == 1)
+        {
+            var userName = args.Parameters[0];
+            var info = await server.QueryAccount(userName);
+            var account = info.Accounts.Find(x => x.Name == userName);
+            if (!info.Status || account == null)
+            {
+                await args.EventArgs.Reply(info.Message, true);
+                return;
+            }
+
+            var sb = new StringBuilder($"查询`{userName}\n");
+            sb.AppendLine($"ID: {account.ID}");
+            sb.AppendLine($"Group: {account.Group}");
+            sb.AppendLine($"LastLogin: {account.LastLoginTime}");
+            sb.AppendLine($"Registered: {account.RegisterTime}");
+            await args.EventArgs.Reply(sb.ToString().Trim());
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误，正确语法:\n{args.CommamdPrefix}{args.Name} [名称]");
+            return;
+        }
     }
     #endregion
 
@@ -656,9 +692,16 @@ public class OneBotCommand
             await args.EventArgs.Reply($"同一个服务器上绑定账户不能超过{server.RegisterMaxCount}个", true);
             return;
         }
+        
         if (args.Parameters.Count == 1)
         {
             var userName = args.Parameters[0];
+            var account = await server.QueryAccount();
+            if (!account.Status || !account.Accounts.Any(x => x.Name == userName))
+            {
+                await args.EventArgs.Reply($"没有在服务器中找到{userName}账户，无法绑定!", true);
+                return;
+            }
             var token = Guid.NewGuid().ToString()[..8];
             CommandUtils.AddTempData(args.EventArgs.Group.Id, userName, token);
             MailHelper.SendMail($"{args.EventArgs.Sender.Id}@qq.com", "绑定账号验证码", $"您的验证码为: {token}");

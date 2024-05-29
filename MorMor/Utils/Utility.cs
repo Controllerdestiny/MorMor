@@ -1,4 +1,4 @@
-﻿using Markdig;
+using Markdig;
 using ProtoBuf.Meta;
 using PuppeteerSharp;
 using System.Diagnostics;
