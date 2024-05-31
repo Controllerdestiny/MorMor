@@ -86,6 +86,8 @@ public class MorMorAPI
         MappingPlugin.Initializer();
         //socket服务器启动
         await TShockWebSocketServer.StartService();
+
+        TerrariaMap.CreateMapFile.Instance.Init();
         //Socket信息适配器
         TShockWebSocketServer.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
         //群消息转发适配器

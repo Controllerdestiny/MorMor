@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.4" />
     <PackageReference Include="MySql.Data" Version="8.3.0" />
     <PackageReference Include="Octokit.Webhooks" Version="2.1.1" />
+    <PackageReference Include="OTAPI.Upcoming" Version="3.1.20" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <PackageReference Include="PuppeteerSharp" Version="17.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />

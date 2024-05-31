@@ -42,7 +42,7 @@ public static class Utils
             { "format", signtype },
             { "url", AudioUrl },
             { "jump", jumpUrl },
-            { "song", song.Replace(","," ")},
+            { "song", song },
             { "singer", singer },
             { "cover", imageUrl },
             //{ "p_skey", res.Pskey },
