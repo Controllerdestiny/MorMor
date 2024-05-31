@@ -70,8 +70,8 @@ jobs:
       - name: Update Nightly Release
         uses: ncipollo/release-action@v1
         with:
-          tag: V999
-          name: V999
+          tag: V9999
+          name: V9999
           prerelease: false
           body: '发布版本'
           artifacts: |
