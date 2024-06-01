@@ -29,7 +29,8 @@ public class DefaultGroup : Group
         OneBotPermissions.TerrariaShop,
         OneBotPermissions.TerrariaPrize,
         OneBotPermissions.ImageEmoji,
-        OneBotPermissions.SelfPassword
+        OneBotPermissions.SelfPassword,
+        OneBotPermissions.SearchItem
     ];
 
     public override void NegatePermission(string permission)

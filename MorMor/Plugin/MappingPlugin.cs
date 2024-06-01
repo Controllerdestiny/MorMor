@@ -1,4 +1,5 @@
 ﻿using MomoAPI.Utils;
+using MorMor.TShock.ChatCommand;
 using System.Reflection;
 
 namespace MorMor.Plugin;
@@ -31,7 +32,7 @@ internal class MappingPlugin
 
         });
         Assemblies.ForEach(Commands.CommandManager.Hook.MappingCommands);
-        Assemblies.ForEach(Terraria.ChatCommand.ChatCommandMananger.Hook.MappingCommands);
+        Assemblies.ForEach(ChatCommandMananger.Hook.MappingCommands);
     }
 
     private static void GetAssmblyInstance(Assembly assembly)

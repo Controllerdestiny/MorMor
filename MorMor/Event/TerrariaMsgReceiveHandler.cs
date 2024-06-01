@@ -8,13 +8,13 @@ using MorMor.Model.Socket.Action.Receive;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
 using MorMor.Net;
-using MorMor.Terraria;
-using MorMor.Terraria.ChatCommand;
+using MorMor.TShock.Server;
+using MorMor.TShock.ChatCommand;
+using MorMor.TShock.Map;
 using ProtoBuf;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
-using TerrariaMap;
 
 namespace MorMor.Event;
 
@@ -242,6 +242,7 @@ public class TerrariaMsgReceiveHandler
                             var info = CreateMapFile.Instance.Start(buffer);
                             await args.Reply(new MomoAPI.Entities.MessageBody().File("base64://" + Convert.ToBase64String(info.Buffer), info.Name));
                             CreateMapFile.Instance.Dispose();
+                            Utils.Utility.FreeMemory();
                         }
                             
                     }

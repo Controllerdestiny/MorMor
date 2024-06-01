@@ -3,7 +3,7 @@ using MorMor.Utils;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 
-namespace MorMor.Terraria.Picture;
+namespace MorMor.TShock.Picture;
 
 internal class DrawInventory
 {
@@ -33,11 +33,11 @@ internal class DrawInventory
         ImageUtils.DrawSlot(image, slot, data.inventory, obj.inventoryX, obj.inventoryY, obj.slotSize);
         ImageUtils.DrawText(image, "背包物品", (obj.slotSize * 10 + obj.slotinterval * 9) / 2, obj.inventoryY - obj.slotSize - 50, 100, Color.Wheat);
         ImageUtils.DrawSlot(image, slot, data.inventory.Skip(50).ToArray(), obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9 + obj.inventoryAmmo, obj.inventoryY, darwCount: 8, maxLineCount: 4, erect: true);
-        ImageUtils.DrawText(image, "猪猪储钱罐", (image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9) + (obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9) / 4, obj.inventoryY - obj.slotSize - 50, 100, Color.Wheat);
+        ImageUtils.DrawText(image, "猪猪储钱罐", image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9 + (obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9) / 4, obj.inventoryY - obj.slotSize - 50, 100, Color.Wheat);
         ImageUtils.DrawSlot(image, slot, data.Piggiy, image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9, obj.inventoryY, darwCount: 40);
-        ImageUtils.DrawText(image, "保险箱", (image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9) + (obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9) / 4, obj.inventoryY + 4 * obj.slotSize + 4 * obj.slotinterval + obj.interval - obj.slotSize - 50, 100, Color.Wheat);
+        ImageUtils.DrawText(image, "保险箱", image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9 + (obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9) / 4, obj.inventoryY + 4 * obj.slotSize + 4 * obj.slotinterval + obj.interval - obj.slotSize - 50, 100, Color.Wheat);
         ImageUtils.DrawSlot(image, slot, data.safe, image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9, obj.inventoryY + 4 * obj.slotSize + 4 * obj.slotinterval + obj.interval, darwCount: 40);
-        ImageUtils.DrawText(image, "虚空宝库", (image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9) + (obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9) / 4, obj.inventoryY + 2 * (4 * obj.slotSize + 4 * obj.slotinterval + obj.interval) - obj.slotSize - 50, 100, Color.Wheat);
+        ImageUtils.DrawText(image, "虚空宝库", image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9 + (obj.inventoryX + obj.slotSize * 10 + obj.slotinterval * 9) / 4, obj.inventoryY + 2 * (4 * obj.slotSize + 4 * obj.slotinterval + obj.interval) - obj.slotSize - 50, 100, Color.Wheat);
         ImageUtils.DrawSlot(image, slot, data.VoidVault, image.Width - obj.inventoryX - obj.slotSize * 10 - obj.slotinterval * 9, obj.inventoryY + 2 * (4 * obj.slotSize + 4 * obj.slotinterval + obj.interval), darwCount: 40);
         ImageUtils.DrawText(image, "护卫熔炉", obj.inventoryX + obj.slotSize * 12 + obj.slotinterval * 11 + obj.inventoryAmmo + 90 + 400, obj.inventoryY + 2 * (4 * obj.slotSize + 4 * obj.slotinterval + obj.interval) - obj.slotSize - 50, 100, Color.Wheat);
         ImageUtils.DrawSlot(image, slot, data.Forge, obj.inventoryX + obj.slotSize * 12 + obj.slotinterval * 11 + obj.inventoryAmmo + 90, obj.inventoryY + 2 * (4 * obj.slotSize + 4 * obj.slotinterval + obj.interval), darwCount: 40);

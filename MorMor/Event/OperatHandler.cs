@@ -2,7 +2,7 @@
 using MorMor.DB.Manager;
 using MorMor.Enumeration;
 using MorMor.EventArgs;
-using MorMor.Terraria.ChatCommand;
+using MorMor.TShock.ChatCommand;
 
 namespace MorMor.Event;
 

@@ -5,7 +5,7 @@ using MorMor.Model.Socket.PlayerMessage;
 using System.Drawing;
 using System.Reflection;
 
-namespace MorMor.Terraria.ChatCommand;
+namespace MorMor.TShock.ChatCommand;
 
 internal class ChatCommandMananger
 {

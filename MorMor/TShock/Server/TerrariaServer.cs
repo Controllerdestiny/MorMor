@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
-namespace MorMor.Terraria;
+namespace MorMor.TShock.Server;
 
 public class TerrariaServer
 {
@@ -242,6 +242,16 @@ public class TerrariaServer
         };
         return await RequestApi<ReStartServerArgs, BaseActionResponse>(args);
     }
+
+    public async Task<PlayerStrikeBoss> GetStrikeBoss()
+    {
+        var args = new BaseAction()
+        {
+            ActionType = ActionType.PlayerStrikeBoss,
+        };
+        return await RequestApi<BaseAction, PlayerStrikeBoss>(args);
+    }
+
 
     public string SpawnStartArgs(Dictionary<string, string> startArgs)
     {

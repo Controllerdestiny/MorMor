@@ -3,25 +3,27 @@ using System.IO.Compression;
 using Terraria;
 using Terraria.IO;
 using Terraria.ID;
-using System.ComponentModel;
 
-namespace TerrariaMap;
+namespace MorMor.TShock.Map;
 
 internal class CreateMapFile
 {
     public static readonly CreateMapFile Instance = new();
 
     public bool Status { get; private set; } = false;
+
     private WorldMap WorldMap { get; set; }
 
     private CreateMapFile()
-    { 
-    
+    {
+
     }
 
     public void Init()
     {
+
         Terraria.Program.SavePath = Platform.Get<IPathService>().GetStoragePath("Terraria");
+        Terraria.Localization.LanguageManager.Instance.SetLanguage(7);
         Main.dedServ = true;
         using Main main = new();
         Lang.InitializeLegacyLocalization();
@@ -31,6 +33,7 @@ internal class CreateMapFile
         Terraria.Map.MapHelper.Initialize();
         Main.MapFileMetadata = FileMetadata.FromCurrentSettings(FileType.Map);
     }
+
     public MapInfo Start(byte[] buffer)
     {
         Status = true;
@@ -55,7 +58,7 @@ internal class CreateMapFile
 
     public MapInfo InternalSaveMap()
     {
-        string text = !Main.ActiveWorldFileData.UseGuidAsMapName ? (Main.worldID + ".map") : Main.ActiveWorldFileData.UniqueId.ToString() + ".map";
+        string text = !Main.ActiveWorldFileData.UseGuidAsMapName ? Main.worldID + ".map" : Main.ActiveWorldFileData.UniqueId.ToString() + ".map";
         using (MemoryStream memoryStream = new MemoryStream(4000))
         {
             using BinaryWriter binaryWriter = new BinaryWriter(memoryStream);
@@ -137,7 +140,7 @@ internal class CreateMapFile
             {
                 if (!Terraria.Map.MapHelper.noStatusText)
                 {
-                    float num2 = (float)j / (float)Main.maxTilesY;
+                    float num2 = j / (float)Main.maxTilesY;
                     //Main.statusText = Lang.gen[66].Value + " " + (int)(num2 * 100f + 1f) + "%";
                 }
 
@@ -147,7 +150,7 @@ internal class CreateMapFile
                     Terraria.Map.MapTile mapTile = WorldMap[num3, j];
                     byte b4;
                     byte b3;
-                    byte b5 = (b4 = (b3 = 0));
+                    byte b5 = b4 = b3 = 0;
                     int num4 = 0;
                     bool flag = true;
                     bool flag2 = true;
@@ -207,7 +210,7 @@ internal class CreateMapFile
                         else if (num8 < Terraria.Map.MapHelper.hellPosition)
                         {
                             num7 = 7;
-                            num8 = ((num8 >= Terraria.Map.MapHelper.rockPosition) ? ((ushort)(num8 - Terraria.Map.MapHelper.rockPosition)) : ((ushort)(num8 - Terraria.Map.MapHelper.dirtPosition)));
+                            num8 = num8 >= Terraria.Map.MapHelper.rockPosition ? (ushort)(num8 - Terraria.Map.MapHelper.rockPosition) : (ushort)(num8 - Terraria.Map.MapHelper.dirtPosition);
                         }
                         else
                         {
@@ -274,7 +277,7 @@ internal class CreateMapFile
                         b5 = (byte)(b5 | 0x20u);
 
                     if (num4 > 0)
-                        b5 = ((num4 <= 255) ? ((byte)(b5 | 0x40u)) : ((byte)(b5 | 0x80u)));
+                        b5 = num4 <= 255 ? (byte)(b5 | 0x40u) : (byte)(b5 | 0x80u);
 
                     array[num] = b5;
                     num++;

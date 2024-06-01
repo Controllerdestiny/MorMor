@@ -3,7 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 
-namespace MorMor.Terraria.Picture;
+namespace MorMor.TShock.Picture;
 
 public class ProgressImage
 {

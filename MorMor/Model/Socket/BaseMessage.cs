@@ -2,7 +2,7 @@
 using MorMor.Model.Socket.Action;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
-using MorMor.Terraria;
+using MorMor.TShock.Server;
 using Newtonsoft.Json;
 using ProtoBuf;
 

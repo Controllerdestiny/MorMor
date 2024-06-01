@@ -1,4 +1,4 @@
-﻿using MorMor.Terraria;
+﻿using MorMor.TShock.Server;
 using Newtonsoft.Json;
 
 namespace MorMor.Configuration;

@@ -2,7 +2,7 @@
 using MorMor.Permission;
 using System.Drawing;
 
-namespace MorMor.Terraria.ChatCommand;
+namespace MorMor.TShock.ChatCommand;
 
 [CommandSeries]
 public class ChatServerCommand

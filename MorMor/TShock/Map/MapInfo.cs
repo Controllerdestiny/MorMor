@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TerrariaMap;
+namespace MorMor.TShock.Map;
 
 public class MapInfo
 {

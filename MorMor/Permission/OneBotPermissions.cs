@@ -5,11 +5,17 @@ internal class OneBotPermissions
 {
     public const string ImageEmoji = "onebot.emoji.image";
 
+    public const string SearchItem = "onebot.item.search";
+
     public const string SetConfig = "onebot.terraria.config";
 
     public const string TerrariaPrize = "onebot.terraria.prize";
 
     public const string TerrariaShop = "onebot.terraria.shop";
+
+    public const string TerrariaShopAdmin = "onebot.terraria.shopadmin";
+
+    public const string TerrariaPrizeAdmin = "onebot.terraria.prizeadmin";
 
     public const string EmojiLike = "onebot.emoji.like";
 
@@ -58,6 +64,8 @@ internal class OneBotPermissions
     public const string GenerateMap = "onebot.tshock.map";
 
     public const string ExecuteCommand = "onebot.tshock.command";
+
+    public const string KillRank = "onebot.tshock.killrank";
 
     public const string DeathRank = "onebot.tshock.deathrank";
 

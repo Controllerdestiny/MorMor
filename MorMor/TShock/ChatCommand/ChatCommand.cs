@@ -1,4 +1,4 @@
-﻿namespace MorMor.Terraria.ChatCommand;
+﻿namespace MorMor.TShock.ChatCommand;
 
 public class ChatCommand
 {

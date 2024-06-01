@@ -1,34 +1,98 @@
-using Markdig;
-using ProtoBuf.Meta;
-using PuppeteerSharp;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
+using Terraria;
+
 namespace MorMor.Utils;
 
 public class Utility
 {
-    private static IBrowser? browser = null;
-
-    private static IPage? Page = null;
-
-    private static IElementHandle? App;
-
-    public static T ReadProtobufItem<T>(MemoryStream stream)
+    
+    public static Item GetItemById(int id)
     {
-        stream.Seek(0, SeekOrigin.Begin);
-        var mode = RuntimeTypeModel.Create();
-        mode.Add(typeof(T), true);
-        return mode.Deserialize<T>(stream);
+        var item = new Item();
+        item.netDefaults(id);
+        return item;
     }
 
-    private static Dictionary<string, string> ReplaceDic = new()
+    
+    public static List<Item> GetItemByIdOrName(string text)
+	{
+		int type = -1;
+		if (Int32.TryParse(text, out type))
+		{
+			if (type >= Terraria.ID.ItemID.Count)
+				return new List<Item>();
+			return new List<Item> { GetItemById(type) };
+		}
+		Item item = GetItemFromTag(text);
+		if (item != null)
+			return new List<Item>() { item };
+		return GetItemByName(text);
+	}
+		
+	public static Item GetItemFromTag(string tag)
+	{
+		Regex regex = new Regex(@"\[i(tem)?(?:\/s(?<Stack>\d{1,4}))?(?:\/p(?<Prefix>\d{1,3}))?:(?<NetID>-?\d{1,4})\]");
+		Match match = regex.Match(tag);
+		if (!match.Success)
+			return null;
+		Item item = new Item();
+		item.netDefaults(Int32.Parse(match.Groups["NetID"].Value));
+		if (!String.IsNullOrWhiteSpace(match.Groups["Stack"].Value))
+			item.stack = Int32.Parse(match.Groups["Stack"].Value);
+		if (!String.IsNullOrWhiteSpace(match.Groups["Prefix"].Value))
+			item.prefix = Byte.Parse(match.Groups["Prefix"].Value);
+		return item;
+	}
+    
+    public static List<Item> GetItemByName(string name)
+	{
+		var startswith = new List<int>();
+		var contains = new List<int>();
+		for (int i = 1; i < Terraria.ID.ItemID.Count; i++)
+		{
+			var currentName = Lang.GetItemNameValue(i);
+			if (!string.IsNullOrEmpty(currentName))
+			{
+				if (currentName.Equals(name, StringComparison.InvariantCultureIgnoreCase))
+					return new List<Item> { GetItemById(i) };
+				if (currentName.StartsWith(name, StringComparison.InvariantCultureIgnoreCase))
+				{
+					startswith.Add(i);
+					continue;
+				}
+				if (currentName.Contains(name, StringComparison.InvariantCultureIgnoreCase))
+				{
+					contains.Add(i);
+					continue;
+				}
+			}
+		}
+
+		if (startswith.Count != 1)
+			startswith.AddRange(contains);
+		return startswith.Select(GetItemById).ToList();
+	}
+
+    [DllImport("psapi.dll")]
+    private static extern bool EmptyWorkingSet(IntPtr lpAddress);
+
+    public static void FreeMemory()
     {
-        { "\n", "\\n" },
-        { "\r\n", "\\n" },
-        { "\r", "\\n" },
-        { "'", "\\'" }
-    };
-
-
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        foreach (var process in Process.GetProcesses())
+        {
+            if ((process.ProcessName == "System") && (process.ProcessName == "Idle"))
+                continue;
+            try
+            {
+                EmptyWorkingSet(process.Handle);
+            }
+            catch { }
+        }
+    }
 
     public static void KillChrome()
     {
@@ -40,76 +104,9 @@ public class Utility
             }
         }
     }
-    public static async Task<Stream> Markdown(string md)
-    {
-        if (browser == null || !browser.IsConnected || browser.IsClosed || browser.Process.HasExited)
-        {
-            await new BrowserFetcher().DownloadAsync();
-            browser = await Puppeteer.LaunchAsync(new LaunchOptions()
-            {
-                Headless = true,
-            });
-        }
-        if (Page == null || Page.IsClosed || Page.Browser.Process.HasExited)
-        {
-            Page = await browser.NewPageAsync();
-            await Page.GoToAsync($"http://docs.oiapi.net/view.php?theme=light", 5000).ConfigureAwait(false);
-            App = await Page.QuerySelectorAsync("body").ConfigureAwait(false);
-        }
-        await Page.WaitForNetworkIdleAsync(new()
-        {
-            Timeout = 5000
-        });
-        var guid = Guid.NewGuid().ToString();
-        var option = new MarkdownPipelineBuilder()
-            .UseAdvancedExtensions()
-            .UseAlertBlocks()
-            .UsePipeTables()
-            .UseEmphasisExtras()
-            .UseListExtras()
-            .UseSoftlineBreakAsHardlineBreak()
-            .UseFootnotes()
-            .UseFooters()
-            .UseCitations()
-            .UseGenericAttributes()
-            .UseGridTables()
-            .UseAbbreviations()
-            .UseEmojiAndSmiley()
-            .UseDefinitionLists()
-            .UseCustomContainers()
-            .UseFigures()
-            .UseMathematics()
-            .UseBootstrap()
-            .UseMediaLinks()
-            .UseSmartyPants()
-            .UseAutoIdentifiers()
-            .UseTaskLists()
-            .UseDiagrams()
-            .UseYamlFrontMatter()
-            .UseNonAsciiNoEscape()
-            .UseAutoLinks()
-            .UseGlobalization()
-            .Build();
-        var postData = Markdig.Markdown.ToHtml(md, option);
-        foreach (var (oldChar, newChar) in ReplaceDic)
-        {
-            postData = postData.Replace(oldChar, newChar);
-        }
 
-        await Page.EvaluateExpressionAsync($"document.querySelector('#app').innerHTML = '{postData.Trim()}'");
-        await App!.EvaluateFunctionAsync("element => element.style.width = 'fit-content'");
-        var clip = await App!.BoundingBoxAsync().ConfigureAwait(false);
-        var ret = await Page.ScreenshotStreamAsync(new()
-        {
-            Clip = new()
-            {
-                Width = clip!.Width,
-                Height = clip.Height,
-                X = clip.X,
-                Y = clip.Y
-            },
-            Type = ScreenshotType.Png,
-        });
-        return ret;
-    }
+	public static async Task<Stream> Markdown(string md)
+	{ 
+		return await MarkdownHelper.ToImage(md);
+	}
 }

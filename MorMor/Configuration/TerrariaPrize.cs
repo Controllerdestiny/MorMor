@@ -28,6 +28,13 @@ public class TerrariaPrize
         return Pool[random.Next(0, Pool.Count - 1)];
     }
 
+    public Prize? GetPrize(int id)
+    {
+        if (id > 0 && id <= Pool.Count)
+            return Pool[id - 1];
+        return null;
+    }
+
     public List<Prize> Nexts(int count)
     {
         var res = new List<Prize>();
@@ -57,6 +64,12 @@ public class TerrariaPrize
     public bool Remove(string name)
     {
         return Pool.RemoveAll(x => x.Name == name) > 0;
+
+    }
+
+    public bool Remove(Prize prize)
+    {
+        return Pool.Remove(prize);
 
     }
 }

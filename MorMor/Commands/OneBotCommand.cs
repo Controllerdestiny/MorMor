@@ -10,12 +10,13 @@ using MorMor.Exceptions;
 using MorMor.Extensions;
 using MorMor.Music;
 using MorMor.Permission;
-using MorMor.Terraria.Picture;
 using MorMor.Utils;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using MorMor.TShock.Picture;
+using Terraria;
 
 namespace MorMor.Commands;
 
@@ -181,6 +182,115 @@ public class OneBotCommand
             id++;
         }
         await args.EventArgs.Reply(new MessageBody().MarkdownImage(sb.ToString()));
+    }
+    #endregion
+
+    #region 泰拉奖池管理
+    [CommandMatch("prize", OneBotPermissions.TerrariaPrizeAdmin)]
+    private async Task PrizeManager(CommandArgs args)
+    {
+        if (args.Parameters.Count == 5 && args.Parameters[0].ToLower() == "add")
+        {
+            if (!int.TryParse(args.Parameters[1], out int id) || id > Terraria.ID.ItemID.Count || id < 1)
+            {
+                await args.EventArgs.Reply("请输入一个正确的物品ID", true);
+                return;
+            }
+            if (!int.TryParse(args.Parameters[2], out int max) || max < 0)
+            {
+                await args.EventArgs.Reply("请输入一个正确最大数", true);
+                return;
+            }
+            if (!int.TryParse(args.Parameters[3], out int min) || min < 0)
+            {
+                await args.EventArgs.Reply("请输入一个正确最小数", true);
+                return;
+            }
+            if (!int.TryParse(args.Parameters[4], out int rate) || rate < 0)
+            {
+                await args.EventArgs.Reply("请输入一个正确概率", true);
+                return;
+            }
+            var item = Utility.GetItemById(id);
+            MorMorAPI.TerrariaPrize.Add(item.Name, id, rate, max, min);
+            await args.EventArgs.Reply("添加成功", true);
+            MorMorAPI.ConfigSave();
+        }
+        else if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "del")
+        {
+            if (!int.TryParse(args.Parameters[1], out int index))
+            {
+                await args.EventArgs.Reply("请输入一个正确序号", true);
+                return;
+            }
+            var prize = MorMorAPI.TerrariaPrize.GetPrize(index);
+            if (prize == null)
+            {
+                await args.EventArgs.Reply("该奖品不存在!", true);
+                return;
+            }
+            MorMorAPI.TerrariaPrize.Remove(prize);
+            await args.EventArgs.Reply("删除成功", true);
+            MorMorAPI.ConfigSave();
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n" +
+                $"{args.CommamdPrefix}{args.Name} add [物品id] [最大数] [最小数] [概率]\n" +
+                $"{args.CommamdPrefix}{args.Name} del [奖品序号]");
+        }
+    }
+    #endregion
+
+    #region 泰拉商店管理
+    [CommandMatch("shop", OneBotPermissions.TerrariaShopAdmin)]
+    private async Task ShopManager(CommandArgs args)
+    {
+        if (args.Parameters.Count == 4 && args.Parameters[0].ToLower() == "add")
+        {
+            if (!int.TryParse(args.Parameters[1], out int id) || id > Terraria.ID.ItemID.Count || id < 1)
+            {
+                await args.EventArgs.Reply("请输入一个正确的物品ID", true);
+                return;
+            }
+            if (!int.TryParse(args.Parameters[2], out int cost) || cost < 0)
+            {
+                await args.EventArgs.Reply("请输入一个正确价格", true);
+                return;
+            }
+            if (!int.TryParse(args.Parameters[3], out int num) || num < 0)
+            {
+                await args.EventArgs.Reply("请输入一个正确数量", true);
+                return;
+            }
+            var item = Utility.GetItemById(id);
+            MorMorAPI.TerrariaShop.TrShop.Add(new Model.Terraria.Shop(item.Name, id, cost, num));
+            await args.EventArgs.Reply("添加成功", true);
+            MorMorAPI.ConfigSave();
+        }
+        else if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "del")
+        {
+            if (!int.TryParse(args.Parameters[1], out int index))
+            {
+                await args.EventArgs.Reply("请输入一个正确序号", true);
+                return;
+            }
+            var shop = MorMorAPI.TerrariaShop.GetShop(index);
+            if (shop == null)
+            {
+                await args.EventArgs.Reply("该商品不存在!", true);
+                return;
+            }
+            MorMorAPI.TerrariaShop.TrShop.Remove(shop);
+            await args.EventArgs.Reply("删除成功", true);
+            MorMorAPI.ConfigSave();
+        }
+        else
+        {
+            await args.EventArgs.Reply($"语法错误,正确语法:\n" +
+                $"{args.CommamdPrefix}{args.Name} add [物品id] [价格] [数量]\n" +
+                $"{args.CommamdPrefix}{args.Name} del [商品序号]");
+        }
     }
     #endregion
 
@@ -391,11 +501,16 @@ public class OneBotCommand
     }
     #endregion
 
-    #region 内部自用获取Cookie
-    [CommandMatch("test", OneBotPermissions.Account)]
+    #region 搜索物品
+    [CommandMatch("sitem", OneBotPermissions.SearchItem)]
     private async Task Test(CommandArgs args)
     {
-        await args.EventArgs.Reply(args.EventArgs.MessageContext.Messages);
+        if (args.Parameters.Count > 0)
+        { 
+            var items = Utility.GetItemByIdOrName(args.Parameters[0]);
+            await args.EventArgs.Reply(items.Count == 0 ? "未查询到指定物品" : $"查询结果:\n{string.Join(",", items.Select(x => $"{x.Name}({x.netID})"))}");
+        }
+        
     }
     #endregion
 
@@ -404,7 +519,7 @@ public class OneBotCommand
     private async Task VersionInfo(CommandArgs args)
     {
         var info = "名称: MorMor" +
-            "\n版本: V2.0.1.7" +
+            "\n版本: V2.0.1.8" +
             $"\n运行时长: {DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime:dd\\.hh\\:mm\\:ss}" +
             "\nMorMor是基于LLOneBot开发的 .NET平台机器人，主要功能为群管理以及TShock服务器管理" +
             "\n开源地址: https://github.com/Controllerdestiny/MorMor";
@@ -1709,6 +1824,47 @@ public class OneBotCommand
                 body.Add("无法连接到服务器！");
             }
             await args.EventArgs.Reply(body);
+        }
+        else
+        {
+            await args.EventArgs.Reply("未切换服务器或服务器无效!", true);
+        }
+    }
+    #endregion
+
+    #region 击杀排行
+    [CommandMatch("击杀排行", OneBotPermissions.KillRank)]
+    private async Task KillRank(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+        {
+            var data = await server.GetStrikeBoss();
+            if (data.Damages != null)
+            {
+                var sb = new StringBuilder();
+                foreach (var damage in data.Damages.OrderByDescending(x => x.KillTime))
+                {
+                    sb.AppendLine($"Boss: {damage.Name}");
+                    sb.AppendLine($"总血量: {damage.MaxLife}");
+                    sb.AppendLine($"更新时间: {damage.KillTime.ToString("yyyy-MM-dd HH:mm:ss")}");
+                    sb.AppendLine($"状态: {(damage.IsAlive ? "未被击杀" : "已被击杀")}");
+                    if (!damage.IsAlive)
+                    {
+                        sb.AppendLine($"击杀用时: {(damage.KillTime - damage.SpawnTime).TotalSeconds}秒");
+                        sb.AppendLine($"丢失伤害: {damage.MaxLife - damage.Strikes.Sum(x => x.Damage)}");
+                    }  
+                    foreach (var strike in damage.Strikes.OrderByDescending(x=>x.Damage))
+                    {
+                        sb.AppendLine($"{strike.Player}伤害 {(Convert.ToSingle(strike.Damage) / damage.MaxLife) * 100 :F0}%({strike.Damage})");
+                    }
+                    sb.AppendLine();
+                }
+                await args.EventArgs.Reply(sb.ToString().Trim());
+            }
+            else
+            {
+                await args.EventArgs.Reply("暂无击杀数据可以统计!", true);
+            }
         }
         else
         {

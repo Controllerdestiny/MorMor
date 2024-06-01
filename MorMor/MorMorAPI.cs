@@ -8,6 +8,7 @@ using MorMor.Event;
 using MorMor.Log;
 using MorMor.Net;
 using MorMor.Plugin;
+using MorMor.TShock.Map;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -86,14 +87,13 @@ public class MorMorAPI
         MappingPlugin.Initializer();
         //socket服务器启动
         await TShockWebSocketServer.StartService();
-
-        TerrariaMap.CreateMapFile.Instance.Init();
         //Socket信息适配器
         TShockWebSocketServer.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
         //群消息转发适配器
         Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
+        CreateMapFile.Instance.Init();
 
     }
 
