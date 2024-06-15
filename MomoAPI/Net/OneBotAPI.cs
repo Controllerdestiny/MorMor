@@ -194,6 +194,16 @@ public class OneBotAPI
         return await ApiAdapter.GetImage(file);
     }
 
+    public async Task<(ApiStatus, List<PeerInfo>)> GetGroupFileList(long groupid)
+    {
+        return await ApiAdapter.GetGroupFileList(groupid);
+    }
+
+    public async Task<ApiStatus> DelGroupFile(long groupid, string fileid)
+    {
+        return await ApiAdapter.DelGroupFile(groupid, fileid);
+    }
+
     public async Task<(ApiStatus, string)> GetRecord(string file, RecordType type = RecordType.Mp3)
     {
         return await ApiAdapter.GetRecord(file, type);

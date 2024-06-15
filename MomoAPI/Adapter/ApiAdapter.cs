@@ -486,7 +486,7 @@ internal class ApiAdapter
                 file_id = fileid
             }
         });
-        return (status, data["data"]?.ToObject<Entities.Info.FileInfo>() ?? new());
+        return (status, data?["data"]?.ToObject<Entities.Info.FileInfo>() ?? new());
     }
 
     public static async Task<ApiStatus> EmojiLike(long msgId, string emojiid)
@@ -552,6 +552,35 @@ internal class ApiAdapter
             ApiParams = new
             {
                 group_id = groupid
+            }
+        });
+        return status;
+    }
+
+    public static async Task<(ApiStatus, List<PeerInfo>)> GetGroupFileList(long groupid)
+    {
+        var (status, obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.GetGroupFileList,
+            ApiParams = new
+            {
+                group_id = groupid,
+                start_index = 0,
+                file_count = 999
+            }
+        });
+        return (status, obj?["data"]?["FileList"]?.ToObject<List<PeerInfo>>() ?? new List<PeerInfo>());
+    }
+
+    public static async Task<ApiStatus> DelGroupFile(long groupid, string fileid)
+    {
+        var (status, obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        {
+            ApiRequestType = ActionType.DelGrpupFile,
+            ApiParams = new
+            {
+                group_id = groupid,
+                file_id = fileid
             }
         });
         return status;

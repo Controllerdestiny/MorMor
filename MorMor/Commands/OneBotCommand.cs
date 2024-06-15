@@ -17,6 +17,7 @@ using System.Text.RegularExpressions;
 using System.Web;
 using MorMor.TShock.Picture;
 using Terraria;
+using System.Diagnostics;
 
 namespace MorMor.Commands;
 
@@ -450,7 +451,7 @@ public class OneBotCommand
                             await args.EventArgs.Reply(
                             [
 
-                                MomoSegment.Music_QQ(music.link,music.url,music.cover,music.song,music.singer)
+                                MomoSegment.Music_QQ(music.url,music.music,music.picture,music.song,music.singer)
                             ]);
                         }
                         catch (Exception ex)
@@ -501,9 +502,40 @@ public class OneBotCommand
     }
     #endregion
 
+    #region 清理内存
+    [CommandMatch("清理内存", OneBotPermissions.ClearMemory)]
+    private async Task Memory(CommandArgs args)
+    {
+        var old = Utility.GetUsedPhys();
+        Utility.FreeMemory();
+        var curr = old - Utility.GetUsedPhys();
+        await args.EventArgs.Reply($"已释放内存:{Utility.FormatSize(curr)}");
+    }
+    #endregion
+
+    #region 测试指令
+    [CommandMatch("删除文件", OneBotPermissions.ChangeServer)]
+    private async Task Test(CommandArgs args)
+    {
+        var (status, list) = await args.EventArgs.OneBotAPI.GetGroupFileList(args.EventArgs.Group.Id);
+        var count = 0;
+        var tasks = new List<Task>();
+        foreach (var file in list)
+        {
+            if (file.FileInfo != null && file.FileInfo.Value.UploaderUin == args.EventArgs.OneBotAPI.BotId.ToString())
+            {
+                tasks.Add(args.EventArgs.OneBotAPI.DelGroupFile(args.EventArgs.Group.Id, file.FileInfo.Value.FileId));
+                count++;
+            }
+        }
+        await Task.WhenAll(tasks);
+        await args.EventArgs.Reply($"删除了{count}个文件");
+    }
+    #endregion
+
     #region 搜索物品
     [CommandMatch("sitem", OneBotPermissions.SearchItem)]
-    private async Task Test(CommandArgs args)
+    private async Task SearchItem(CommandArgs args)
     {
         if (args.Parameters.Count > 0)
         { 

@@ -23,6 +23,8 @@ internal class OneBotPermissions
 
     public const string Sign = "onebot.sign";
 
+    public const string ClearMemory = "onebot.memory.clear";
+
     public const string Jrrp = "onebot.join";
 
     public const string Reload = "onebot.reload";

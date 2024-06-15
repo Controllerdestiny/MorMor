@@ -25,7 +25,6 @@ internal class MomoWebSocket : IMomoService
         {
             if (!string.IsNullOrEmpty(msg.Text))
             {
-                //await Console.Out.WriteLineAsync(msg.Text);
                 await Event.Adapter(JObject.Parse(msg.Text));
             }
         }));

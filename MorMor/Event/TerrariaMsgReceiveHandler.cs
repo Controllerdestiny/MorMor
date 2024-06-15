@@ -54,7 +54,7 @@ public class TerrariaMsgReceiveHandler
     {
         var data = Serializer.Deserialize<PlayerChatMessage>(args.Stream);
         OnPlayerChat?.Invoke(data);
-        if (!data.Handler && data.TerrariaServer != null)
+        if (!data.Handler && data.TerrariaServer != null && !data.Mute)
         {
             if (data.Text.Length >= data.TerrariaServer.MsgMaxLength)
                 return;
@@ -226,48 +226,50 @@ public class TerrariaMsgReceiveHandler
         {
             try
             {
-                var (status, fileinfo) = await args.OneBotAPI.GetFile(args.MessageContext.GetFileId());
-                var buffer = Convert.FromBase64String(fileinfo.Base64);
-                if (TerrariaServer.IsReWorld(buffer))
+                var fileid = args.MessageContext.GetFileId();
+                if (fileid != null)
                 {
-                    try
+                    var (status, fileinfo) = await args.OneBotAPI.GetFile(fileid);
+                    var buffer = Convert.FromBase64String(fileinfo.Base64);
+                    if (TerrariaServer.IsReWorld(buffer))
                     {
-                        if (CreateMapFile.Instance.Status)
+                        try
                         {
-                            await args.Reply("正在处理另一张地图，请稍等片刻...");
+                            if (CreateMapFile.Instance.Status)
+                            {
+                                await args.Reply("正在处理另一张地图，请稍等片刻...");
+                            }
+                            else
+                            {
+                                await args.Reply("检测到Terraria 地图文件，正常尝试生成Map文件...");
+                                var info = CreateMapFile.Instance.Start(buffer);
+                                await args.Reply(new MomoAPI.Entities.MessageBody().File("base64://" + Convert.ToBase64String(info.Buffer), info.Name));
+                                CreateMapFile.Instance.Dispose();
+                                Utils.Utility.FreeMemory();
+                            }
+
                         }
-                        else
-                        { 
-                            await args.Reply("检测到Terraria 地图文件，正常尝试生成Map文件...");
-                            var info = CreateMapFile.Instance.Start(buffer);
-                            await args.Reply(new MomoAPI.Entities.MessageBody().File("base64://" + Convert.ToBase64String(info.Buffer), info.Name));
-                            CreateMapFile.Instance.Dispose();
-                            Utils.Utility.FreeMemory();
+                        catch (Exception ex)
+                        {
+                            await args.Reply(ex.Message);
                         }
-                            
-                    }
-                    catch (Exception ex)
-                    {
-                        await args.Reply(ex.Message);
                     }
 
-                }
-
-                foreach (var server in MorMorAPI.Setting.Servers)
-                {
-                    if (server != null && server.WaitFile != null)
+                    foreach (var server in MorMorAPI.Setting.Servers)
                     {
-                        if (server.Groups.Contains(args.Group.Id))
+                        if (server != null && server.WaitFile != null)
                         {
-                            server.WaitFile.TrySetResult(buffer);
+                            if (server.Groups.Contains(args.Group.Id))
+                            {
+                                server.WaitFile.TrySetResult(buffer);
+                            }
                         }
                     }
                 }
-               
             }
             catch (Exception e)
             {
-                await Console.Out.WriteLineAsync(e.ToString());
+                await args.Reply("[GetFile] Error" + e.Message);
             }
 
         }

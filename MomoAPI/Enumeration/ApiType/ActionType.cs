@@ -238,6 +238,18 @@ public enum ActionType
     #endregion
 
     #region 目前支持的CQHTPP API
+
+    /// <summary>
+    /// 获取文件列表
+    /// </summary>
+    [Description("get_group_file_list")]
+    GetGroupFileList,
+
+    /// <summary>
+    /// 删除文件
+    /// </summary>
+    [Description("del_group_file")]
+    DelGrpupFile,
     /// <summary>
     /// 私聊合并消息
     /// </summary>

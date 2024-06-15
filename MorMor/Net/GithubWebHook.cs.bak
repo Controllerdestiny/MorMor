@@ -31,34 +31,18 @@ public class GithubWebHook : WebhookEventProcessor
             return;
         if (action == ReleaseAction.Edited || action == ReleaseAction.Released)
         {
+            await Console.Out.WriteLineAsync("触发");
             try
             {
-                HttpClient client = new();
-                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Linux; Android 13; 22127RK46C Build/TKQ1.220905.001) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.97 Mobile Safari/537.36");
-                var mdTemp = $"""<svg title="Merged" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true" style="fill:purple;"><path d="M5.45 5.154A4.25 4.25 0 0 0 9.25 7.5h1.378a2.251 2.251 0 1 1 0 1.5H9.25A5.734 5.734 0 0 1 5 7.123v3.505a2.25 2.25 0 1 1-1.5 0V5.372a2.25 2.25 0 1 1 1.95-.218ZM4.25 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm8.5-4.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM5 3.25a.75.75 0 1 0 0 .005V3.25Z"></path></svg>""";
                 var repName = releaseEvent.Repository?.FullName;
                 var sb = new StringBuilder($"# Release Github 仓库 {repName}");
                 sb.AppendLine();
                 sb.AppendLine("## 有新的版本更新");
                 sb.AppendLine($"- 当前时间: {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}");
-                var pullUrl = "https://api.github.com/repos/Controllerdestiny/TShockPlugin/pulls?state=closed&per_page=5";
-                var pullList = await client.GetStringAsync(pullUrl);
-                var list = JsonConvert.DeserializeObject<JArray>(pullList);
-                if (list != null)
-                { 
-                     foreach (var pull in list)
-                    {
-                        if (pull.Value<string>("merged_at") != null)
-                        {
-                            var title = pull.Value<string>("title");
-                            var number = pull.Value<string>("number");
-                            var html_url = pull.Value<string>("html_url");
-                            var create_time = pull.Value<string>("created_at")?.ToString();
-                            sb.AppendLine(mdTemp + $"[{title} #{number}]({html_url}) ({DateTime.Parse(create_time!).ToString("yyyy.MM.dd")})");
-                        }
-                    }
-                }
-               
+                var pullUrl = "https://api.github.com/repos/Controllerdestiny/TShockPlugin/pulls?state=closed&per_page=3"
+                //sb.AppendLine(releaseEvent.Release.Body);
+                HttpClient client = new();
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Linux; Android 13; 22127RK46C Build/TKQ1.220905.001) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.5112.97 Mobile Safari/537.36");
                 var result = await client.GetStringAsync(releaseEvent.Release.AssetsUrl);
                 var jobj = JsonConvert.DeserializeObject<JArray>(result);
                 var download = jobj?[0]?["browser_download_url"]?.ToString();
@@ -72,7 +56,7 @@ public class GithubWebHook : WebhookEventProcessor
             }
             catch (Exception ex)
             {
-                await Console.Out.WriteLineAsync(ex.ToString());
+                await Console.Out.WriteLineAsync(ex.Message);
             }
 
         }

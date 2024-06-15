@@ -55,8 +55,8 @@ public class MessageContext
         return Messages.Where(msg => msg.Type == Enumeration.SegmentType.At).Select(img => img.MessageData as At).ToList();
     }
 
-    public string GetFileId()
+    public string? GetFileId()
     {
-        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.File).Select(file => file.MessageData as File).First()!.FileId;
+        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.File).Select(file => file.MessageData as File).First()?.FileId;
     }
 }

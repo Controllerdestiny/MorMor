@@ -5,7 +5,15 @@ public class MusicInfo
     /// <summary>
     /// 
     /// </summary>
-    public int id { get; set; }
+    public string url { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string music { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string size { get; set; }
     /// <summary>
     /// 
     /// </summary>
@@ -13,36 +21,38 @@ public class MusicInfo
     /// <summary>
     /// 
     /// </summary>
-    public string vid { get; set; }
+    public int songid { get; set; }
     /// <summary>
-    /// 花海
+    /// 这一生关于你的风景
     /// </summary>
     public string song { get; set; }
     /// <summary>
-    /// 
+    /// 枯木逢春
     /// </summary>
-    public string cover { get; set; }
+    public List<string> singer { get; set; }
     /// <summary>
-    /// 
-    /// </summary>
-    public string subtitle { get; set; }
-    /// <summary>
-    /// 周杰伦
-    /// </summary>
-    public string singer { get; set; }
-    /// <summary>
-    /// 魔杰座
+    /// 这一生关于你的风景
     /// </summary>
     public string album { get; set; }
     /// <summary>
     /// 
     /// </summary>
-    public int type { get; set; }
+    public List<string> singerList { get; set; }
     /// <summary>
-    /// 1个多版本
+    /// 
     /// </summary>
-    public string grp { get; set; }
+    public string picture { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public string pay { get; set; }
+    /// <summary>
+    /// 
+    /// </summary>
+    public int interval { get; set; }
 }
+
+
 
 public class MusicList
 {

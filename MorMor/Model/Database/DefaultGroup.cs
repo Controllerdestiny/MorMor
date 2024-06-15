@@ -30,7 +30,8 @@ public class DefaultGroup : Group
         OneBotPermissions.TerrariaPrize,
         OneBotPermissions.ImageEmoji,
         OneBotPermissions.SelfPassword,
-        OneBotPermissions.SearchItem
+        OneBotPermissions.SearchItem,
+        OneBotPermissions.KillRank
     ];
 
     public override void NegatePermission(string permission)

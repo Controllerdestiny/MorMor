@@ -1,6 +1,8 @@
 using MomoAPI.Enumeration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Net.Http.Json;
+using System.Text.Json.Nodes;
 using System.Web;
 
 namespace MomoAPI.Utils;
@@ -27,57 +29,60 @@ public static class Utils
         return await content.Content.ReadAsStringAsync();
     }
 
-    internal static string SignMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    public static async Task<string> HttpPostContent(string url, Dictionary<string, string> args)
     {
-        var url = "http://oiapi.net/API/QQMusicJSONArk";
-        var signtype = type switch
-        {
-            MusicType.QQ => "qq",
-            MusicType._163 => "163",
-            _ => "qq"
-        };
-        //var (status, res) = MomoAPI.Net.OneBotAPI.Instance.GetCookie("qzone.qq.com").Result;
-        var args = new Dictionary<string, string>()
-        {
-            { "format", signtype },
-            { "url", AudioUrl },
-            { "jump", jumpUrl },
-            { "song", song },
-            { "singer", singer },
-            { "cover", imageUrl },
-            //{ "p_skey", res.Pskey },
-            //{ "uin", MomoAPI.Net.OneBotAPI.Instance.BotId.ToString() },
-        };
-        var result = HttpPost(url, args).Result;
-        var data = JObject.Parse(result);
-        //data["data"]["meta"]["music"]["uin"] = 424993442;
-        return JsonConvert.SerializeObject(data?["data"]);
+        StringContent payload = new(JsonConvert.SerializeObject(args));
+        var content = await HttpClient.PostAsync(url,payload);
+        return await content.Content.ReadAsStringAsync();
     }
 
     //internal static string SignMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
     //{
-    //    var url = "";
+    //    var url = "http://oiapi.net/API/QQMusicJSONArk";
     //    var signtype = type switch
     //    {
     //        MusicType.QQ => "qq",
     //        MusicType._163 => "163",
-    //        _ => "163"
+    //        _ => "qq"
     //    };
-    //    //var (status, res) = OneBotAPI.Instance.GetCookie("qzone.qq.com").Result;
+    //    //var (status, res) = MomoAPI.Net.OneBotAPI.Instance.GetCookie("qzone.qq.com").Result;
     //    var args = new Dictionary<string, string>()
     //    {
-    //        { "type", signtype },
-    //        { "musicUrl", AudioUrl },
-    //        { "jumpUrl", jumpUrl },
-    //        { "title", song },
+    //        { "format", signtype },
+    //        { "url", AudioUrl },
+    //        { "jump", jumpUrl },
+    //        { "song", song },
     //        { "singer", singer },
-    //        { "preview", imageUrl },
-    //        { "get", "yes" },
+    //        { "cover", imageUrl },
+    //        //{ "p_skey", res.Pskey },
+    //        //{ "uin", MomoAPI.Net.OneBotAPI.Instance.BotId.ToString() },
     //    };
-    //    var result = HttpGet(url, args).Result;
+    //    var result = HttpPost(url, args).Result;
     //    var data = JObject.Parse(result);
+    //    //data["data"]["meta"]["music"]["uin"] = 424993442;
     //    return JsonConvert.SerializeObject(data?["data"]);
     //}
+
+    internal static string SignMusic(MusicType type, string jumpUrl, string AudioUrl, string imageUrl, string song, string singer)
+    {
+        var url = "https://ss.xingzhige.com/music_card/card";
+        var signtype = type switch
+        {
+            MusicType.QQ => "qq",
+            MusicType._163 => "163",
+            _ => "163"
+        };
+        var args = new Dictionary<string, string>()
+        {
+            { "type" , signtype },
+            { "url" , jumpUrl },
+            { "audio" , AudioUrl },
+            { "title" , song },
+            { "image" , imageUrl },
+            { "singer" , singer },
+        };
+        return HttpPostContent(url, args).GetAwaiter().GetResult();
+    }
 
 
     public static void ForEach<T>(this IEnumerable<T> values, Action<T> action)
