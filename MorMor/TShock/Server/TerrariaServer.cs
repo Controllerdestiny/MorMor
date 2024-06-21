@@ -50,9 +50,6 @@ public class TerrariaServer
     [JsonProperty("是否开启抽奖")]
     public bool EnabledPrize { get; set; }
 
-    [JsonProperty("抽奖单价")]
-    public int PrizeCost { get; set; } = 10;
-
     [JsonProperty("Tshock路径")]
     public string TShockPath { get; set; } = "C:/Users/Administrator/Desktop/tshock/";
 
