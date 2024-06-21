@@ -17,7 +17,6 @@ using System.Text.RegularExpressions;
 using System.Web;
 using MorMor.TShock.Picture;
 using Terraria;
-using System.Diagnostics;
 
 namespace MorMor.Commands;
 
@@ -616,7 +615,7 @@ public class OneBotCommand
         try
         {
             var rand = new Random();
-            long num = rand.NextInt64(500, 700);
+            long num = rand.NextInt64(MorMorAPI.Setting.SignMinCurrency, MorMorAPI.Setting.SignMaxCurrency);
             var result = MorMorAPI.SignManager.SingIn(args.EventArgs.Group.Id, args.EventArgs.Sender.Id);
             var currency = MorMorAPI.CurrencyManager.Add(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, num);
             MessageBody body = new()

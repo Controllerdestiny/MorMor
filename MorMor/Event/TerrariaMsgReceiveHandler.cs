@@ -230,6 +230,8 @@ public class TerrariaMsgReceiveHandler
                 if (fileid != null)
                 {
                     var (status, fileinfo) = await args.OneBotAPI.GetFile(fileid);
+                    if (string.IsNullOrEmpty(fileinfo.Base64) || fileinfo.FileSize > 500000)
+                        return;
                     var buffer = Convert.FromBase64String(fileinfo.Base64);
                     if (TerrariaServer.IsReWorld(buffer))
                     {

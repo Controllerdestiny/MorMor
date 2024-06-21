@@ -57,6 +57,12 @@ public class MorMorSetting
     [JsonProperty("TShockSocket通信端口")]
     public int SocketProt { get; init; } = 6000;
 
+    [JsonProperty("获得星币最大数")]
+    public int SignMaxCurrency { get; init; } = 700;
+
+    [JsonProperty("获得星币最小数")]
+    public int SignMinCurrency { get; init; } = 400;
+
     [JsonProperty("Webhook配置")]
     public WebhookOption WebhookOption { get; init; } = new();
 
