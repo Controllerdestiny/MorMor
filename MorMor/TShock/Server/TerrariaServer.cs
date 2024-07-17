@@ -299,7 +299,7 @@ public class TerrariaServer
         {
             ActionType = ActionType.ResetServer,
             StartArgs = SpawnStartArgs(startArgs),
-        };
+        };  
         if (startArgs.TryGetValue("-upload", out var _))
         {
             var now = DateTime.Now;

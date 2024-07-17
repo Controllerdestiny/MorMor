@@ -1,4 +1,5 @@
 ﻿using MorMor.Attributes;
+using MorMor.Model.Terraria;
 using MorMor.Permission;
 using System.Drawing;
 
@@ -126,5 +127,53 @@ public class ChatServerCommand
         //{
         //    await args.EventArgs.Reply("服务器不存在或未切换到服务器!", true);
         //}
+    }
+
+    [CommandMatch("结算", OneBotPermissions.TerrariaPrize)]
+    public static async Task CartBuy(PlayerCommandArgs args)
+    {
+        if (args.Server == null) return;
+        if (args.Parameters.Count != 1)
+        {
+            await args.Server.PrivateMsg(args.Name, $"语法错误:\n正确语法:/结算 [购物车]", Color.GreenYellow);
+            return;
+        }
+        if (!args.Server.EnabledShop)
+        {
+            await args.Server.PrivateMsg(args.Name, "服务器未开启商店系统！", Color.DarkRed);
+            return;
+        }
+        if (args.User != null)
+        {
+            try
+            {
+                var carts = MorMorAPI.TerrariaCart.GetCartShop(args.Account.UserId, args.Parameters[0]);
+                if (carts.Count == 0)
+                {
+                    await args.Server.PrivateMsg(args.Name, "购物车中不存在物品!", Color.DarkRed);
+                    return;
+                }
+                var all = carts.Sum(x => x.Price);
+                var curr = MorMorAPI.CurrencyManager.Query(args.User.GroupID, args.User.Id);
+                if (curr != null && curr.num >= all)
+                {
+                    foreach (var shop in carts)
+                    { 
+                        var res = await args.Server.Command($"/g {shop.ID} {args.Name} {shop.num}");
+                    }
+                    await args.Server.PrivateMsg(args.Name, "结算成功!", Color.GreenYellow);
+                }
+                else
+                {
+                    await args.Server.PrivateMsg(args.Name, "星币不足!", Color.GreenYellow);
+                }
+            }
+            catch (Exception e)
+            {
+                await args.Server.PrivateMsg(args.Name, e.Message, Color.DarkRed);
+                return;
+            }
+            
+        }
     }
 }

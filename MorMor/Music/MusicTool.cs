@@ -9,7 +9,7 @@ public class MusicTool
     private static readonly Dictionary<long, string> MusicLocal = new();
     private static readonly Dictionary<long, string> MusicName = new();
 
-    public static async Task<List<QQ.MusicInfo>> GetMusicQQList(string musicName)
+    public static async Task<List<QQ.MusicItem>> GetMusicQQList(string musicName)
     {
         return await QQ.MusicQQ.GetMusicList(musicName);
     }
@@ -21,7 +21,7 @@ public class MusicTool
         int i = 1;
         list.ForEach(x =>
         {
-            ret += $"[{i}].{x.song} -- {string.Join(",", x.singer)}\n";
+            ret += $"[{i}].{x.Song} -- {x.Singer}\n";
             i++;
         });
         ret += "资源来自于QQ音乐";
@@ -37,7 +37,7 @@ public class MusicTool
         sb.AppendLine("# QQ音乐");
         for (int i = 0; i < list.Count; i++)
         {
-            sb.AppendLine($"## `{i + 1}`- {list[i].song} -- {string.Join(",", list[i].singer)}");
+            sb.AppendLine($"## `{i + 1}`- {list[i].Song} -- {list[i].Singer}");
         }
         sb.AppendLine();
         sb.AppendLine($$"""</div>""");

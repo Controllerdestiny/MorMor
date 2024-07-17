@@ -230,9 +230,21 @@ public class TerrariaMsgReceiveHandler
                 if (fileid != null)
                 {
                     var (status, fileinfo) = await args.OneBotAPI.GetFile(fileid);
-                    if (string.IsNullOrEmpty(fileinfo.Base64) || fileinfo.FileSize > 500000)
+                    if (string.IsNullOrEmpty(fileinfo.Base64) || fileinfo.FileSize > 1024 *1024 * 30)
                         return;
                     var buffer = Convert.FromBase64String(fileinfo.Base64);
+
+                    foreach (var server in MorMorAPI.Setting.Servers)
+                    {
+                        if (server != null && server.WaitFile != null)
+                        {
+                            if (server.Groups.Contains(args.Group.Id))
+                            {
+                                server.WaitFile.TrySetResult(buffer);
+                            }
+                        }
+                    }
+
                     if (TerrariaServer.IsReWorld(buffer))
                     {
                         try
@@ -243,28 +255,20 @@ public class TerrariaMsgReceiveHandler
                             }
                             else
                             {
-                                await args.Reply("检测到Terraria 地图文件，正常尝试生成Map文件...");
-                                var info = CreateMapFile.Instance.Start(buffer);
-                                await args.Reply(new MomoAPI.Entities.MessageBody().File("base64://" + Convert.ToBase64String(info.Buffer), info.Name));
-                                CreateMapFile.Instance.Dispose();
-                                Utils.Utility.FreeMemory();
+                                await Task.Run(async () =>
+                                {
+                                    await args.Reply("检测到Terraria 地图文件，正常尝试生成Map文件...");
+                                    var info = CreateMapFile.Instance.Start(buffer);
+                                    await args.Reply(new MomoAPI.Entities.MessageBody().File("base64://" + Convert.ToBase64String(info.Buffer), info.Name));
+                                    CreateMapFile.Instance.Dispose();
+                                    Utils.Utility.FreeMemory();
+                                });
                             }
 
                         }
                         catch (Exception ex)
                         {
                             await args.Reply(ex.Message);
-                        }
-                    }
-
-                    foreach (var server in MorMorAPI.Setting.Servers)
-                    {
-                        if (server != null && server.WaitFile != null)
-                        {
-                            if (server.Groups.Contains(args.Group.Id))
-                            {
-                                server.WaitFile.TrySetResult(buffer);
-                            }
                         }
                     }
                 }

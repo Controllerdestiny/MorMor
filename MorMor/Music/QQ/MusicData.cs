@@ -1,4 +1,6 @@
-﻿namespace MorMor.Music.QQ;
+﻿using Newtonsoft.Json;
+
+namespace MorMor.Music.QQ;
 
 
 public class MusicData
@@ -6,62 +8,90 @@ public class MusicData
     /// <summary>
     /// 
     /// </summary>
-    public string url { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string music { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string size { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string mid { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public int songid { get; set; }
-    /// <summary>
-    /// 这一生关于你的风景
-    /// </summary>
-    public string song { get; set; }
-    /// <summary>
-    /// 枯木逢春
-    /// </summary>
-    public string singer { get; set; }
-    /// <summary>
-    /// 这一生关于你的风景
-    /// </summary>
-    public string album { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public List<string> singerList { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string picture { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public string pay { get; set; }
-    /// <summary>
-    /// 
-    /// </summary>
-    public int interval { get; set; }
-}
+    [JsonProperty("id")]
+    public int Id { get; set; }
 
+    /// <summary>
+    /// 花海
+    /// </summary>
+    [JsonProperty("song")]
+    public string Song { get; set; }
 
-public class Music
-{
     /// <summary>
     /// 
     /// </summary>
-    public int code { get; set; }
+    [JsonProperty("subtitle")]
+    public string Subtitle { get; set; }
+
+    /// <summary>
+    /// 周杰伦
+    /// </summary>
+    [JsonProperty("singer")]
+    public string Singer { get; set; }
+
+    /// <summary>
+    /// 魔杰座
+    /// </summary>
+    [JsonProperty("album")]
+    public string Album { get; set; }
+
+    /// <summary>
+    /// 付费
+    /// </summary>
+    [JsonProperty("pay")]
+    public string Pay { get; set; }
+
     /// <summary>
     /// 
     /// </summary>
-    public MusicData data { get; set; }
+    [JsonProperty("time")]
+    public DateTime Time { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("bpm")]
+    public string Bpm { get; set; }
+
+    /// <summary>
+    /// SQ无损音质
+    /// </summary>
+    [JsonProperty("quality")]
+    public string Quality { get; set; }
+
+    /// <summary>
+    /// 4分24秒
+    /// </summary>
+    [JsonProperty("interval")]
+    public string Interval { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("size")]
+    public string Size { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("kbps")]
+    public string Kbps { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("cover")]
+    public string Cover { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("link")]
+    public string Link { get; set; }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [JsonProperty("url")]
+    public string Url { get; set; }
 }

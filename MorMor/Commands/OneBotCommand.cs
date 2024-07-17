@@ -450,7 +450,7 @@ public class OneBotCommand
                             await args.EventArgs.Reply(
                             [
 
-                                MomoSegment.Music_QQ(music.url,music.music,music.picture,music.song,music.singer)
+                                MomoSegment.Music_QQ(music.Link,music.Url,music.Cover,music.Song,music.Singer)
                             ]);
                         }
                         catch (Exception ex)
@@ -497,6 +497,94 @@ public class OneBotCommand
         else
         {
             await args.EventArgs.Reply("请输入一个正确的序号!");
+        }
+    }
+    #endregion
+
+    #region 购物车
+    [CommandMatch("cart", OneBotPermissions.TerrariaShop)]
+    private async Task CartMananger(CommandArgs args)
+    {
+        try
+        {
+            if (args.Parameters.Count == 3 && args.Parameters[0].ToLower() == "add")
+            {
+                if (int.TryParse(args.Parameters[2], out int id))
+                {
+                    MorMorAPI.TerrariaCart.Add(args.EventArgs.SenderInfo.UserId, args.Parameters[1], id);
+                    await args.EventArgs.Reply("添加成功!", true);
+                    MorMorAPI.ConfigSave();
+                }
+                else
+                {
+                    await args.EventArgs.Reply("请填写一个正确的商品ID!", true);
+                }
+            }
+            else if (args.Parameters.Count == 3 && args.Parameters[0].ToLower() == "del")
+            {
+                if (int.TryParse(args.Parameters[2], out int id))
+                {
+                    MorMorAPI.TerrariaCart.Remove(args.EventArgs.SenderInfo.UserId, args.Parameters[1], id);
+                    await args.EventArgs.Reply("删除成功!", true);
+                    MorMorAPI.ConfigSave();
+                }
+                else
+                {
+                    await args.EventArgs.Reply("请填写一个正确的商品ID!", true);
+                }
+            }
+            else if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "clear")
+            {
+                MorMorAPI.TerrariaCart.ClearCart(args.EventArgs.Sender.Id, args.Parameters[1]);
+                await args.EventArgs.Reply("已清除购物车" + args.Parameters[1]);
+                MorMorAPI.ConfigSave();
+            }
+            else if (args.Parameters.Count == 1 && args.Parameters[0].ToLower() == "list")
+            {
+                var carts = MorMorAPI.TerrariaCart.GetCarts(args.EventArgs.Sender.Id);
+                if (carts.Count == 0)
+                {
+                    await args.EventArgs.Reply("购物车空空如也!", true);
+                    return;
+                }
+                var sb = new StringBuilder();
+                sb.AppendLine($$"""<div align="center">""");
+                sb.AppendLine();
+                sb.AppendLine();
+                foreach (var (name, shops) in carts)
+                {
+                    sb.AppendLine();
+                    sb.AppendLine($"# 购物车`{name}`");
+                    sb.AppendLine();
+                    sb.AppendLine("|商品ID|商品名称|数量|价格|");
+                    sb.AppendLine("|:--:|:--:|:--:|:--:|");
+                    foreach (var index in shops)
+                    {
+                        var shop = MorMorAPI.TerrariaShop.GetShop(index);
+                        if (shop != null)
+                            sb.AppendLine($"|{index}|{shop.Name}|{shop.num}|{shop.Price}|");
+                    }
+                }
+                sb.AppendLine();
+                sb.AppendLine();
+                sb.AppendLine("</div>");
+
+                await args.EventArgs.Reply(new MessageBody().MarkdownImage(sb.ToString()));
+            }
+            else
+            {
+                await args.EventArgs.Reply("语法错误,正确语法\n" +
+                    $"{args.CommamdPrefix}{args.Name} add [购物车] [商品ID]\n" +
+                    $"{args.CommamdPrefix}{args.Name} del [购物车] [商品ID]\n" +
+                    $"{args.CommamdPrefix}{args.Name} clear [购物车]\n" +
+                    $"{args.CommamdPrefix}{args.Name} list");
+            }
+            
+        }
+        catch (Exception e)
+        {
+
+            await args.EventArgs.Reply(e.Message);
         }
     }
     #endregion
