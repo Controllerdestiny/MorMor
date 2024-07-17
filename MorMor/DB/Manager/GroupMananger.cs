@@ -136,8 +136,11 @@ public class GroupMananger
                 DefaultGroup.permissions = DefaultGroup.permissions.Concat(permssions.Split(",")).Distinct().ToList();
                 list.Add(DefaultGroup);
             }
-            else if (!string.IsNullOrEmpty("parent"))
-                list.Add(new Group(GroupName, new Group(Parent), permssions));
+            else if (!string.IsNullOrEmpty(Parent))
+                if (Parent == MorMorAPI.Setting.DefaultPermGroup)
+                    list.Add(new Group(GroupName, DefaultGroup, permssions));
+                else
+                    list.Add(new Group(GroupName, new Group(Parent), permssions));
             else
                 list.Add(new Group(GroupName, null, permssions));
         }
