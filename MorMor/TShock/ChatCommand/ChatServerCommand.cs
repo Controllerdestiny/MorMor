@@ -2,12 +2,29 @@
 using MorMor.Model.Terraria;
 using MorMor.Permission;
 using System.Drawing;
+using System.Text;
 
 namespace MorMor.TShock.ChatCommand;
 
 [CommandSeries]
 public class ChatServerCommand
 {
+    [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop
+        )]
+    public static async Task ShopList(PlayerCommandArgs args)
+    {
+        if (args.Server == null) return;
+        var sb = new StringBuilder();
+        var shop = MorMorAPI.TerrariaShop.TrShop;
+        var index = 1;
+        foreach (var item in shop)
+        {
+            sb.AppendLine($"{index}.{item.Name} x {item.num}     {item.Price}");
+            index++;
+        }
+        await args.Server.PrivateMsg(args.Name, $"泰拉商店列表:\n{sb.ToString()}", Color.GreenYellow);
+    }
+
     [CommandMatch("抽", OneBotPermissions.TerrariaPrize)]
     public static async Task Prize(PlayerCommandArgs args)
     {
@@ -122,11 +139,6 @@ public class ChatServerCommand
         {
             await args.Server.PrivateMsg(args.Name, "未找到你的注册信息!", Color.GreenYellow);
         }
-        //}
-        //else
-        //{
-        //    await args.EventArgs.Reply("服务器不存在或未切换到服务器!", true);
-        //}
     }
 
     [CommandMatch("结算", OneBotPermissions.TerrariaPrize)]
