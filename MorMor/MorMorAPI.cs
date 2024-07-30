@@ -8,7 +8,6 @@ using MorMor.Event;
 using MorMor.Log;
 using MorMor.Net;
 using MorMor.Plugin;
-using MorMor.TShock.Map;
 using MySql.Data.MySqlClient;
 using System.Data;
 
@@ -97,7 +96,6 @@ public class MorMorAPI
         Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
-        CreateMapFile.Instance.Init();
 
     }
 

@@ -9,6 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TerrariaID\TerrariaID.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\TerrariaID.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\MomoAPI\MomoAPI.csproj" />
   </ItemGroup>
 
@@ -18,7 +26,6 @@
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.4" />
     <PackageReference Include="MySql.Data" Version="8.3.0" />
     <PackageReference Include="Octokit.Webhooks" Version="2.1.1" />
-    <PackageReference Include="OTAPI.Upcoming" Version="3.1.20" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <PackageReference Include="PuppeteerSharp" Version="17.0.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
@@ -39,6 +46,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="TerrariaID\" />
   </ItemGroup>
 
 </Project>

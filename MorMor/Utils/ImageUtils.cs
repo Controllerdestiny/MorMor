@@ -1,4 +1,5 @@
-﻿using MorMor.Model.Socket.Internet;
+﻿using MorMor.EventArgs;
+using MorMor.Model.Socket.Internet;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
@@ -9,14 +10,22 @@ namespace MorMor.Utils;
 
 internal class ImageUtils
 {
-    private static FontFamily FontFamily = new FontCollection().Add(new MemoryStream((byte[])Properties.Resources.ResourceManager.GetObject("simhei")!));
+    private FontFamily FontFamily { get; set; }
 
-    public static void DrawImage(Image target, Image source, int X, int Y)
+    public static readonly ImageUtils Instance = new();
+    private ImageUtils()
+    {
+        using var ms = new MemoryStream((byte[])Properties.Resources.ResourceManager.GetObject("simhei")!);
+        var fc = new FontCollection();
+        FontFamily = fc.Add(ms);
+    }
+
+    public void DrawImage(Image target, Image source, int X, int Y)
     {
         target.Mutate(x => x.DrawImage(source, new Point(X, Y), new GraphicsOptions()));
     }
 
-    public static void DrawText(Image image, string text, int x, int y, int fontSize, Color color)
+    public void DrawText(Image image, string text, int x, int y, int fontSize, Color color)
     {
         var font = new Font(FontFamily, fontSize);
         RichTextOptions textOptions = new(font)
@@ -32,7 +41,7 @@ internal class ImageUtils
     /// </summary>
     /// <param name="image"></param>
     /// <param name="size"></param>
-    public static void ResetSize(Image image, int size)
+    public void ResetSize(Image image, int size)
     {
         var height = image.Height;
         var width = image.Width;
@@ -48,7 +57,7 @@ internal class ImageUtils
         }
     }
 
-    public static void DrawProgresst(Image image, Image slot, Dictionary<string, bool> progress, int x, int y, int slotSize = 400, int maxLineCount = 10, int darwCount = 50, bool erect = false)
+    public void DrawProgresst(Image image, Image slot, Dictionary<string, bool> progress, int x, int y, int slotSize = 400, int maxLineCount = 10, int darwCount = 50, bool erect = false)
     {
         ResetSize(slot, slotSize);
         var textSlot = slot.CloneAs<Rgba32>();
@@ -111,7 +120,7 @@ internal class ImageUtils
     /// <param name="y">起始位置</param>
     /// <param name="slotSize">卡槽大小</param>
     /// <param name="erect">竖直方向</param>
-    public static void DrawSlot(Image image, Image slot, Item[] items, int x, int y, int slotSize = 100, int maxLineCount = 10, int darwCount = 50, bool erect = false)
+    public void DrawSlot(Image image, Image slot, Item[] items, int x, int y, int slotSize = 100, int maxLineCount = 10, int darwCount = 50, bool erect = false)
     {
         ResetSize(slot, slotSize);
 

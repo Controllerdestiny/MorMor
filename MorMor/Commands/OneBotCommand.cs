@@ -16,7 +16,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using MorMor.TShock.Picture;
-using Terraria;
 
 namespace MorMor.Commands;
 
@@ -191,7 +190,7 @@ public class OneBotCommand
     {
         if (args.Parameters.Count == 5 && args.Parameters[0].ToLower() == "add")
         {
-            if (!int.TryParse(args.Parameters[1], out int id) || id > Terraria.ID.ItemID.Count || id < 1)
+            if (!int.TryParse(args.Parameters[1], out int id) || id < 1)
             {
                 await args.EventArgs.Reply("请输入一个正确的物品ID", true);
                 return;
@@ -248,7 +247,7 @@ public class OneBotCommand
     {
         if (args.Parameters.Count == 4 && args.Parameters[0].ToLower() == "add")
         {
-            if (!int.TryParse(args.Parameters[1], out int id) || id > Terraria.ID.ItemID.Count || id < 1)
+            if (!int.TryParse(args.Parameters[1], out int id) || id < 1)
             {
                 await args.EventArgs.Reply("请输入一个正确的物品ID", true);
                 return;

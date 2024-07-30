@@ -1,79 +1,14 @@
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using Terraria;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MorMor.Utils;
 
 public class Utility
 {
-    
-    public static Item GetItemById(int id)
-    {
-        var item = new Item();
-        item.netDefaults(id);
-        return item;
-    }
-
-    
-    public static List<Item> GetItemByIdOrName(string text)
-	{
-		int type = -1;
-		if (Int32.TryParse(text, out type))
-		{
-			if (type >= Terraria.ID.ItemID.Count)
-				return new List<Item>();
-			return new List<Item> { GetItemById(type) };
-		}
-		Item item = GetItemFromTag(text);
-		if (item != null)
-			return new List<Item>() { item };
-		return GetItemByName(text);
-	}
-		
-	public static Item GetItemFromTag(string tag)
-	{
-		Regex regex = new Regex(@"\[i(tem)?(?:\/s(?<Stack>\d{1,4}))?(?:\/p(?<Prefix>\d{1,3}))?:(?<NetID>-?\d{1,4})\]");
-		Match match = regex.Match(tag);
-		if (!match.Success)
-			return null;
-		Item item = new Item();
-		item.netDefaults(Int32.Parse(match.Groups["NetID"].Value));
-		if (!String.IsNullOrWhiteSpace(match.Groups["Stack"].Value))
-			item.stack = Int32.Parse(match.Groups["Stack"].Value);
-		if (!String.IsNullOrWhiteSpace(match.Groups["Prefix"].Value))
-			item.prefix = Byte.Parse(match.Groups["Prefix"].Value);
-		return item;
-	}
-    
-    public static List<Item> GetItemByName(string name)
-	{
-		var startswith = new List<int>();
-		var contains = new List<int>();
-		for (int i = 1; i < Terraria.ID.ItemID.Count; i++)
-		{
-			var currentName = Lang.GetItemNameValue(i);
-			if (!string.IsNullOrEmpty(currentName))
-			{
-				if (currentName.Equals(name, StringComparison.InvariantCultureIgnoreCase))
-					return new List<Item> { GetItemById(i) };
-				if (currentName.StartsWith(name, StringComparison.InvariantCultureIgnoreCase))
-				{
-					startswith.Add(i);
-					continue;
-				}
-				if (currentName.Contains(name, StringComparison.InvariantCultureIgnoreCase))
-				{
-					contains.Add(i);
-					continue;
-				}
-			}
-		}
-
-		if (startswith.Count != 1)
-			startswith.AddRange(contains);
-		return startswith.Select(GetItemById).ToList();
-	}
 
     [DllImport("psapi.dll")]
     private static extern bool EmptyWorkingSet(IntPtr lpAddress);
@@ -200,4 +135,65 @@ public class Utility
 	{ 
 		return await MarkdownHelper.ToImage(md);
 	}
+
+    public static Model.Socket.Internet.Item? GetItemById(int id)
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var file = assembly.GetName().Name + ".Resources.TerrariaID.json";
+        var stream = assembly.GetManifestResourceStream(file)!;
+        using var reader = new StreamReader(stream);
+        var jobj = JsonConvert.DeserializeObject<JObject>(reader.ReadToEnd());
+        var array = jobj?.Value<JArray>("物品");
+        foreach (var item in array)
+        {
+            if (item.Value<int>("ID") == id)
+            {
+                return new Model.Socket.Internet.Item()
+                {
+                    Name = item.Value<string>("中文名称")!,
+                    netID = id
+                };
+            }
+        }
+        return null;
+    }
+
+    public static List<Model.Socket.Internet.Item> GetItemByName(string name)
+    {
+        var list = new List<Model.Socket.Internet.Item>();
+        var assembly = Assembly.GetExecutingAssembly();
+        var file = assembly.GetName().Name + ".Resources.TerrariaID.json";
+        var stream = assembly.GetManifestResourceStream(file)!;
+        using var reader = new StreamReader(stream);
+        var jobj = JsonConvert.DeserializeObject<JObject>(reader.ReadToEnd());
+        var array = jobj?.Value<JArray>("物品")!;
+        foreach (var item in array)
+        {
+            if (item.Value<string>("中文名称")!.Contains(name))
+            {
+                list.Add(new Model.Socket.Internet.Item()
+                {
+                    Name = item.Value<string>("中文名称")!,
+                    netID = item.Value<int>("ID")
+                });
+            }
+        }
+        return list;
+    }
+
+    public static List<Model.Socket.Internet.Item> GetItemByIdOrName(string ji)
+    {
+        var list = new List<Model.Socket.Internet.Item>();
+        if (int.TryParse(ji, out var i))
+        {
+            var item = GetItemById(i);
+            if (item != null)
+                list.Add(item);
+        }
+        else
+        { 
+            list.AddRange(GetItemByName(ji));
+        }
+        return list;
+    }
 }

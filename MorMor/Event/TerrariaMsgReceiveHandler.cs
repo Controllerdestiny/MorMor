@@ -8,9 +8,7 @@ using MorMor.Model.Socket.Action.Receive;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
 using MorMor.Net;
-using MorMor.TShock.Server;
-using MorMor.TShock.ChatCommand;
-using MorMor.TShock.Map;
+using MorMor.TShock.ChatCommand; 
 using ProtoBuf;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
@@ -242,33 +240,6 @@ public class TerrariaMsgReceiveHandler
                             {
                                 server.WaitFile.TrySetResult(buffer);
                             }
-                        }
-                    }
-
-                    if (TerrariaServer.IsReWorld(buffer))
-                    {
-                        try
-                        {
-                            if (CreateMapFile.Instance.Status)
-                            {
-                                await args.Reply("正在处理另一张地图，请稍等片刻...");
-                            }
-                            else
-                            {
-                                await Task.Run(async () =>
-                                {
-                                    await args.Reply("检测到Terraria 地图文件，正常尝试生成Map文件...");
-                                    var info = CreateMapFile.Instance.Start(buffer);
-                                    await args.Reply(new MomoAPI.Entities.MessageBody().File("base64://" + Convert.ToBase64String(info.Buffer), info.Name));
-                                    CreateMapFile.Instance.Dispose();
-                                    Utils.Utility.FreeMemory();
-                                });
-                            }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            await args.Reply(ex.Message);
                         }
                     }
                 }

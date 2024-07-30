@@ -65,7 +65,7 @@ public class GithubWebHook : WebhookEventProcessor
                 var update = jobj?[0]?["updated_at"]?.ToString();
                 if (!string.IsNullOrEmpty(download))
                 {
-                    var file = await client.GetByteArrayAsync("https://gitdl.cn/" + download);
+                    var file = await client.GetByteArrayAsync("https://github.moeyy.xyz/" + download);
                     await SendGroupMsg(new MessageBody().MarkdownImage(sb.ToString()), groups);
                     await SendGroupMsg(new MessageBody().File("base64://" + Convert.ToBase64String(file), $"({Guid.NewGuid().ToString()[..8]})Plugins.zip"), groups);
                 }
