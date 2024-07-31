@@ -8,6 +8,7 @@ on:
   
 jobs:
   build:
+    name: 发布MorMor
     runs-on: ubuntu-latest
 
     steps:
@@ -29,3 +30,27 @@ jobs:
 
       - name: Push generated package to NuGet MorMor
         run: dotnet nuget push ./MorMor/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}
+
+  NutGetMomoAPI:
+    name: 发布MomoAPI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Pack
+        run: |
+            dotnet build -c Release MomoAPI
+            dotnet pack -c Release MomoAPI
+            dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg MorMor
+            
+      - name: Add private GitHub registry to NuGet MorMor
+        run: dotnet nuget add source --username Controllerdestiny --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/MomoAPI/index.json"
+
+      - name: Push generated package to NuGet MorMor
+        run: dotnet nuget push ./MomoAPI/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}
+
