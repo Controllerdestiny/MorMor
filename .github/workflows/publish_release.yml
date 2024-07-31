@@ -54,8 +54,8 @@ jobs:
           
       - name: 更新发布标签
         run: |
-          git tag -f V1.0.0.0
-          git push -f origin V1.0.0.0
+          git tag -f V9.9.9.9
+          git push -f origin V9.9.9.9
       - name: 下载临时插文件
         uses: actions/download-artifact@v3
         with:
@@ -64,7 +64,7 @@ jobs:
       - name: 发布Release
         uses: ncipollo/release-action@v1
         with:
-          tag: V1.0.0.0
+          tag: V9.9.9.9
           name: "最新版本"
           body: ""
           artifacts: |
