@@ -26,22 +26,22 @@ jobs:
       - name: Build MorMor
         shell: powershell
         run: |
-          dotnet build MorMor/MorMor.csproj --self-contained=false -p:PublishSingleFile=false -p:IncludeContentInSingleFile=false -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
+          dotnet publish MorMor/MorMor.csproj --no-self-contained -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -p:RuntimeIdentifier=${{ matrix.runtimeIdentifier }} --framework net8.0
 
       - name: Upload binary files(${{ matrix.runtimeIdentifier }}) for .NET 8.0
         uses: actions/upload-artifact@v3
         with:
           name: MorMor_${{ matrix.runtimeIdentifier }}_8.0
-          path: MorMor/bin/Debug/net8.0/${{ matrix.runtimeIdentifier }}
+          path: MorMot/bin/Release/net8.0/${{ matrix.runtimeIdentifier }}/publish
           
       - name: Compress files (Not Windows)
         if: matrix.runtimeIdentifier != 'win-x64' && matrix.runtimeIdentifier != 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Debug\net8.0\${{ matrix.runtimeIdentifier }}' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip'
+          Compress-Archive -Path 'MorMot\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip'
       - name: Compress files (Windows)
         if: matrix.runtimeIdentifier == 'win-x64' || matrix.runtimeIdentifier == 'win-x86'
         run: |
-          Compress-Archive -Path 'MorMor\bin\Debug\net8.0\${{ matrix.runtimeIdentifier }}' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip'
+          Compress-Archive -Path 'MorMor\bin\Release\net8.0\${{ matrix.runtimeIdentifier }}\publish' -DestinationPath  'MorMor_${{ matrix.runtimeIdentifier }}_8.0.zip'
           
       - name: Prepare release files
         uses: actions/upload-artifact@v3
