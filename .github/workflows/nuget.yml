@@ -23,20 +23,9 @@ jobs:
             dotnet build -c Release MorMor
             dotnet pack -c Release MorMor
             dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg MorMor
-            dotnet build -c Release MomoAPI
-            dotnet pack -c Release MomoAPI
-            dotnet pack -c Release -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg MomoAPI
-
-      - name: Add private GitHub registry to NuGet MomoAPI
-        run: dotnet nuget add source --username Controllerdestiny --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/MomoAPI/index.json"
-
-      - name: Push generated package to NuGet MomoAPI
-        run: dotnet nuget push ./MomoAPI/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}
-
-
+            
       - name: Add private GitHub registry to NuGet MorMor
         run: dotnet nuget add source --username Controllerdestiny --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/MorMor/index.json"
 
-      
       - name: Push generated package to NuGet MorMor
         run: dotnet nuget push ./MorMor/bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --skip-duplicate --api-key ${{ secrets.NUGETAPIKEY }}
