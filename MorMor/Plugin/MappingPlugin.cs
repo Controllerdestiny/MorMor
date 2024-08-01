@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace MorMor.Plugin;
 
-internal class MappingPlugin
+public class MappingPlugin
 {
     public readonly static List<MorMorPlugin> Instances = new();
 
