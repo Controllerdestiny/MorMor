@@ -6,13 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
-	<Version>2.0.1</Version>
+	<Version>2.0.2</Version>
 	<Authors>Controllerdestiny</Authors>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="TerrariaID\TerrariaID.json" />
-  </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\TerrariaID.json" />
@@ -48,10 +44,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="TerrariaID\" />
   </ItemGroup>
 
 </Project>

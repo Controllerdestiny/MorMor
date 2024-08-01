@@ -36,6 +36,6 @@ public class UserLocation
 
     private void Save()
     {
-        Config.Write(MorMorAPI.UserLocationPath, MorMorAPI.UserLocation);
+        ConfigHelpr.Write(MorMorAPI.UserLocationPath, MorMorAPI.UserLocation);
     }
 }

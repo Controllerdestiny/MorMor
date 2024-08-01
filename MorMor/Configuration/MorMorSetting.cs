@@ -1,5 +1,4 @@
-﻿using MorMor.Model.NetworkOption;
-using MorMor.TShock.Server;
+﻿using MorMor.TShock.Server;
 using Newtonsoft.Json;
 
 namespace MorMor.Configuration;
@@ -62,9 +61,6 @@ public class MorMorSetting
 
     [JsonProperty("获得星币最小数")]
     public int SignMinCurrency { get; init; } = 400;
-
-    [JsonProperty("Webhook配置")]
-    public WebhookOption WebhookOption { get; init; } = new();
 
     [JsonProperty("服务器列表")]
     public List<TerrariaServer> Servers { get; } = new();

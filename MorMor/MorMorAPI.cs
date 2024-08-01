@@ -39,8 +39,6 @@ public class MorMorAPI
 
     internal static string TerrariaPrizePath => Path.Combine(SAVE_PATH, "Prize.Json");
 
-    internal static string TerrariaCartPath => Path.Combine(SAVE_PATH, "Cart.json");
-
     public static TextLog Log { get; internal set; }
 
     public static MorMorSetting Setting { get; internal set; } = new();
@@ -50,8 +48,6 @@ public class MorMorAPI
     public static TerrariaShop TerrariaShop { get; internal set; } = new();
 
     public static TerrariaPrize TerrariaPrize { get; internal set; } = new();
-
-    public static TerrariaCart TerrariaCart { get; internal set; } = new();
 
     public static IMomoService Service { get; internal set; }
 
@@ -85,7 +81,6 @@ public class MorMorAPI
             AccessToken = Setting.AccessToken,
             Log = Log
         }).Start();
-        new GithubService().Start<GithubWebHook>(Setting.WebhookOption);
         //加载插件
         MappingPlugin.Initializer();
         //socket服务器启动
@@ -101,20 +96,18 @@ public class MorMorAPI
 
     internal static void LoadConfig()
     {
-        Setting = Config.LoadConfig(ConfigPath, Setting);
-        UserLocation = Config.LoadConfig(UserLocationPath, UserLocation);
-        TerrariaShop = Config.LoadConfig(TerrariaShopPath, TerrariaShop);
-        TerrariaPrize = Config.LoadConfig(TerrariaPrizePath, TerrariaPrize);
-        TerrariaCart = Config.LoadConfig(TerrariaCartPath, TerrariaCart);
+        Setting = ConfigHelpr.LoadConfig(ConfigPath, Setting);
+        UserLocation = ConfigHelpr.LoadConfig(UserLocationPath, UserLocation);
+        TerrariaShop = ConfigHelpr.LoadConfig(TerrariaShopPath, TerrariaShop);
+        TerrariaPrize = ConfigHelpr.LoadConfig(TerrariaPrizePath, TerrariaPrize);
     }
 
     internal static void ConfigSave()
     {
-        Config.Write(ConfigPath, Setting);
-        Config.Write(UserLocationPath, UserLocation);
-        Config.Write(TerrariaShopPath, TerrariaShop);
-        Config.Write(TerrariaPrizePath, TerrariaPrize);
-        Config.Write(TerrariaCartPath, TerrariaCart);
+        ConfigHelpr.Write(ConfigPath, Setting);
+        ConfigHelpr.Write(UserLocationPath, UserLocation);
+        ConfigHelpr.Write(TerrariaShopPath, TerrariaShop);
+        ConfigHelpr.Write(TerrariaPrizePath, TerrariaPrize);
     }
 
     private static void InitDb()

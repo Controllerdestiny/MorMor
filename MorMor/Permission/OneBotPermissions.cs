@@ -1,7 +1,7 @@
 ﻿
 namespace MorMor.Permission;
 
-internal class OneBotPermissions
+public class OneBotPermissions
 {
     public const string ImageEmoji = "onebot.emoji.image";
 

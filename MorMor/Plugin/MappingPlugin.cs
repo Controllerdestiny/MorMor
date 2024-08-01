@@ -23,8 +23,14 @@ internal class MappingPlugin
         GetAssmblyInstance(Assembly.GetExecutingAssembly());
         foreach (var file in files)
         {
-            var assembly = Assembly.Load(File.ReadAllBytes(file.FullName));
+            Assembly assembly;
+            var pdb = Path.ChangeExtension(file.FullName, ".pdb");
+            if (File.Exists(pdb))
+                assembly = Assembly.Load(File.ReadAllBytes(file.FullName), File.ReadAllBytes(pdb));
+            else
+                assembly = Assembly.Load(File.ReadAllBytes(file.FullName));
             GetAssmblyInstance(assembly);
+
         }
         Instances.OrderByDescending(x => x.Order).ForEach(x =>
         {
@@ -42,8 +48,8 @@ internal class MappingPlugin
         {
             if (x.IsSubclassOf(typeof(MorMorPlugin)) && x.IsPublic && !x.IsAbstract)
             {
-                var Instance = Activator.CreateInstance(x) as MorMorPlugin;
-                Instances.Add(Instance);
+                if (Activator.CreateInstance(x) is MorMorPlugin Instance)
+                    Instances.Add(Instance);
             }
         });
     }

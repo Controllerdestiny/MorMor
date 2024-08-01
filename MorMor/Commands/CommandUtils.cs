@@ -6,31 +6,6 @@ namespace MorMor.Commands;
 
 internal static class CommandUtils
 {
-    private static readonly Dictionary<long, List<Tuple<string, string>>> temp = [];
-    public static void AddTempData(long groupid, string name, string token)
-    {
-        if (temp.TryGetValue(groupid, out var list) && list != null)
-        {
-            list.Add(new Tuple<string, string>(name, token));
-        }
-        else
-        {
-            temp[groupid] = [new Tuple<string, string>(name, token)];
-        }
-    }
-   
-    public static bool GetTempData(long groupid, string token, out string? name)
-    {
-        if (temp.TryGetValue(groupid, out var list) && list != null)
-        {
-            var res = list.Find(x => x.Item2 == token);
-            name = res?.Item1;
-            return res != null;
-        }
-        name = null;
-        return false;
-    }
-
     public static async Task SendImagsEmoji(string url, CommandArgs args)
     {
         var at = args.EventArgs.MessageContext.GetAts();

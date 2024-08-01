@@ -2,8 +2,9 @@
 
 namespace MorMor.Configuration;
 
-public class Config
+public class ConfigHelpr
 {
+
     /// <summary>
     /// 读取配置文件内容
     /// </summary>
