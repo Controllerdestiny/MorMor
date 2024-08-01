@@ -11,7 +11,7 @@ public class ChatCommandMananger
 {
     public static readonly ChatCommandMananger Hook = new();
 
-    internal readonly List<ChatCommand> commands = new();
+    public readonly List<ChatCommand> commands = new();
     private ChatCommandMananger()
     {
 

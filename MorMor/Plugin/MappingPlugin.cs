@@ -6,9 +6,9 @@ namespace MorMor.Plugin;
 
 internal class MappingPlugin
 {
-    private static List<MorMorPlugin> Instances = new();
+    public readonly static List<MorMorPlugin> Instances = new();
 
-    private static List<Assembly> Assemblies = new();
+    public readonly static List<Assembly> Assemblies = new();
 
     /// <summary>
     /// 加载插件

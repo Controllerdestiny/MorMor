@@ -10,7 +10,7 @@ public class CommandManager
 {
     public static readonly CommandManager Hook = new();
 
-    internal readonly List<Command> commands = new();
+    public readonly List<Command> commands = new();
     private CommandManager()
     {
 
