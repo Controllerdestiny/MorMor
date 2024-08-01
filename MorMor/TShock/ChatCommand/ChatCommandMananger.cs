@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace MorMor.TShock.ChatCommand;
 
-internal class ChatCommandMananger
+public class ChatCommandMananger
 {
     public static readonly ChatCommandMananger Hook = new();
 
