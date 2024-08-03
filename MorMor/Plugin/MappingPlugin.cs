@@ -1,57 +1,34 @@
 ﻿using MomoAPI.Utils;
 using MorMor.TShock.ChatCommand;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace MorMor.Plugin;
 
 public class MappingPlugin
 {
-    public readonly static List<MorMorPlugin> Instances = new();
+    public readonly static string PluginPath = Path.Combine(MorMorAPI.PATH, "Plugin");
 
-    public readonly static List<Assembly> Assemblies = new();
+    public static PluginAssemblyLoadContext AssemblyLoadContext { get; private set; } = new("PluginLoader" + Guid.NewGuid().ToString(), PluginPath);
 
     /// <summary>
     /// 加载插件
     /// </summary>
     public static void Initializer()
     {
-        var DirPath = Path.Combine(MorMorAPI.PATH, "Plugin");
-        DirectoryInfo directoryInfo = new(DirPath);
-        if (!directoryInfo.Exists)
-            directoryInfo.Create();
-        var files = directoryInfo.GetFiles("*.dll");
-        GetAssmblyInstance(Assembly.GetExecutingAssembly());
-        foreach (var file in files)
-        {
-            Assembly assembly;
-            var pdb = Path.ChangeExtension(file.FullName, ".pdb");
-            if (File.Exists(pdb))
-                assembly = Assembly.Load(File.ReadAllBytes(file.FullName), File.ReadAllBytes(pdb));
-            else
-                assembly = Assembly.Load(File.ReadAllBytes(file.FullName));
-            GetAssmblyInstance(assembly);
-
-        }
-        Instances.OrderByDescending(x => x.Order).ForEach(x =>
-        {
-            x.Initialize();
-
-        });
-        Assemblies.ForEach(Commands.CommandManager.Hook.MappingCommands);
-        Assemblies.ForEach(ChatCommandMananger.Hook.MappingCommands);
+        Commands.CommandManager.Hook.MappingCommands(Assembly.GetExecutingAssembly());
+        ChatCommandMananger.Hook.MappingCommands(Assembly.GetExecutingAssembly());
+        AssemblyLoadContext.LoadPlugin();
+        AssemblyLoadContext.LoadAssemblies.ForEach(Commands.CommandManager.Hook.MappingCommands);
+        AssemblyLoadContext.LoadAssemblies.ForEach(ChatCommandMananger.Hook.MappingCommands);
     }
 
-    private static void GetAssmblyInstance(Assembly assembly)
+    public static void UnLoadPlugin()
     {
-        Assemblies.Add(assembly);
-        assembly.GetExportedTypes().ForEach(x =>
-        {
-            if (x.IsSubclassOf(typeof(MorMorPlugin)) && x.IsPublic && !x.IsAbstract)
-            {
-                if (Activator.CreateInstance(x) is MorMorPlugin Instance)
-                    Instances.Add(Instance);
-            }
-        });
+        AssemblyLoadContext.UnloadPlugin();
+        AssemblyLoadContext = new("PluginLoader" + Guid.NewGuid().ToString(), PluginPath);
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
     }
 
     internal static Assembly? Resolve(object? sender, ResolveEventArgs args)
