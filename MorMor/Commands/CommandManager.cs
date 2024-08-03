@@ -10,7 +10,7 @@ public class CommandManager
 {
     public static readonly CommandManager Hook = new();
 
-    public readonly List<Command> CommandDelegate = new();
+    public readonly List<Command> commands = new();
     private CommandManager()
     {
 
@@ -18,7 +18,7 @@ public class CommandManager
 
     public void Add(Command command)
     {
-        CommandDelegate.Add(command);
+        commands.Add(command);
     }
 
     public List<string> ParseParameters(string str)
@@ -114,7 +114,7 @@ public class CommandManager
                 var cmdName = cmdParam[0];
                 cmdParam.RemoveAt(0);
                 var account = MorMorAPI.AccountManager.GetAccountNullDefault(args.Sender.Id);
-                foreach (var command in CommandDelegate)
+                foreach (var command in commands)
                 {
                     if (command.Name.Contains(cmdName))
                     {
@@ -152,10 +152,8 @@ public class CommandManager
     }
 
 
-    public void MappingCommands(Assembly? assembly)
+    public void MappingCommands(Assembly assembly)
     {
-        if (assembly is null)
-            return;
         var flag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
         Dictionary<Type, MethodInfo[]> mapping = assembly.GetExportedTypes()
             .Where(x => x.IsDefined(typeof(CommandSeries)))

@@ -11,7 +11,7 @@ public class ChatCommandMananger
 {
     public static readonly ChatCommandMananger Hook = new();
 
-    public readonly List<ChatCommand> CommamdDelegate = new();
+    public readonly List<ChatCommand> commands = new();
     private ChatCommandMananger()
     {
 
@@ -19,7 +19,7 @@ public class ChatCommandMananger
 
     public void Add(ChatCommand command)
     {
-        CommamdDelegate.Add(command);
+        commands.Add(command);
     }
 
     public async Task CommandAdapter(PlayerCommandMessage args)
@@ -30,7 +30,7 @@ public class ChatCommandMananger
         {
             var cmdName = cmdParam[0];
             cmdParam.RemoveAt(0);
-            foreach (var command in CommamdDelegate)
+            foreach (var command in commands)
             {
                 if (command.Name.Contains(cmdName))
                 {
@@ -49,10 +49,8 @@ public class ChatCommandMananger
         }
     }
 
-    public void MappingCommands(Assembly? assembly)
+    public void MappingCommands(Assembly assembly)
     {
-        if (assembly is null)
-            return;
         var flag = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Instance | BindingFlags.Public;
         Dictionary<Type, MethodInfo[]> mapping = assembly.GetExportedTypes()
             .Where(x => x.IsDefined(typeof(CommandSeries)))
