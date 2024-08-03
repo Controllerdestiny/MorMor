@@ -11,7 +11,7 @@ public class ChatCommandMananger
 {
     public static readonly ChatCommandMananger Hook = new();
 
-    public readonly List<ChatCommand> commands = new();
+    public readonly List<ChatCommand> CommandDelegate = new();
     private ChatCommandMananger()
     {
 
@@ -19,7 +19,7 @@ public class ChatCommandMananger
 
     public void Add(ChatCommand command)
     {
-        commands.Add(command);
+        CommandDelegate.Add(command);
     }
 
     public async Task CommandAdapter(PlayerCommandMessage args)
@@ -30,7 +30,7 @@ public class ChatCommandMananger
         {
             var cmdName = cmdParam[0];
             cmdParam.RemoveAt(0);
-            foreach (var command in commands)
+            foreach (var command in CommandDelegate)
             {
                 if (command.Name.Contains(cmdName))
                 {
