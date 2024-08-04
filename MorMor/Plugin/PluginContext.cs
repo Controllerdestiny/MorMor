@@ -22,7 +22,7 @@ public class PluginContext : AssemblyLoadContext
             if(assembly.GetName() == assemblyName)
                 return assembly;
         }
-        return null;
+        return Default.LoadFromAssemblyName(assemblyName);
     }
 
     public void LoadPlugins(DirectoryInfo dir)
