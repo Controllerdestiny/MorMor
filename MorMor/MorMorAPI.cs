@@ -72,7 +72,7 @@ public class MorMorAPI
         //初始化数据库
         InitDb();
         //扩展程序集
-        AppDomain.CurrentDomain.AssemblyResolve += MappingPlugin.Resolve;
+        AppDomain.CurrentDomain.AssemblyResolve += PluginLoader.Resolve;
         //启动机器人服务
         Service = await MomoServiceFactory.CreateService(new()
         {
@@ -82,7 +82,7 @@ public class MorMorAPI
             Log = Log
         }).Start();
         //加载插件
-        MappingPlugin.Initializer();
+        PluginLoader.Load();
         //socket服务器启动
         await TShockWebSocketServer.StartService();
         //Socket信息适配器
