@@ -223,6 +223,16 @@ public class TerrariaServer
         return await RequestApi<PlayerPasswordResetArgs, BaseActionResponse>(args);
     }
 
+    public async Task<ExportPlayer> ExportPlayer(List<string> names)
+    {
+        var args = new ExportPlayerArgs()
+        {
+            ActionType = ActionType.ExportPlayer,
+            Names = names,
+        };
+        return await RequestApi<ExportPlayerArgs, ExportPlayer>(args);
+    }
+
     public async Task<QueryAccount> QueryAccount(string? name = null)
     {
         var args = new QueryAccountArgs()

@@ -21,8 +21,8 @@ public class PluginLoader
         PluginContext.LoadPlugins(directoryInfo);
         Commands.CommandManager.Hook.MappingCommands(Assembly.GetExecutingAssembly());
         ChatCommandMananger.Hook.MappingCommands(Assembly.GetExecutingAssembly());
-        PluginContext.lLoadAssemblys.ForEach(Commands.CommandManager.Hook.MappingCommands);
-        PluginContext.lLoadAssemblys.ForEach(ChatCommandMananger.Hook.MappingCommands);
+        PluginContext.LoadAssemblys.ForEach(Commands.CommandManager.Hook.MappingCommands);
+        PluginContext.LoadAssemblys.ForEach(ChatCommandMananger.Hook.MappingCommands);
     }
 
     public static void UnLoad()

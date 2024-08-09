@@ -14,6 +14,7 @@ namespace MorMor.Model.Socket.Action.Response;
 [ProtoInclude(409, typeof(ServerStatus))]
 [ProtoInclude(410, typeof(QueryAccount))]
 [ProtoInclude(411, typeof(PlayerStrikeBoss))]
+[ProtoInclude(412, typeof(ExportPlayer))]
 public class BaseActionResponse : BaseAction
 {
     [ProtoMember(6)] public string Message { get; set; }

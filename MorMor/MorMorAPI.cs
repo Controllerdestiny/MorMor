@@ -15,17 +15,17 @@ namespace MorMor;
 
 public class MorMorAPI
 {
-    public static IDbConnection DB { get; internal set; }
+    public static IDbConnection DB { get; internal set; } = null!;
 
-    public static SignManager SignManager { get; internal set; }
+    public static SignManager SignManager { get; internal set; } = null!;
 
-    public static GroupMananger GroupManager { get; internal set; }
+    public static GroupMananger GroupManager { get; internal set; } = null!;
 
-    public static AccountManager AccountManager { get; internal set; }
+    public static AccountManager AccountManager { get; internal set; } = null!;
 
-    public static CurrencyManager CurrencyManager { get; internal set; }
+    public static CurrencyManager CurrencyManager { get; internal set; } = null!;
 
-    public static TerrariaUserManager TerrariaUserManager { get; internal set; }
+    public static TerrariaUserManager TerrariaUserManager { get; internal set; } = null!;
 
     public static string PATH => Environment.CurrentDirectory;
 
@@ -39,7 +39,7 @@ public class MorMorAPI
 
     internal static string TerrariaPrizePath => Path.Combine(SAVE_PATH, "Prize.Json");
 
-    public static TextLog Log { get; internal set; }
+    public static TextLog Log { get; internal set; } = null!;
 
     public static MorMorSetting Setting { get; internal set; } = new();
 
@@ -49,7 +49,7 @@ public class MorMorAPI
 
     public static TerrariaPrize TerrariaPrize { get; internal set; } = new();
 
-    public static IMomoService Service { get; internal set; }
+    public static IMomoService Service { get; internal set; } = null!;
 
     public static async Task Star()
     {
@@ -117,9 +117,13 @@ public class MorMorAPI
             case "sqlite":
                 {
                     string sql = Path.Combine(PATH, Setting.DbPath);
-                    Directory.CreateDirectory(Path.GetDirectoryName(sql));
-                    DB = new SqliteConnection(string.Format("Data Source={0}", sql));
-                    break;
+                    if (Path.GetDirectoryName(sql) is string path)
+                    { 
+                        Directory.CreateDirectory(path);
+                        DB = new SqliteConnection(string.Format("Data Source={0}", sql));
+                        break;
+                    }
+                    throw new ArgumentNullException("无法找到数据库路径!");
                 }
             case "mysql":
                 {

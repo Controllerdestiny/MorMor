@@ -1,23 +1,18 @@
 ﻿using System.Reflection;
 using System.Runtime.Loader;
-using System.Security.Permissions;
 using MomoAPI.Utils;
 
 namespace MorMor.Plugin;
 
-public class PluginContext : AssemblyLoadContext
+public class PluginContext(string name) : AssemblyLoadContext(name, true)
 {
-    public readonly List<Assembly> lLoadAssemblys = [];
+    public readonly List<Assembly> LoadAssemblys = [];
 
     public readonly List<MorMorPlugin> Plugins = [];
 
-    public PluginContext(string name) : base(name, true)
-    {
-    }
-
     protected override Assembly? Load(AssemblyName assemblyName)
     {
-        foreach (Assembly assembly in lLoadAssemblys)
+        foreach (Assembly assembly in LoadAssemblys)
         { 
             if(assembly.GetName() == assemblyName)
                 return assembly;
@@ -32,9 +27,9 @@ public class PluginContext : AssemblyLoadContext
             using var stream = file.OpenRead();
             using var pdbStream = File.Exists(Path.ChangeExtension(file.FullName, ".pdb")) ? File.OpenRead(Path.ChangeExtension(file.FullName, ".pdb")) : null;
             var assembly = LoadFromStream(stream, pdbStream);
-            lLoadAssemblys.Add(assembly);
+            LoadAssemblys.Add(assembly);
         }
-        foreach (Assembly assembly in lLoadAssemblys)
+        foreach (Assembly assembly in LoadAssemblys)
         {
             foreach (var type in assembly.GetExportedTypes())
             {
@@ -47,14 +42,14 @@ public class PluginContext : AssemblyLoadContext
         }
         foreach(var dt in dir.GetDirectories())
             LoadPlugins(dt);
-        Plugins.OrderBy(p=>p.Order).ForEach(p=>p.Initialize());
+        Plugins.OrderBy(p => p.Order).ForEach(p => p.Initialize());
     }
 
     public void UnloadPlugin()
     {
         Plugins.ForEach(x =>x.Dispose());
         Plugins.Clear();
-        lLoadAssemblys.Clear();
+        LoadAssemblys.Clear();
         Unload();
     }
 }

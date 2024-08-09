@@ -15,12 +15,64 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using MorMor.TShock.Picture;
+using System.IO.Compression;
 
 namespace MorMor.Commands;
 
 [CommandSeries]
 public class OneBotCommand
 {
+    [CommandMatch("导出存档", OneBotPermissions.ExportFile)]
+    private async Task Test(CommandArgs args)
+    {
+        if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
+        {
+            if (args.Parameters.Count == 1)
+            {
+                List<string> names = [];
+                if (args.Parameters[0] != "all")
+                    names.Add(args.Parameters[0]);
+                var files = await server.ExportPlayer(names);
+                if (!files.PlayerFiles.Any(x => x.Active))
+                {
+                    await args.EventArgs.Reply("没有可以导出的存档!", true);
+                    return;
+                }
+                var sb = new StringBuilder();
+                var zipName = $"人物存档[{DateTime.Now:yyyy_MM_dd_HH_mm_ss}].zip";
+                using var ms = new MemoryStream();
+                using var zip = new ZipArchive(ms, ZipArchiveMode.Create);
+                foreach (var file in files.PlayerFiles)
+                {
+                    if (!file.Active)
+                    {
+                        sb.AppendLine($"存档{file.Name}.plr导出失败，未找到存档!");
+                    }
+                    else
+                    {
+                        var entry = zip.CreateEntry(file.Name + ".plr");
+                        using var stream = entry.Open();
+                        stream.Write(file.Buffer);
+                        if (files.PlayerFiles.Count == 1)
+                            stream.Flush();
+
+                    }
+                }
+                if (sb.Length > 0)
+                    await args.EventArgs.Reply(sb.ToString().Trim());
+                await args.EventArgs.Reply(new MessageBody().File("base64://" + Convert.ToBase64String(ms.GetBuffer()), zipName));
+            }
+            else
+            {
+                await args.EventArgs.Reply($"语法错误 正确语法:\n{args.CommamdPrefix}{args.Name} [名称 or all]", true);
+            }
+        }
+        else
+        {
+            await args.EventArgs.Reply("服务器无效或未切换服务器!");
+        }
+       
+    }
     #region 捣药
     [CommandMatch("捣药", OneBotPermissions.ImageEmoji)]
     private async Task ImageEmojiOne(CommandArgs args)
@@ -304,9 +356,9 @@ public class OneBotCommand
     }
     #endregion
 
-    #region 测试指令
+    #region 删除文件
     [CommandMatch("删除文件", OneBotPermissions.ChangeServer)]
-    private async Task Test(CommandArgs args)
+    private async Task ClearFile(CommandArgs args)
     {
         var (status, list) = await args.EventArgs.OneBotAPI.GetGroupFileList(args.EventArgs.Group.Id);
         var count = 0;

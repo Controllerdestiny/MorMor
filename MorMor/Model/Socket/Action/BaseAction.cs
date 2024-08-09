@@ -17,6 +17,7 @@ namespace MorMor.Model.Socket.Action;
 [ProtoInclude(309, typeof(PlayerPasswordResetArgs))]
 [ProtoInclude(310, typeof(SocketConnectStatusArgs))]
 [ProtoInclude(311, typeof(QueryAccountArgs))]
+[ProtoInclude(312, typeof(ExportPlayerArgs))]
 public class BaseAction : BaseMessage
 {
     [ProtoMember(4)] public ActionType ActionType { get; set; }

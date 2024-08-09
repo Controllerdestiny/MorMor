@@ -91,5 +91,10 @@ public enum ActionType
     /// <summary>
     /// 玩家击杀BOSS数据
     /// </summary>
-    PlayerStrikeBoss
+    PlayerStrikeBoss,
+
+    /// <summary>
+    /// 导出玩家存档
+    /// </summary>
+    ExportPlayer
 }

@@ -3,6 +3,8 @@ namespace MorMor.Permission;
 
 public class OneBotPermissions
 {
+    public const string ExportFile = "onebot.export.file";
+
     public const string ImageEmoji = "onebot.emoji.image";
 
     public const string SearchItem = "onebot.item.search";

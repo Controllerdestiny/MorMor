@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
-	<Version>2.0.7</Version>
+	<Version>2.0.8</Version>
 	<Authors>Controllerdestiny</Authors>
   </PropertyGroup>
 
@@ -23,7 +23,6 @@
     <PackageReference Include="Markdig" Version="0.37.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.7" />
     <PackageReference Include="MySql.Data" Version="9.0.0" />
-    <PackageReference Include="Octokit.Webhooks" Version="2.2.2" />
     <PackageReference Include="protobuf-net" Version="3.2.30" />
     <PackageReference Include="PuppeteerSharp" Version="18.0.5" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
