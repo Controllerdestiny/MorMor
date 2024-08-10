@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
-	<Version>2.0.8</Version>
+	<Version>2.0.9</Version>
 	<Authors>Controllerdestiny</Authors>
   </PropertyGroup>
 

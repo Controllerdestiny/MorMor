@@ -22,7 +22,7 @@ public class PluginContext(string name) : AssemblyLoadContext(name, true)
 
     public void LoadPlugins(DirectoryInfo dir)
     {
-        foreach (FileInfo file in dir.GetFiles("*.dll"))
+        foreach (FileInfo file in dir.GetFiles("*.dll", SearchOption.AllDirectories))
         {
             using var stream = file.OpenRead();
             using var pdbStream = File.Exists(Path.ChangeExtension(file.FullName, ".pdb")) ? File.OpenRead(Path.ChangeExtension(file.FullName, ".pdb")) : null;
@@ -40,8 +40,6 @@ public class PluginContext(string name) : AssemblyLoadContext(name, true)
                 }
             }
         }
-        foreach(var dt in dir.GetDirectories())
-            LoadPlugins(dt);
         Plugins.OrderBy(p => p.Order).ForEach(p => p.Initialize());
     }
 
