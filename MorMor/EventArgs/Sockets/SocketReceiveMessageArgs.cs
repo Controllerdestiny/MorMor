@@ -1,14 +1,11 @@
-﻿using Fleck;
-
-namespace MorMor.EventArgs.Sockets;
+﻿namespace MorMor.EventArgs.Sockets;
 
 public class SocketReceiveMessageArgs : BaseSocketArgs
 {
-    public MemoryStream Stream { get; init; }
+    public byte[] Buffer { get; init; }
 
-    public SocketReceiveMessageArgs(IWebSocketConnection socket, MemoryStream stream)
+    public SocketReceiveMessageArgs(string id, byte[] buffer) : base(id)
     {
-        Client = socket;
-        Stream = stream;
+        Buffer = buffer;
     }
 }

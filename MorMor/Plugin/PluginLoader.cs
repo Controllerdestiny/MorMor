@@ -1,6 +1,5 @@
-﻿using MorMor.Extensions;
+﻿using System.Reflection;
 using MorMor.TShock.ChatCommand;
-using System.Reflection;
 
 namespace MorMor.Plugin;
 
@@ -8,7 +7,7 @@ public class PluginLoader
 {
     public static PluginContext PluginContext { get; private set; } = new(Guid.NewGuid().ToString());
 
-    public readonly static string PATH  = Path.Combine(MorMorAPI.PATH, "Plugins");
+    public readonly static string PATH = Path.Combine(MorMorAPI.PATH, "Plugins");
 
     /// <summary>
     /// 加载插件
@@ -26,7 +25,7 @@ public class PluginLoader
     }
 
     public static void UnLoad()
-    { 
+    {
         PluginContext.UnloadPlugin();
         PluginContext = new(Guid.NewGuid().ToString());
         GC.Collect();

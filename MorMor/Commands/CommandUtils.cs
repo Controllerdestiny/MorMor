@@ -1,12 +1,12 @@
-﻿using MomoAPI.Entities;
+﻿using System.Reflection;
+using MomoAPI.Entities;
 using MomoAPI.Entities.Segment;
-using System.Reflection;
 
 namespace MorMor.Commands;
 
 internal static class CommandUtils
 {
-    public static async Task SendImagsEmoji(string url, CommandArgs args)
+    public static async ValueTask SendImagsEmoji(string url, CommandArgs args)
     {
         var at = args.EventArgs.MessageContext.GetAts();
         long target = -1;
@@ -51,7 +51,7 @@ internal static class CommandUtils
         return false;
     }
 
-    public static async Task<MessageBody> GetAccountInfo(long groupid, long uin, string groupName)
+    public static MessageBody GetAccountInfo(long groupid, long uin, string groupName)
     {
         var userid = uin;
         var serverName = MorMorAPI.UserLocation.TryGetServer(userid, groupid, out var server) ? server?.Name ?? "NULL" : "NULL";

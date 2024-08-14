@@ -1,15 +1,15 @@
-﻿using Microsoft.Data.Sqlite;
+﻿global using MomoAPI.IO;
+using System.Data;
+using Microsoft.Data.Sqlite;
 using MomoAPI;
 using MomoAPI.Interface;
 using MorMor.Commands;
 using MorMor.Configuration;
 using MorMor.DB.Manager;
 using MorMor.Event;
-using MorMor.Log;
 using MorMor.Net;
 using MorMor.Plugin;
 using MySql.Data.MySqlClient;
-using System.Data;
 
 namespace MorMor;
 
@@ -39,8 +39,6 @@ public class MorMorAPI
 
     internal static string TerrariaPrizePath => Path.Combine(SAVE_PATH, "Prize.Json");
 
-    public static TextLog Log { get; internal set; } = null!;
-
     public static MorMorSetting Setting { get; internal set; } = new();
 
     public static UserLocation UserLocation { get; internal set; } = new();
@@ -64,7 +62,6 @@ public class MorMorAPI
 |__/     |__/ \______/ |__/      |__/     |__/ \______/ |__/      |_______/  \______/    \___/  ";
         if (!Directory.Exists(SAVE_PATH))
             Directory.CreateDirectory(SAVE_PATH);
-        Log = new TextLog(Path.Combine(PATH, "log", $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log"));
         Log.ConsoleInfo(ConsoleInfo, ConsoleColor.Green);
         Utils.Utility.KillChrome();
         //读取Config
@@ -78,19 +75,18 @@ public class MorMorAPI
         {
             Host = Setting.Host,
             Port = Setting.Port,
-            AccessToken = Setting.AccessToken,
-            Log = Log
+            AccessToken = Setting.AccessToken
         }).Start();
         //加载插件
         PluginLoader.Load();
-        //socket服务器启动
-        await TShockWebSocketServer.StartService();
         //Socket信息适配器
-        TShockWebSocketServer.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
+        TShockReceive.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
         //群消息转发适配器
         Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
+        //socket服务器启动
+        await TShockReceive.StartService();
 
     }
 
@@ -118,7 +114,7 @@ public class MorMorAPI
                 {
                     string sql = Path.Combine(PATH, Setting.DbPath);
                     if (Path.GetDirectoryName(sql) is string path)
-                    { 
+                    {
                         Directory.CreateDirectory(path);
                         DB = new SqliteConnection(string.Format("Data Source={0}", sql));
                         break;

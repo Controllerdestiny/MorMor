@@ -26,7 +26,7 @@ public class EnumConverter : JsonConverter
 
     public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
     {
-        if (string.IsNullOrEmpty(value.ToString()))
+        if (string.IsNullOrEmpty(value?.ToString()))
         {
             writer.WriteValue("");
             return;
@@ -36,7 +36,9 @@ public class EnumConverter : JsonConverter
 
     public static string GetFieldDesc<T>(T value)
     {
-        FieldInfo fieldInfo = value.GetType().GetField(value.ToString()!);
+        if (value == null)
+            return string.Empty;
+        FieldInfo? fieldInfo = value?.GetType().GetField(value.ToString()!);
         if (fieldInfo == null)
             return string.Empty;
         DescriptionAttribute[] attributes =
@@ -51,8 +53,8 @@ public class EnumConverter : JsonConverter
         {
             var obj = field.GetCustomAttribute<DescriptionAttribute>();
             if (obj?.Description == value)
-                return (T)field.GetValue(null);
+                return (T)field.GetValue(null)!;
         }
-        return default(T);
+        return default(T)!;
     }
 }

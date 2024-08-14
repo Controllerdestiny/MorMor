@@ -50,7 +50,7 @@ internal class DrawInventory
             ImageUtils.Instance.DrawSlot(image, slot, data.Loadout[i].armor, obj.inventoryX + (i + 2) * (obj.slotSize + obj.slotinterval) + n[i] * obj.interval, 1000, darwCount: 10, maxLineCount: 10, erect: true);
         }
         //ImageUtils.ResetSize(image, 1500);
-        MemoryStream ms = new();
+        using MemoryStream ms = new();
         image.SaveAsync(ms, new JpegEncoder());
         return ms;
     }

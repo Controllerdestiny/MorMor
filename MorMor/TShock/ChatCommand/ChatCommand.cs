@@ -2,7 +2,7 @@
 
 public class ChatCommand
 {
-    public delegate Task CommandCallBack(PlayerCommandArgs args);
+    public delegate ValueTask CommandCallBack(PlayerCommandArgs args);
 
     public List<string> Name { get; }
 

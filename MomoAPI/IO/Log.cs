@@ -1,62 +1,64 @@
-﻿global using MomoAPI.Log;
+﻿global using MomoAPI.IO;
 using System.Diagnostics;
+using System.IO;
 
-namespace MomoAPI.Log;
+namespace MomoAPI.IO;
 
-static class Log
+public static class Log
 {
     static StreamWriter StreamWriter { get; set; }
 
     static Log()
     {
-        var dir = Path.GetDirectoryName("Log");
+        var path = Path.Combine(Environment.CurrentDirectory, "log", $"{DateTime.Now:yyyy-MM-dd-HH-mm-ss}.log");
+        var dir = Path.GetDirectoryName(path);
         if (dir == null)
             throw new NullReferenceException("目录文件不存在!");
         Directory.CreateDirectory(dir);
-        StreamWriter = new("Log");
+        StreamWriter = new(path);
     }
 
-    static void OutPutConsole(string msg, ConsoleColor color)
+    public static void OutPutConsole(string msg, ConsoleColor color)
     {
         Console.ForegroundColor = color;
         Console.WriteLine(msg);
         Console.ResetColor();
     }
 
-    static void ConsoleError(string info)
+    public static void ConsoleError(string info)
     {
         OutPutConsole(info, ConsoleColor.Red);
         Writer(info, TraceLevel.Error);
     }
 
-    static void ConsoleInfo(string info, ConsoleColor color = ConsoleColor.Gray)
+    public static void ConsoleInfo(string info, ConsoleColor color = ConsoleColor.Gray)
     {
         OutPutConsole(info, color);
         Writer(info, TraceLevel.Info);
     }
 
-    static void ConsoleWarn(string info)
+    public static void ConsoleWarn(string info)
     {
         OutPutConsole(info, ConsoleColor.Yellow);
         Writer(info, TraceLevel.Warning);
     }
 
-    static void Dispose()
+    public static void Dispose()
     {
         StreamWriter.Dispose();
     }
 
-    static void Error(string info)
+    public static void Error(string info)
     {
         Writer(info, TraceLevel.Error);
     }
 
-    static void Info(string info)
+    public static void Info(string info)
     {
         Writer(info, TraceLevel.Info);
     }
 
-    static void Warn(string info)
+    public static void Warn(string info)
     {
         Writer(info, TraceLevel.Warning);
     }

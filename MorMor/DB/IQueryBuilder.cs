@@ -16,9 +16,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+using System.Text;
 using MorMor.Extensions;
 using MySql.Data.MySqlClient;
-using System.Text;
 
 namespace MorMor.DB
 {

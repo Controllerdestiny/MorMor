@@ -1,9 +1,9 @@
-﻿using MorMor.Attributes;
+﻿using System.Drawing;
+using System.Reflection;
+using MorMor.Attributes;
 using MorMor.Commands;
 using MorMor.Event;
 using MorMor.Model.Socket.PlayerMessage;
-using System.Drawing;
-using System.Reflection;
 
 namespace MorMor.TShock.ChatCommand;
 
@@ -22,7 +22,7 @@ public class ChatCommandMananger
         CommandDelegate.Add(command);
     }
 
-    public async Task CommandAdapter(PlayerCommandMessage args)
+    public async ValueTask CommandAdapter(PlayerCommandMessage args)
     {
         var text = args.Command;
         var cmdParam = CommandManager.Hook.ParseParameters(text[args.CommandPrefix.Length..]);
@@ -40,7 +40,7 @@ public class ChatCommandMananger
                     }
                     catch (Exception ex)
                     {
-                        MorMorAPI.Log.ConsoleError(ex.ToString());
+                        Log.ConsoleError(ex.ToString());
                         if (args.TerrariaServer != null)
                             await args.TerrariaServer.PrivateMsg(args.Name, ex.Message, Color.DarkRed);
                     }
@@ -77,7 +77,7 @@ public class ChatCommandMananger
         }
     }
 
-    private async Task RunCommandCallback(PlayerCommandArgs args, ChatCommand command)
+    private async ValueTask RunCommandCallback(PlayerCommandArgs args, ChatCommand command)
     {
         foreach (var perm in command.Permission)
         {
@@ -86,7 +86,7 @@ public class ChatCommandMananger
                 if (!await OperatHandler.ServerUserCommand(args))
                 {
                     await command.CallBack(args);
-                    MorMorAPI.Log.ConsoleInfo($"Server:{args.ServerName} {args.Name} 使用命令: {command.Name.First()}", ConsoleColor.Cyan);
+                    Log.ConsoleInfo($"Server:{args.ServerName} {args.Name} 使用命令: {command.Name.First()}", ConsoleColor.Cyan);
                 }
                 return;
             }

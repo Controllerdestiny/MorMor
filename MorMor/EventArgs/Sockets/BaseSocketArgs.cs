@@ -1,8 +1,6 @@
-﻿using Fleck;
+﻿namespace MorMor.EventArgs.Sockets;
 
-namespace MorMor.EventArgs.Sockets;
-
-public class BaseSocketArgs
+public class BaseSocketArgs(string connectid)
 {
-    public IWebSocketConnection Client { get; init; }
+    public string ConnectId { get; init; } = connectid;
 }

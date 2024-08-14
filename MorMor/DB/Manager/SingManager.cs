@@ -1,7 +1,7 @@
-﻿using MorMor.Exceptions;
+﻿using System.Data;
+using MorMor.Exceptions;
 using MorMor.Extensions;
 using MySql.Data.MySqlClient;
-using System.Data;
 
 namespace MorMor.DB.Manager;
 public class SignManager

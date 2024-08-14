@@ -1,6 +1,6 @@
-﻿using MorMor.Extensions;
+﻿using System.Data;
+using MorMor.Extensions;
 using MySql.Data.MySqlClient;
-using System.Data;
 
 namespace MorMor.DB.Manager;
 

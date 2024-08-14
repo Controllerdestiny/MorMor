@@ -20,30 +20,30 @@ internal static class MessageConverter
     private static MomoSegment ParseMessageElement(OnebotSegment onebotSegment)
     {
         if (onebotSegment.RawData == null)
-            return new MomoSegment(SegmentType.Unknown, null);
+            return new MomoSegment(SegmentType.Unknown, new());
         try
         {
             JObject jsonObj = JObject.FromObject(onebotSegment.RawData);
             if (jsonObj.Count == 0)
-                return new MomoSegment(SegmentType.Unknown, null);
+                return new MomoSegment(SegmentType.Unknown, new());
             return onebotSegment.MsgType switch
             {
-                SegmentType.Text => new MomoSegment(SegmentType.Text, jsonObj.ToObject<Text>()),
-                SegmentType.Face => new MomoSegment(SegmentType.Face, jsonObj.ToObject<Face>()),
-                SegmentType.Image => new MomoSegment(SegmentType.Image, jsonObj.ToObject<Image>()),
-                SegmentType.Record => new MomoSegment(SegmentType.Record, jsonObj.ToObject<Record>()),
-                SegmentType.At => new MomoSegment(SegmentType.At, jsonObj.ToObject<At>()),
-                SegmentType.Reply => new MomoSegment(SegmentType.Reply, jsonObj.ToObject<Reply>()),
-                SegmentType.Json => new MomoSegment(SegmentType.Json, jsonObj.ToObject<Json>()),
-                SegmentType.File => new MomoSegment(SegmentType.File, jsonObj.ToObject<File>()),
-                SegmentType.Video => new MomoSegment(SegmentType.Video, jsonObj.ToObject<Video>()),
-                _ => new MomoSegment(SegmentType.Unknown, null)
+                SegmentType.Text => new MomoSegment(SegmentType.Text, jsonObj.ToObject<Text>()!),
+                SegmentType.Face => new MomoSegment(SegmentType.Face, jsonObj.ToObject<Face>()!),
+                SegmentType.Image => new MomoSegment(SegmentType.Image, jsonObj.ToObject<Image>()!),
+                SegmentType.Record => new MomoSegment(SegmentType.Record, jsonObj.ToObject<Record>()!),
+                SegmentType.At => new MomoSegment(SegmentType.At, jsonObj.ToObject<At>()!),
+                SegmentType.Reply => new MomoSegment(SegmentType.Reply, jsonObj.ToObject<Reply>()!),
+                SegmentType.Json => new MomoSegment(SegmentType.Json, jsonObj.ToObject<Json>()!),
+                SegmentType.File => new MomoSegment(SegmentType.File, jsonObj.ToObject<File>()!),
+                SegmentType.Video => new MomoSegment(SegmentType.Video, jsonObj.ToObject<Video>()!),
+                _ => new MomoSegment(SegmentType.Unknown, new())
             };
         }
-        catch (Exception e)
+        catch
         {
 
-            return new MomoSegment(SegmentType.Unknown, null);
+            return new MomoSegment(SegmentType.Unknown, new());
         }
     }
 
@@ -55,7 +55,7 @@ internal static class MessageConverter
     {
 
         if (messages == null || messages.Count == 0)
-            return new MessageBody();
+            return [];
         List<MomoSegment> retMsg = messages.Select(ParseMessageElement).ToList();
 
 

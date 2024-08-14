@@ -17,7 +17,7 @@ public class ProgressImage
         ImageUtils.Instance.DrawProgresst(image, slot, parameters, 500, 400, maxLineCount: 7, darwCount: 28);
         ImageUtils.Instance.DrawText(image, $"{serverName}进度", image.Width / 2 - 300, 100, 150, Color.White);
         ImageUtils.Instance.ResetSize(image, 1500);
-        MemoryStream ms = new();
+        using MemoryStream ms = new();
         image.SaveAsync(ms, new JpegEncoder());
         return ms;
     }

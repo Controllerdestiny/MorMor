@@ -26,7 +26,7 @@ public class GroupRequestAddEventArgs : BaseMomoEventArgs
         RequestType = args.RequestType;
     }
 
-    public async Task<ApiStatus> SetGroupAddReuqest(bool approve, string remark = "")
+    public async ValueTask<ApiStatus> SetGroupAddReuqest(bool approve, string remark = "")
     {
         return await ApiAdapter.SetGroupAddRequest(Flag, approve, remark);
     }

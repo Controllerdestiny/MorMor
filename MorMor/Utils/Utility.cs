@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -131,10 +130,10 @@ public class Utility
         }
     }
 
-	public static async Task<Stream> Markdown(string md)
-	{ 
-		return await MarkdownHelper.ToImage(md);
-	}
+    public static async Task<Stream> Markdown(string md)
+    {
+        return await MarkdownHelper.ToImage(md);
+    }
 
     public static Model.Socket.Internet.Item? GetItemById(int id)
     {
@@ -191,7 +190,7 @@ public class Utility
                 list.Add(item);
         }
         else
-        { 
+        {
             list.AddRange(GetItemByName(ji));
         }
         return list;

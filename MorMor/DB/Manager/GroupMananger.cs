@@ -1,8 +1,8 @@
+using System.Data;
 using MorMor.Exceptions;
 using MorMor.Extensions;
 using MorMor.Model.Database;
 using MySql.Data.MySqlClient;
-using System.Data;
 
 namespace MorMor.DB.Manager;
 

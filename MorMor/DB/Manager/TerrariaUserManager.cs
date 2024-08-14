@@ -1,8 +1,7 @@
-﻿using MorMor.Exceptions;
+﻿using System.Data;
+using MorMor.Exceptions;
 using MorMor.Extensions;
 using MySql.Data.MySqlClient;
-using System.Data;
-using System.Xml.Linq;
 
 namespace MorMor.DB.Manager;
 
@@ -30,7 +29,7 @@ public class TerrariaUserManager
         database = MorMorAPI.DB;
         var table = new SqlTable("User",
             new SqlColumn("ID", MySqlDbType.Int64) { Length = 100 },
-            new SqlColumn("Server", MySqlDbType.VarChar) {  Length = 100 },
+            new SqlColumn("Server", MySqlDbType.VarChar) { Length = 100 },
             new SqlColumn("Name", MySqlDbType.VarChar) { Unique = true, Length = 100 },
             new SqlColumn("GroupID", MySqlDbType.Int64) { Length = 100 },
             new SqlColumn("Password", MySqlDbType.VarChar) { Length = 100 }
@@ -100,7 +99,7 @@ public class TerrariaUserManager
     }
     public void ResetPassword(long id, string servername, string name, string pwd)
     {
-        var user = GetUserById(id, servername,name) ?? throw new GroupException("删除权限指向的目标组不存在!");
+        var user = GetUserById(id, servername, name) ?? throw new GroupException("删除权限指向的目标组不存在!");
         if (database.Query("UPDATE `User` SET `Password` = @0 WHERE `User`.`Server` = @1 AND `User`.`ID` = @2 AND `User`.`Name` = @3", pwd, servername, id, name) != 1)
             throw new GroupException("添加至数据库失败!");
         user.Password = pwd;

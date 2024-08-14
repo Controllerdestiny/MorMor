@@ -19,15 +19,20 @@ internal class MomoWebSocket : IMomoService
         Event = new();
     }
 
-    public async Task<IMomoService> Start()
+    public async ValueTask<IMomoService> Start()
     {
-        Client.MessageReceived.Subscribe(msg => Task.Run(async () =>
+        Client.MessageReceived.Subscribe(msg =>
         {
-            if (!string.IsNullOrEmpty(msg.Text))
+            var token = new CancellationToken();
+            Task.Run(async () =>
             {
-                await Event.Adapter(JObject.Parse(msg.Text));
-            }
-        }));
+                if (!string.IsNullOrEmpty(msg.Text))
+                {
+                    await Event.Adapter(JObject.Parse(msg.Text));
+                }
+            }, token);
+            token.ThrowIfCancellationRequested();
+        });
         ConnectMananger.OpenConnect(Client);
         await Client.Start();
         return this;

@@ -6,5 +6,5 @@ public interface IMomoService : IDisposable
 {
     EventAdapter Event { get; }
 
-    public Task<IMomoService> Start();
+    public ValueTask<IMomoService> Start();
 }

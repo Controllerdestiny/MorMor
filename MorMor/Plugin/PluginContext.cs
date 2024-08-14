@@ -13,8 +13,8 @@ public class PluginContext(string name) : AssemblyLoadContext(name, true)
     protected override Assembly? Load(AssemblyName assemblyName)
     {
         foreach (Assembly assembly in LoadAssemblys)
-        { 
-            if(assembly.GetName() == assemblyName)
+        {
+            if (assembly.GetName() == assemblyName)
                 return assembly;
         }
         return Default.LoadFromAssemblyName(assemblyName);
@@ -45,7 +45,7 @@ public class PluginContext(string name) : AssemblyLoadContext(name, true)
 
     public void UnloadPlugin()
     {
-        Plugins.ForEach(x =>x.Dispose());
+        Plugins.ForEach(x => x.Dispose());
         Plugins.Clear();
         LoadAssemblys.Clear();
         Unload();

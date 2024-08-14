@@ -19,7 +19,7 @@ internal class MomoReceive : IMomoService
         Event = new();
     }
 
-    public async Task<IMomoService> Start()
+    public async ValueTask<IMomoService> Start()
     {
         Client.MessageReceived.Subscribe(msg => Task.Run(async () =>
         {
@@ -34,7 +34,7 @@ internal class MomoReceive : IMomoService
         {
             throw new Exception("无法连接到WebSocket服务器");
         }
-        MomoServiceFactory.Log.ConsoleInfo("[MorMor] 成功链接至WebSocket服务器....", ConsoleColor.Green);
+        Log.ConsoleInfo("[MorMor] 成功链接至WebSocket服务器....", ConsoleColor.Green);
         return this;
     }
 

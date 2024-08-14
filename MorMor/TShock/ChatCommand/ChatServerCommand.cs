@@ -1,7 +1,7 @@
-﻿using MorMor.Attributes;
-using MorMor.Permission;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Text;
+using MorMor.Attributes;
+using MorMor.Permission;
 
 namespace MorMor.TShock.ChatCommand;
 
@@ -10,7 +10,7 @@ public class ChatServerCommand
 {
     [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop
         )]
-    public static async Task ShopList(PlayerCommandArgs args)
+    public static async ValueTask ShopList(PlayerCommandArgs args)
     {
         if (args.Server == null) return;
         var sb = new StringBuilder();
@@ -25,7 +25,7 @@ public class ChatServerCommand
     }
 
     [CommandMatch("抽", OneBotPermissions.TerrariaPrize)]
-    public static async Task Prize(PlayerCommandArgs args)
+    public static async ValueTask Prize(PlayerCommandArgs args)
     {
         if (args.Server == null) return;
         if (args.User == null)
@@ -52,17 +52,17 @@ public class ChatServerCommand
         }
         MorMorAPI.CurrencyManager.Del(args.User.GroupID, args.User.Id, count * MorMorAPI.TerrariaPrize.Fess);
         Random random = new();
-        var tasks = new List<Task>();
+        //var tasks = new List<ValueTask>();
         foreach (var prize in prizes)
         {
-            tasks.Add(args.Server.Command($"/g {prize.ID} {args.Name} {random.Next(prize.Min, prize.Max)}"));
+            await args.Server.Command($"/g {prize.ID} {args.Name} {random.Next(prize.Min, prize.Max)}");
         }
-        await Task.WhenAll(tasks);
+        //await ValueTask.WhenAll(tasks);
     }
 
 
     [CommandMatch("购买", OneBotPermissions.TerrariaShop)]
-    public static async Task ShopBuy(PlayerCommandArgs args)
+    public static async ValueTask ShopBuy(PlayerCommandArgs args)
     {
         if (args.Server == null) return;
         if (args.Parameters.Count != 1)

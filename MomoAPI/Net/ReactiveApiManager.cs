@@ -45,7 +45,7 @@ internal static class ReactiveApiManager
     /// <param name="connectionId">服务器连接标识符</param>
     /// <param name="timeout">覆盖原有超时,在不为空时有效</param>
     /// <returns>API返回</returns>
-    internal static async Task<(ApiStatus, JObject)> SendApiRequest(ApiRequest request, TimeSpan? timeout = null)
+    internal static async ValueTask<(ApiStatus, JObject)> SendApiRequest(ApiRequest request, TimeSpan? timeout = null)
     {
         if (timeout == null)
             timeout = TimeSpan.FromSeconds(15);

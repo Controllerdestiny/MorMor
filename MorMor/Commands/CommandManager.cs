@@ -1,8 +1,8 @@
-﻿using MomoAPI.EventArgs;
+﻿using System.Reflection;
+using System.Text;
+using MomoAPI.EventArgs;
 using MorMor.Attributes;
 using MorMor.Event;
-using System.Reflection;
-using System.Text;
 
 namespace MorMor.Commands;
 
@@ -95,7 +95,7 @@ public class CommandManager
         return args;
     }
 
-    public async Task CommandAdapter(GroupMessageEventArgs args)
+    public async ValueTask CommandAdapter(GroupMessageEventArgs args)
     {
         var text = args.MessageContext.GetText().Trim();
         string prefix = string.Empty;
@@ -124,7 +124,7 @@ public class CommandManager
                         }
                         catch (Exception ex)
                         {
-                            MorMorAPI.Log.ConsoleError(ex.ToString());
+                            Log.ConsoleError(ex.ToString());
                             await args.Reply(ex.Message, true);
                         }
                     }
@@ -133,7 +133,7 @@ public class CommandManager
         }
     }
 
-    private async Task RunCommandCallback(CommandArgs args, Command command)
+    private async ValueTask RunCommandCallback(CommandArgs args, Command command)
     {
         foreach (var perm in command.Permission)
         {
@@ -142,12 +142,12 @@ public class CommandManager
                 if (!await OperatHandler.UserCommand(args))
                 {
                     await command.CallBack(args);
-                    MorMorAPI.Log.ConsoleInfo($"group:{args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Cyan);
+                    Log.ConsoleInfo($"group:{args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Cyan);
                 }
                 return;
             }
         }
-        MorMorAPI.Log.ConsoleInfo($"group: {args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 试图使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Yellow);
+        Log.ConsoleInfo($"group: {args.EventArgs.Group.Id} {args.EventArgs.SenderInfo.Name}({args.EventArgs.SenderInfo.UserId}) 试图使用命令: {args.CommamdPrefix}{args.Name}", ConsoleColor.Yellow);
         await args.EventArgs.Reply("你无权使用此命令！");
     }
 

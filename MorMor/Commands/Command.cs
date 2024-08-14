@@ -2,7 +2,7 @@
 
 public class Command
 {
-    public delegate Task CommandCallBack(CommandArgs args);
+    public delegate ValueTask CommandCallBack(CommandArgs args);
 
     public List<string> Name { get; }
 

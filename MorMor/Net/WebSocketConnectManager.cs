@@ -1,14 +1,14 @@
-﻿using Fleck;
+﻿
 
 namespace MorMor.Net;
 
 internal class WebSocketConnectManager
 {
-    private readonly static Dictionary<string, IWebSocketConnection> Connect = [];
+    private readonly static Dictionary<string, string> Connect = [];
 
-    public static void Add(string name, IWebSocketConnection connection)
+    public static void Add(string name, string id)
     {
-        Connect[name] = connection;
+        Connect[name] = id;
     }
 
     public static void Remove(string name)
@@ -16,9 +16,16 @@ internal class WebSocketConnectManager
         Connect.Remove(name);
     }
 
-    public static IWebSocketConnection? GetConnent(string name)
+    public static string? GetConnentId(string name)
     {
-        Connect.TryGetValue(name, out var connection);
-        return connection;
+        Connect.TryGetValue(name, out var id);
+        return id;
+    }
+
+    public static WebSocketServer.ConnectionContext? GetConnent(string name)
+    {
+        if (Connect.TryGetValue(name, out var id))
+            return TShockReceive.GetConnectionContext(id);
+        return null;
     }
 }

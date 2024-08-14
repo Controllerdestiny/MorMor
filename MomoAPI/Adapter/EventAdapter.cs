@@ -11,69 +11,69 @@ namespace MomoAPI.Adapter;
 
 public class EventAdapter
 {
-    public delegate Task EventCallBackHandler<in TEventArgs>(TEventArgs args) where TEventArgs : System.EventArgs;
+    public delegate ValueTask EventCallBackHandler<in TEventArgs>(TEventArgs args) where TEventArgs : System.EventArgs;
 
     /// <summary>
     /// 群消息事件
     /// </summary>
-    public event EventCallBackHandler<GroupMessageEventArgs> OnGroupMessage;
+    public event EventCallBackHandler<GroupMessageEventArgs>? OnGroupMessage;
 
     /// <summary>
     /// 私聊消息事件
     /// </summary>
-    public event EventCallBackHandler<PrivateMessageEventArgs> OnPrivateMessage;
+    public event EventCallBackHandler<PrivateMessageEventArgs>? OnPrivateMessage;
 
     /// <summary>
     /// 群消息撤回事件
     /// </summary>
-    public event EventCallBackHandler<GroupRecallEventArgs> OnGroupRecall;
+    public event EventCallBackHandler<GroupRecallEventArgs>? OnGroupRecall;
 
     /// <summary>
     /// 好友消息撤回事件
     /// </summary>
-    public event EventCallBackHandler<FriendRecallEventArgs> OnFriendReacll;
+    public event EventCallBackHandler<FriendRecallEventArgs>? OnFriendReacll;
 
     /// <summary>
     /// 好友添加事件
     /// </summary>
-    public event EventCallBackHandler<FriendAddEventArgs> OnFriendAdd;
+    public event EventCallBackHandler<FriendAddEventArgs>? OnFriendAdd;
 
     /// <summary>
     /// 群成员变更事件
     /// </summary>
-    public event EventCallBackHandler<GroupMemberChangeEventArgs> OnGroupMemberChange;
+    public event EventCallBackHandler<GroupMemberChangeEventArgs>? OnGroupMemberChange;
 
     /// <summary>
     /// 请求入群事件
     /// </summary>
-    public event EventCallBackHandler<GroupRequestAddEventArgs> OnGroupRequestAdd;
+    public event EventCallBackHandler<GroupRequestAddEventArgs>? OnGroupRequestAdd;
 
     /// <summary>
     /// 好友请求事件
     /// </summary>
-    public event EventCallBackHandler<FriendRequestAddEventArgs> OnFriendRequestAdd;
+    public event EventCallBackHandler<FriendRequestAddEventArgs>? OnFriendRequestAdd;
 
     /// <summary>
     /// 心跳包事件
     /// </summary>
-    public event EventCallBackHandler<HeartBeatEventArgs> OnHeartBeat;
+    public event EventCallBackHandler<HeartBeatEventArgs>? OnHeartBeat;
 
     /// <summary>
     /// 生命周期事件
     /// </summary>
-    public event EventCallBackHandler<LifeCycleEventArgs> OnLifeCycle;
+    public event EventCallBackHandler<LifeCycleEventArgs>? OnLifeCycle;
 
     /// <summary>
     /// 群禁言事件
     /// </summary>
-    public event EventCallBackHandler<GroupMuteEventArgs> OnGroupMute;
+    public event EventCallBackHandler<GroupMuteEventArgs>? OnGroupMute;
 
     /// <summary>
     /// 群解除禁用事件
     /// </summary>
-    public event EventCallBackHandler<GroupUnMuteEventArgs> OnGroupUnMute;
+    public event EventCallBackHandler<GroupUnMuteEventArgs>? OnGroupUnMute;
 
-    internal async Task Adapter(JObject messageObj)
+    internal async ValueTask Adapter(JObject messageObj)
     {
         if (messageObj.TryGetValue("post_type", out var message) && message != null)
         {
@@ -103,7 +103,7 @@ public class EventAdapter
         }
     }
 
-    private async Task MetaAdapter(JObject messageObj)
+    private async ValueTask MetaAdapter(JObject messageObj)
     {
         if (messageObj.TryGetValue("meta_event_type", out var type) && type != null)
         {
@@ -117,7 +117,7 @@ public class EventAdapter
                         var args = new LifeCycleEventArgs(obj);
                         if (args != null)
                         {
-                            await OnLifeCycle(args);
+                            if(OnLifeCycle != null) await OnLifeCycle(args);
                         }
                         break;
                     }
@@ -129,7 +129,7 @@ public class EventAdapter
                         var args = new HeartBeatEventArgs(obj);
                         if (args != null)
                         {
-                            await OnHeartBeat(args);
+                            if(OnHeartBeat != null) await OnHeartBeat(args);
                         }
                         break;
                     }
@@ -137,7 +137,7 @@ public class EventAdapter
         }
     }
 
-    private async Task RequestAdapter(JObject messageObj)
+    private async ValueTask RequestAdapter(JObject messageObj)
     {
         if (messageObj.TryGetValue("notice_type", out var type) && type != null)
         {
@@ -151,8 +151,8 @@ public class EventAdapter
                         var args = new GroupRequestAddEventArgs(obj);
                         if (args != null)
                         {
-                            MomoServiceFactory.Log.ConsoleInfo($"群请求: group:{args.Group.Id} {args.User.Id} 请求入群");
-                            await OnGroupRequestAdd(args);
+                            Log.ConsoleInfo($"群请求: group:{args.Group.Id} {args.User.Id} 请求入群");
+                            if(OnGroupRequestAdd != null) await OnGroupRequestAdd(args);
                         }
                         break;
                     }
@@ -164,8 +164,8 @@ public class EventAdapter
                         var args = new FriendRequestAddEventArgs(obj);
                         if (args != null)
                         {
-                            MomoServiceFactory.Log.ConsoleInfo($"好友请求: {args.User.Id} 请求添加为好友");
-                            await OnFriendRequestAdd(args);
+                            Log.ConsoleInfo($"好友请求: {args.User.Id} 请求添加为好友");
+                            if(OnFriendRequestAdd != null) await OnFriendRequestAdd(args);
                         }
                         break;
                     }
@@ -173,7 +173,7 @@ public class EventAdapter
         }
     }
 
-    private async Task NoticeAdapter(JObject messageObj)
+    private async ValueTask NoticeAdapter(JObject messageObj)
     {
         if (messageObj.TryGetValue("notice_type", out var type) && type != null)
         {
@@ -187,8 +187,8 @@ public class EventAdapter
                         var args = new GroupRecallEventArgs(obj);
                         if (args != null)
                         {
-                            MomoServiceFactory.Log.ConsoleInfo($"群消息撤回: group: {args.Group.Id} 成员`{args.MessageSender.Id}`被撤回了一条消息:{args.MessageID} 撤回人是`{args.Operator.Id}`");
-                            await OnGroupRecall(args);
+                            Log.ConsoleInfo($"群消息撤回: group: {args.Group.Id} 成员`{args.MessageSender.Id}`被撤回了一条消息:{args.MessageID} 撤回人是`{args.Operator.Id}`");
+                            if(OnGroupRecall != null) await OnGroupRecall(args);
                         }
                         break;
                     }
@@ -200,8 +200,8 @@ public class EventAdapter
                         var args = new FriendRecallEventArgs(obj);
                         if (args != null)
                         {
-                            MomoServiceFactory.Log.ConsoleInfo($"好友撤回 {args.UID} 撤回了一条信息: {args.MessageID}");
-                            await OnFriendReacll(args);
+                            Log.ConsoleInfo($"好友撤回 {args.UID} 撤回了一条信息: {args.MessageID}");
+                            if(OnFriendReacll != null) await OnFriendReacll(args);
                         }
                         break;
                     }
@@ -213,8 +213,8 @@ public class EventAdapter
                         var args = new FriendAddEventArgs(obj);
                         if (args != null)
                         {
-                            MomoServiceFactory.Log.ConsoleInfo($"好友事件: {args.Sender.Id} 被添加为好友");
-                            await OnFriendAdd(args);
+                            Log.ConsoleInfo($"好友事件: {args.Sender.Id} 被添加为好友");
+                            if(OnFriendAdd != null) await OnFriendAdd(args);
                         }
                         break;
                     }
@@ -227,8 +227,8 @@ public class EventAdapter
                         var args = new GroupMemberChangeEventArgs(obj);
                         if (args != null)
                         {
-                            MomoServiceFactory.Log.ConsoleInfo($"群成员变动: group:{args.Group.Id} 成员({args.ChangeUser.Id}) {(args.ChangeType == MemberChangeType.Leave ? "离开" : "加入")}群聊");
-                            await OnGroupMemberChange(args);
+                            Log.ConsoleInfo($"群成员变动: group:{args.Group.Id} 成员({args.ChangeUser.Id}) {(args.ChangeType == MemberChangeType.Leave ? "离开" : "加入")}群聊");
+                            if(OnGroupMemberChange != null) await OnGroupMemberChange(args);
                         }
                         break;
                     }
@@ -244,8 +244,8 @@ public class EventAdapter
                                     var args = new GroupMuteEventArgs(obj);
                                     if (args != null)
                                     {
-                                        MomoServiceFactory.Log.ConsoleInfo($"群禁言: group: {args.Group.Id} 成员`{args.Target.Id}`被`{args.Operator.Id}`禁用{args.Duration}秒");
-                                        await OnGroupMute(args);
+                                        Log.ConsoleInfo($"群禁言: group: {args.Group.Id} 成员`{args.Target.Id}`被`{args.Operator.Id}`禁用{args.Duration}秒");
+                                        if(OnGroupMute != null) await OnGroupMute(args);
                                     }
                                     break;
                                 }
@@ -254,8 +254,8 @@ public class EventAdapter
                                     var args = new GroupUnMuteEventArgs(obj);
                                     if (args != null)
                                     {
-                                        MomoServiceFactory.Log.ConsoleInfo($"群解除禁言: group: {args.Group.Id} 成员`{args.Target.Id}`被`{args.Operator.Id}`解除了禁言");
-                                        await OnGroupUnMute(args);
+                                        Log.ConsoleInfo($"群解除禁言: group: {args.Group.Id} 成员`{args.Target.Id}`被`{args.Operator.Id}`解除了禁言");
+                                        if(OnGroupUnMute != null) await OnGroupUnMute(args);
                                     }
                                     break;
                                 }
@@ -266,7 +266,7 @@ public class EventAdapter
         }
     }
 
-    private async Task MessageAdapter(JObject messageObj)
+    private async ValueTask MessageAdapter(JObject messageObj)
     {
         if (messageObj.TryGetValue("message_type", out var type) && type != null)
         {
@@ -281,7 +281,7 @@ public class EventAdapter
                         var args = new GroupMessageEventArgs(obj);
                         if (args != null)
                         {
-                            await OnGroupMessage(args);
+                            if(OnGroupMessage != null) await OnGroupMessage(args);
                         }
                         break;
                     }
@@ -293,7 +293,7 @@ public class EventAdapter
                         var args = new PrivateMessageEventArgs(obj);
                         if (args != null)
                         {
-                            await OnPrivateMessage(args);
+                            if(OnPrivateMessage != null) await OnPrivateMessage(args);
                         }
                         break;
                     }
