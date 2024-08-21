@@ -27,6 +27,9 @@
 - 这个并不难 你可以用 QQ 邮箱开启 STMP 服务，具体网上教程很多几分钟就可以解决
 - 或者使用其他邮箱的 STMP 服务都可以，你需要正确填写授权码就可以。
 
+## 插件系统
+### 已实现一些插件功能在仓库[MomoPlugin](https://github.com/Controllerdestiny/MomoPlugin)
+
 # 预计支持功能(部分功能可能需要插件支持)
 
 ## 群功能
