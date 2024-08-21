@@ -1,25 +1,25 @@
-﻿using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+﻿using MomoAPI.Converter;
+using MomoAPI.Enumeration.EventParamType;
+using System.Text.Json.Serialization;
 
 
 namespace MomoAPI.Model.Event.NoticeEvent;
 
-internal class OneBotGroupMuteEventArgs : BaseObNoticeEventArgs
+public class OneBotGroupMuteEventArgs : BaseObNoticeEventArgs
 {
-    [JsonProperty("sub_type")]
-    [JsonConverter(typeof(EnumConverter))]
+    [JsonPropertyName("sub_type")]
+    [JsonConverter(typeof(EnumConverter<MuteType>))]
     public MuteType OperatorType { get; set; }
 
-    [JsonProperty("group_id")]
+    [JsonPropertyName("group_id")]
     public long GroupId { get; set; }
 
-    [JsonProperty("operator_id")]
+    [JsonPropertyName("operator_id")]
     public long OperatorId { get; set; }
 
-    [JsonProperty("user_id")]
+    [JsonPropertyName("user_id")]
     public long TargetId { get; set; }
 
-    [JsonProperty("duration")]
+    [JsonPropertyName("duration")]
     public int Duration { get; set; }
 }

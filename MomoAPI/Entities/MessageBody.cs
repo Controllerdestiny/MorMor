@@ -1,7 +1,7 @@
 ﻿using MomoAPI.Entities.Segment;
 using MomoAPI.Enumeration;
-using Newtonsoft.Json;
 using System.Collections;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities;
 
@@ -11,14 +11,19 @@ public class MessageBody : IList<MomoSegment>
     /// 消息列表
     /// 序列化时用得到
     /// </summary>
-    [JsonProperty("message")]
-    private readonly List<MomoSegment> _messages = new();
+    [JsonPropertyName("message")]
+    private readonly List<MomoSegment> _messages = [];
 
     public MomoSegment this[int index] { get => ((IList<MomoSegment>)_messages)[index]; set => ((IList<MomoSegment>)_messages)[index] = value; }
 
     public int Count => _messages.Count;
 
     public bool IsReadOnly => false;
+
+    public static MessageBody Builder()
+    {
+        return new();
+    }
 
     public MessageBody(List<MomoSegment> momoSegments)
     {
@@ -39,6 +44,12 @@ public class MessageBody : IList<MomoSegment>
     public MessageBody Image(string file)
     {
         Add(MomoSegment.Image(file));
+        return this;
+    }
+
+    public MessageBody Image(byte[] buffer)
+    {
+        Add(MomoSegment.Image(buffer));
         return this;
     }
 
@@ -102,7 +113,7 @@ public class MessageBody : IList<MomoSegment>
         return this;
     }
 
-    public MessageBody File(string file, string name = null)
+    public MessageBody File(string file, string name = "")
     {
         Add(MomoSegment.File(file, name));
         return this;
@@ -172,6 +183,6 @@ public class MessageBody : IList<MomoSegment>
 
     public static implicit operator MessageBody(string text)
     {
-        return new MessageBody() { text };
+        return [text];
     }
 }

@@ -1,18 +1,18 @@
-﻿using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+﻿using MomoAPI.Converter;
+using MomoAPI.Enumeration.EventParamType;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.NoticeEvent;
 
 /// <summary>
 /// 通知事件
 /// </summary>
-internal class BaseObNoticeEventArgs : BaseObApiEventArgs
+public class BaseObNoticeEventArgs : BaseObApiEventArgs
 {
-    [JsonProperty("notice_type")]
-    [JsonConverter(typeof(EnumConverter))]
+    [JsonPropertyName("notice_type")]
+    [JsonConverter(typeof(EnumConverter<NoticeType>))]
     public NoticeType NoticeType { get; set; }
 
-    [JsonProperty("user_id")]
+    [JsonPropertyName("user_id")]
     public long Uid { get; set; }
 }

@@ -1,10 +1,10 @@
 ﻿using MomoAPI.Converter;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 public record Reply : BaseMessage
 {
-    [JsonConverter(typeof(StringConverter))]
-    [JsonProperty("id")]
-    public long Id { get; internal set; }
+    //[JsonConverter(typeof(StringConverter))]
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
 }

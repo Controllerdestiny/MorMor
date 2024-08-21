@@ -1,11 +1,11 @@
 ﻿using MomoAPI.Converter;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
 public record Face : BaseMessage
 {
     [JsonConverter(typeof(StringConverter))]
-    [JsonProperty("id")]
+    [JsonPropertyName("id")]
     public int Id { get; internal set; }
 }

@@ -5,10 +5,10 @@ using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration.ApiType;
 using MomoAPI.Enumeration.EventParamType;
 using MomoAPI.Model.API;
+using MomoAPI.Extensions;
 using MomoAPI.Net;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Threading.Channels;
+using System.Text.Json.Nodes;
+using System.Text.Json;
 
 namespace MomoAPI.Adapter;
 
@@ -23,7 +23,7 @@ internal class ApiAdapter
     /// <returns></returns>
     public static async ValueTask<(ApiStatus, long)> SendGroupMessage(long target, MessageBody body, TimeSpan? timeout = null)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        /*(ApiStatus status, JObject obj) = await*/ await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiParams = new SendMessageParams
             {
@@ -33,16 +33,16 @@ internal class ApiAdapter
             },
             ApiRequestType = ActionType.SendGroupMsg
         }, timeout);
-        if (status.RetCode != ApiStatusType.Ok)
-            return (status, -1);
-        Log.ConsoleInfo($"Bot 发送群消息: group-> {target} result ->{obj?["status"]}");
-        long messageid = long.TryParse(obj?["data"]?["message_id"]?.ToString(), out var id) ? id : -1;
-        return (status, messageid);
+        //if (status.RetCode != ApiStatusType.Ok)
+        //    return (status, -1);
+        //Log.ConsoleInfo($"Bot 发送群消息: group-> {target} result ->{obj?["status"]}");
+        //long messageid = long.TryParse(obj?["data"]?["message_id"]?.ToString(), out var id) ? id : -1;
+        return (new ApiStatus(), -1);
     }
 
     public static async ValueTask<(ApiStatus, long)> SendPrivateMessage(long target, MessageBody body, long? group_id, TimeSpan? timeout = null)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiParams = new SendMessageParams
             {
@@ -74,19 +74,19 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, List<GroupInfo>)> GetGroupList()
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetGroupList
         });
         if (status.RetCode != ApiStatusType.Ok || obj?["data"] == null)
             return (status, new List<GroupInfo>());
-        List<GroupInfo> groupList = obj["data"]?.ToObject<List<GroupInfo>>() ?? new();
+        List<GroupInfo> groupList = JsonSerializer.Deserialize<List<GroupInfo>>( obj["data"]) ?? new();
         return (status, groupList);
     }
 
     public static async ValueTask<(ApiStatus, GroupInfo)> GetGroupInfo(long groupid, bool cache)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetGroupInfo,
             ApiParams = new
@@ -103,7 +103,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, GroupMemberInfo)> GetGroupMemberInfo(long groupid, long target, bool cache = false)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetGroupMemberInfo,
             ApiParams = new
@@ -121,7 +121,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, List<GroupMemberInfo>)> GetGroupMemberList(long groupid)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetGroupMemberList,
             ApiParams = new
@@ -137,7 +137,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, List<FriendInfo>)> GetFriendList()
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetGroupMemberList,
         });
@@ -159,7 +159,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, MessageContext, Sender, long)> GetMessage(long messageid)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetMsg,
             ApiParams = new
@@ -307,18 +307,18 @@ internal class ApiAdapter
         return status;
     }
 
-    public static async ValueTask<(ApiStatus, JObject)> GetVersion()
+    public static async ValueTask<(ApiStatus, JsonObject)> GetVersion()
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetVersion,
         });
         return (status, obj);
     }
 
-    public static async ValueTask<(ApiStatus, JObject)> GetStatus()
+    public static async ValueTask<(ApiStatus, JsonObject)> GetStatus()
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetStatus,
         });
@@ -327,7 +327,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, bool)> CanSendImage()
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.CanSendImage,
         });
@@ -336,7 +336,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, bool)> CanSendRecord()
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.CanSendRecord,
         });
@@ -353,7 +353,7 @@ internal class ApiAdapter
         //将消息段转换为数组
         CustomNode[] customNodes = msgList as CustomNode[] ?? msgList.ToArray();
         //发送消息
-        (ApiStatus apiStatus, JObject ret) =
+        (ApiStatus apiStatus, JsonObject ret) =
             await ReactiveApiManager.SendApiRequest(new ApiRequest
             {
                 ApiRequestType = ActionType.SendGroupForwardMsg,
@@ -385,7 +385,7 @@ internal class ApiAdapter
         CustomNode[] customNodes = msgList as CustomNode[] ?? msgList.ToArray();
 
         //发送消息
-        (ApiStatus apiStatus, JObject ret) =
+        (ApiStatus apiStatus, JsonObject ret) =
             await ReactiveApiManager.SendApiRequest(new ApiRequest
             {
                 ApiRequestType = ActionType.SendPrivateForwardMsg,
@@ -407,7 +407,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, UserInfo, string)> GetStrangerInfo(long target, bool cache = false)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetStrangerInfo,
             ApiParams = new
@@ -426,7 +426,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, string)> GetImage(string file)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetImage,
             ApiParams = new
@@ -439,7 +439,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, string)> GetRecord(string file, RecordType type = RecordType.Mp3)
     {
-        (ApiStatus status, JObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject obj) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetImage,
             ApiParams = new
@@ -453,7 +453,7 @@ internal class ApiAdapter
 
     public static async ValueTask<(ApiStatus, CookieInfo)> GetCookie(string domain = "qun.qq.com")
     {
-        (ApiStatus status, JObject res) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
+        (ApiStatus status, JsonObject res) = await ReactiveApiManager.SendApiRequest(new ApiRequest()
         {
             ApiRequestType = ActionType.GetCookie,
             ApiParams = new
@@ -461,17 +461,28 @@ internal class ApiAdapter
                 domain,
             }
         });
-        var Info = new CookieInfo();
+        CookieInfo Info;
         var cookie = res["data"]?["cookies"]?.ToString()!;
-        Info.Cookie = cookie;
         if (!string.IsNullOrEmpty(cookie))
         {
             var val = cookie.Split(";");
             if (val.Length >= 2)
             {
-                Info.Pskey = val[0][7..];
-                Info.Skey = val[1][6..];
+                Info = new()
+                {
+                    Cookie = cookie,
+                    Pskey = val[0][7..],
+                    Skey = val[1][6..]
+                };
             }
+            else
+            {
+                Info = new();
+            }
+        }
+        else
+        {
+            Info = new();
         }
         return (status, Info);
     }

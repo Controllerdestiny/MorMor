@@ -43,7 +43,7 @@ public static class PaginationTools
         }
 
         public string NothingToDisplayString { get; set; }
-        public LineFormatterDelegate LineFormatter { get; set; }
+        public LineFormatterDelegate? LineFormatter { get; set; }
 
         private int maxLinesPerPage;
 
@@ -80,7 +80,7 @@ public static class PaginationTools
             headerFormat = "第 {{0}} 页，共 {{1}} 页";
             IncludeFooter = true;
             footerFormat = "输入 /<指令> {{0}} 查看更多";
-            NothingToDisplayString = null;
+            NothingToDisplayString = "";
             LineFormatter = null;
             maxLinesPerPage = 4;
             pageLimit = 0;
@@ -89,7 +89,7 @@ public static class PaginationTools
     #endregion
 
     public static void SendPage(
-      GroupMessageEventArgs args, int pageNumber, IEnumerable dataToPaginate, int dataToPaginateCount, Settings settings = null)
+      GroupMessageEventArgs args, int pageNumber, IEnumerable dataToPaginate, int dataToPaginateCount, Settings? settings = null)
     {
         settings ??= new Settings();
 
@@ -116,7 +116,7 @@ public static class PaginationTools
         int listOffset = (pageNumber - 1) * settings.MaxLinesPerPage;
         int offsetCounter = 0;
         int lineCounter = 0;
-        foreach (object lineData in dataToPaginate)
+        foreach (var lineData in dataToPaginate)
         {
             if (lineData == null)
                 continue;
@@ -148,7 +148,7 @@ public static class PaginationTools
             }
             else
             {
-                lineMessage = lineData.ToString();
+                lineMessage = lineData?.ToString() ?? "";
             }
 
             if (lineMessage != null)
@@ -172,12 +172,12 @@ public static class PaginationTools
         args.Group.Reply(body);
     }
 
-    public static void SendPage(GroupMessageEventArgs args, int pageNumber, IList dataToPaginate, Settings settings = null)
+    public static void SendPage(GroupMessageEventArgs args, int pageNumber, IList dataToPaginate, Settings? settings = null)
     {
         PaginationTools.SendPage(args, pageNumber, dataToPaginate, dataToPaginate.Count, settings);
     }
 
-    public static List<string> BuildLinesFromTerms(IEnumerable terms, Func<object, string> termFormatter = null, string separator = ", ", int maxCharsPerLine = 80)
+    public static List<string> BuildLinesFromTerms(IEnumerable terms, Func<object, string>? termFormatter = null, string separator = ", ", int maxCharsPerLine = 80)
     {
         List<string> lines = new();
         StringBuilder lineBuilder = new();
@@ -192,7 +192,7 @@ public static class PaginationTools
             {
                 try
                 {
-                    if ((termString = termFormatter(term)) == null)
+                    if ((termString = termFormatter(term!)) == null)
                         continue;
                 }
                 catch (Exception ex)
@@ -202,7 +202,7 @@ public static class PaginationTools
             }
             else
             {
-                termString = term.ToString();
+                termString = term?.ToString() ?? "";
             }
 
             if (lineBuilder.Length + termString.Length + separator.Length < maxCharsPerLine)
@@ -233,7 +233,7 @@ public static class PaginationTools
         if (!int.TryParse(pageNumberRaw, out pageNumber) || pageNumber < 1)
         {
             if (errorMessageReceiver != null)
-                errorMessageReceiver.Reply(string.Format("“{0}”不是有效的页码。", pageNumberRaw));
+                errorMessageReceiver.Reply(string.Format("“{0}”不是有效的页码。", pageNumberRaw)).GetAwaiter().GetResult();
 
             pageNumber = 1;
             return false;

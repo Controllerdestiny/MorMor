@@ -23,7 +23,7 @@ namespace MorMor.Commands;
 public class OneBotCommand
 {
     [CommandMatch("导出存档", OneBotPermissions.ExportFile)]
-    private async ValueTask Test(CommandArgs args)
+    public static async ValueTask Test(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -75,7 +75,7 @@ public class OneBotCommand
     }
     #region 捣药
     [CommandMatch("捣药", OneBotPermissions.ImageEmoji)]
-    private async ValueTask ImageEmojiOne(CommandArgs args)
+    public static async ValueTask ImageEmojiOne(CommandArgs args)
     {
         var url = "https://oiapi.net/API/Face_Pound";
         await CommandUtils.SendImagsEmoji(url, args);
@@ -84,7 +84,7 @@ public class OneBotCommand
 
     #region 咬你
     [CommandMatch("咬你", OneBotPermissions.ImageEmoji)]
-    private async ValueTask ImageEmojiTwo(CommandArgs args)
+    public static async ValueTask ImageEmojiTwo(CommandArgs args)
     {
         var url = "https://oiapi.net/API/Face_Suck";
         await CommandUtils.SendImagsEmoji(url, args);
@@ -93,7 +93,7 @@ public class OneBotCommand
 
     #region 顶
     [CommandMatch("顶", OneBotPermissions.ImageEmoji)]
-    private async ValueTask ImageEmojiThree(CommandArgs args)
+    public static async ValueTask ImageEmojiThree(CommandArgs args)
     {
         var url = "https://oiapi.net/API/Face_Play";
         await CommandUtils.SendImagsEmoji(url, args);
@@ -102,7 +102,7 @@ public class OneBotCommand
 
     #region 拍
     [CommandMatch("拍", OneBotPermissions.ImageEmoji)]
-    private async ValueTask ImageEmojiFour(CommandArgs args)
+    public static async ValueTask ImageEmojiFour(CommandArgs args)
     {
         var url = "https://oiapi.net/API/Face_Pat";
         await CommandUtils.SendImagsEmoji(url, args);
@@ -111,7 +111,7 @@ public class OneBotCommand
 
     #region 配置设置
     [CommandMatch("config", OneBotPermissions.SetConfig)]
-    private async ValueTask SetConfig(CommandArgs args)
+    public static async ValueTask SetConfig(CommandArgs args)
     {
         if (args.Parameters.Count < 2)
         {
@@ -147,7 +147,7 @@ public class OneBotCommand
 
     #region 泰拉商店
     [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop)]
-    private async ValueTask Shop(CommandArgs args)
+    public static async ValueTask Shop(CommandArgs args)
     {
         var sb = new StringBuilder();
         sb.AppendLine($$"""<div align="center">""");
@@ -172,7 +172,7 @@ public class OneBotCommand
 
     #region 泰拉奖池管理
     [CommandMatch("prize", OneBotPermissions.TerrariaPrizeAdmin)]
-    private async ValueTask PrizeManager(CommandArgs args)
+    public static async ValueTask PrizeManager(CommandArgs args)
     {
         if (args.Parameters.Count == 5 && args.Parameters[0].ToLower() == "add")
         {
@@ -234,7 +234,7 @@ public class OneBotCommand
 
     #region 泰拉商店管理
     [CommandMatch("shop", OneBotPermissions.TerrariaShopAdmin)]
-    private async ValueTask ShopManager(CommandArgs args)
+    public static async ValueTask ShopManager(CommandArgs args)
     {
         if (args.Parameters.Count == 4 && args.Parameters[0].ToLower() == "add")
         {
@@ -293,7 +293,7 @@ public class OneBotCommand
 
     #region 泰拉奖池
     [CommandMatch("泰拉奖池", OneBotPermissions.TerrariaPrize)]
-    private async ValueTask Prize(CommandArgs args)
+    public static async ValueTask Prize(CommandArgs args)
     {
         var sb = new StringBuilder();
         sb.AppendLine($$"""<div align="center">""");
@@ -318,7 +318,7 @@ public class OneBotCommand
 
     #region 表情回应
     [CommandMatch("表情回应", OneBotPermissions.EmojiLike)]
-    private async ValueTask EmojiLike(CommandArgs args)
+    public static async ValueTask EmojiLike(CommandArgs args)
     {
         string[] emojis =
         [
@@ -359,7 +359,7 @@ public class OneBotCommand
 
     #region 清理内存
     [CommandMatch("清理内存", OneBotPermissions.ClearMemory)]
-    private async ValueTask Memory(CommandArgs args)
+    public static async ValueTask Memory(CommandArgs args)
     {
         var old = Utility.GetUsedPhys();
         Utility.FreeMemory();
@@ -370,7 +370,7 @@ public class OneBotCommand
 
     #region 删除文件
     [CommandMatch("删除文件", OneBotPermissions.ChangeServer)]
-    private async ValueTask ClearFile(CommandArgs args)
+    public static async ValueTask ClearFile(CommandArgs args)
     {
         var (status, list) = await args.EventArgs.OneBotAPI.GetGroupFileList(args.EventArgs.Group.Id);
         var count = 0;
@@ -390,7 +390,7 @@ public class OneBotCommand
 
     #region 搜索物品
     [CommandMatch("sitem", OneBotPermissions.SearchItem)]
-    private async ValueTask SearchItem(CommandArgs args)
+    public static async ValueTask SearchItem(CommandArgs args)
     {
         if (args.Parameters.Count > 0)
         {
@@ -403,7 +403,7 @@ public class OneBotCommand
 
     #region 版本信息
     [CommandMatch("version", OneBotPermissions.Version)]
-    private async ValueTask VersionInfo(CommandArgs args)
+    public static async ValueTask VersionInfo(CommandArgs args)
     {
         var info = "名称: MorMor" +
             "\n版本: V2.0.2.2" +
@@ -439,7 +439,7 @@ public class OneBotCommand
 
     #region 签到排行
     [CommandMatch("签到排行", OneBotPermissions.Sign)]
-    private async ValueTask SignRank(CommandArgs args)
+    public static async ValueTask SignRank(CommandArgs args)
     {
         try
         {
@@ -466,7 +466,7 @@ public class OneBotCommand
 
     #region 签到
     [CommandMatch("签到", OneBotPermissions.Sign)]
-    private async ValueTask Sign(CommandArgs args)
+    public static async ValueTask Sign(CommandArgs args)
     {
         try
         {
@@ -493,7 +493,7 @@ public class OneBotCommand
 
     #region 重读
     [CommandMatch("reload", OneBotPermissions.Reload)]
-    private async ValueTask Reload(CommandArgs args)
+    public static async ValueTask Reload(CommandArgs args)
     {
         var reloadArgs = new ReloadEventArgs();
         MorMorAPI.LoadConfig();
@@ -505,7 +505,7 @@ public class OneBotCommand
 
     #region Terraria账号信息
     [CommandMatch("ui", OneBotPermissions.QueryUserList)]
-    private async ValueTask UserInfo(CommandArgs args)
+    public static async ValueTask UserInfo(CommandArgs args)
     {
         if (!MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) || server == null)
         {
@@ -540,7 +540,7 @@ public class OneBotCommand
 
     #region 账户管理
     [CommandMatch("account", OneBotPermissions.Account)]
-    private async ValueTask Account(CommandArgs args)
+    public static async ValueTask Account(CommandArgs args)
     {
         void Show(List<string> line)
         {
@@ -682,7 +682,7 @@ public class OneBotCommand
 
     #region 权限组管理
     [CommandMatch("group", OneBotPermissions.Group)]
-    private async ValueTask Group(CommandArgs args)
+    public static async ValueTask Group(CommandArgs args)
     {
         if (args.Parameters.Count == 2 && args.Parameters[0].ToLower() == "add")
         {
@@ -766,7 +766,7 @@ public class OneBotCommand
 
     #region 星币管理
     [CommandMatch("星币", OneBotPermissions.CurrencyUse, OneBotPermissions.CurrencyAdmin)]
-    private async ValueTask Currency(CommandArgs args)
+    public static async ValueTask Currency(CommandArgs args)
     {
         var at = args.EventArgs.MessageContext.GetAts();
         if (args.Parameters.Count == 3 && args.Parameters[0].ToLower() == "add")
@@ -944,7 +944,7 @@ public class OneBotCommand
 
     #region 查询指令权限
     [CommandMatch("scmdperm", OneBotPermissions.SearchCommandPerm)]
-    private async ValueTask CmdBan(CommandArgs args)
+    public static async ValueTask CmdBan(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -973,7 +973,7 @@ public class OneBotCommand
 
     #region 缩写查询
     [CommandMatch("缩写", OneBotPermissions.Nbnhhsh)]
-    private async ValueTask Nbnhhsh(CommandArgs args)
+    public static async ValueTask Nbnhhsh(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1001,7 +1001,7 @@ public class OneBotCommand
 
     #region 禁言
     [CommandMatch("禁", OneBotPermissions.Mute)]
-    private async ValueTask Mute(CommandArgs args)
+    public static async ValueTask Mute(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1028,7 +1028,7 @@ public class OneBotCommand
 
     #region 解禁
     [CommandMatch("解", OneBotPermissions.Mute)]
-    private async ValueTask UnMute(CommandArgs args)
+    public static async ValueTask UnMute(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
         {
@@ -1050,7 +1050,7 @@ public class OneBotCommand
 
     #region 全体禁言
     [CommandMatch("全禁", OneBotPermissions.Mute)]
-    private async ValueTask MuteAll(CommandArgs args)
+    public static async ValueTask MuteAll(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1082,7 +1082,7 @@ public class OneBotCommand
 
     #region 设置群名
     [CommandMatch("设置群名", OneBotPermissions.ChangeGroupOption)]
-    private async ValueTask SetGroupName(CommandArgs args)
+    public static async ValueTask SetGroupName(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1103,7 +1103,7 @@ public class OneBotCommand
 
     #region 设置群成员名片
     [CommandMatch("设置昵称", OneBotPermissions.ChangeGroupOption)]
-    private async ValueTask SetGroupMemeberNick(CommandArgs args)
+    public static async ValueTask SetGroupMemeberNick(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1127,7 +1127,7 @@ public class OneBotCommand
 
     #region 设置管理
     [CommandMatch("设置管理", OneBotPermissions.ChangeGroupOption)]
-    private async ValueTask SetGroupAdmin(CommandArgs args)
+    public static async ValueTask SetGroupAdmin(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
         {
@@ -1151,7 +1151,7 @@ public class OneBotCommand
 
     #region 取消管理
     [CommandMatch("取消管理", OneBotPermissions.ChangeGroupOption)]
-    private async ValueTask UnsetGroupAdmin(CommandArgs args)
+    public static async ValueTask UnsetGroupAdmin(CommandArgs args)
     {
         if (args.Parameters.Count == 0)
         {
@@ -1175,7 +1175,7 @@ public class OneBotCommand
 
     #region 服务器列表
     [CommandMatch("服务器列表", OneBotPermissions.ServerList)]
-    private async ValueTask ServerList(CommandArgs args)
+    public static async ValueTask ServerList(CommandArgs args)
     {
         if (MorMorAPI.Setting.Servers.Count == 0)
         {
@@ -1220,7 +1220,7 @@ public class OneBotCommand
 
     #region 重启服务器
     [CommandMatch("重启服务器", OneBotPermissions.ResetTShock)]
-    private async ValueTask ReStartServer(CommandArgs args)
+    public static async ValueTask ReStartServer(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1245,7 +1245,7 @@ public class OneBotCommand
 
     #region 切换服务器
     [CommandMatch("切换", OneBotPermissions.ChangeServer)]
-    private async ValueTask ChangeServer(CommandArgs args)
+    public static async ValueTask ChangeServer(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1267,7 +1267,7 @@ public class OneBotCommand
 
     #region 查询在线玩家
     [CommandMatch("在线", OneBotPermissions.QueryOnlienPlayer)]
-    private async ValueTask OnlinePlayers(CommandArgs args)
+    public static async ValueTask OnlinePlayers(CommandArgs args)
     {
         if (MorMorAPI.Setting.Servers.Count == 0)
         {
@@ -1287,7 +1287,7 @@ public class OneBotCommand
 
     #region 生成地图
     [CommandMatch("生成地图", OneBotPermissions.GenerateMap)]
-    private async ValueTask GenerateMap(CommandArgs args)
+    public static async ValueTask GenerateMap(CommandArgs args)
     {
         var type = ImageType.Jpg;
         if (args.Parameters.Count > 0 && args.Parameters[0] == "-p")
@@ -1295,16 +1295,24 @@ public class OneBotCommand
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
             var api = await server.MapImage(type);
-            var body = new MessageBody();
             if (api.Status)
             {
-                body.Add(MomoSegment.Image($"base64://{Convert.ToBase64String(api.Buffer)}"));
+                //var tempDir = Path.Combine(Environment.CurrentDirectory, "TempImage");
+                //if (!Directory.Exists(tempDir))
+                //{
+                //    Directory.CreateDirectory(tempDir);
+                //}
+                //var fileName = Guid.NewGuid().ToString() + ".jpg";
+                //var path = Path.Combine(tempDir, fileName);
+                //System.IO.File.WriteAllBytes(path, api.Buffer);
+                await args.EventArgs.Reply(MessageBody.Builder().Image(api.Buffer));
+                //File.Delete(path);
             }
             else
             {
-                body.Add(api.Message);
+                await args.EventArgs.Reply(api.Message);
             }
-            await args.EventArgs.Reply(body);
+
         }
         else
         {
@@ -1315,7 +1323,7 @@ public class OneBotCommand
 
     #region 注册
     [CommandMatch("注册", OneBotPermissions.RegisterUser)]
-    private async ValueTask Register(CommandArgs args)
+    public static async ValueTask Register(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1381,7 +1389,7 @@ public class OneBotCommand
 
     #region 我的密码
     [CommandMatch("我的密码", OneBotPermissions.SelfPassword)]
-    private async ValueTask SelfPassword(CommandArgs args)
+    public static async ValueTask SelfPassword(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1407,7 +1415,7 @@ public class OneBotCommand
 
     #region 重置密码
     [CommandMatch("重置密码", OneBotPermissions.SelfPassword)]
-    private async ValueTask ResetPassword(CommandArgs args)
+    public static async ValueTask ResetPassword(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1451,7 +1459,7 @@ public class OneBotCommand
 
     #region 查询注册人
     [CommandMatch("注册查询", OneBotPermissions.SearchUser)]
-    private async ValueTask SearchUser(CommandArgs args)
+    public static async ValueTask SearchUser(CommandArgs args)
     {
         async ValueTask GetRegister(long id)
         {
@@ -1511,7 +1519,7 @@ public class OneBotCommand
 
     #region 注册列表
     [CommandMatch("注册列表", OneBotPermissions.QueryUserList)]
-    private async ValueTask RegisterList(CommandArgs args)
+    public static async ValueTask RegisterList(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1537,7 +1545,7 @@ public class OneBotCommand
 
     #region user管理
     [CommandMatch("user", OneBotPermissions.UserAdmin)]
-    private async ValueTask User(CommandArgs args)
+    public static async ValueTask User(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1572,7 +1580,7 @@ public class OneBotCommand
 
     #region 进度查询
     [CommandMatch("进度查询", OneBotPermissions.QueryProgress)]
-    private async ValueTask GameProgress(CommandArgs args)
+    public static async ValueTask GameProgress(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1599,7 +1607,7 @@ public class OneBotCommand
 
     #region 查询背包
     [CommandMatch("查背包", OneBotPermissions.QueryInventory)]
-    private async ValueTask QueryInventory(CommandArgs args)
+    public static async ValueTask QueryInventory(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1635,7 +1643,7 @@ public class OneBotCommand
 
     #region 执行命令
     [CommandMatch("执行", OneBotPermissions.ExecuteCommand)]
-    private async ValueTask ExecuteCommand(CommandArgs args)
+    public static async ValueTask ExecuteCommand(CommandArgs args)
     {
         if (args.Parameters.Count < 1)
         {
@@ -1667,7 +1675,7 @@ public class OneBotCommand
 
     #region 击杀排行
     [CommandMatch("击杀排行", OneBotPermissions.KillRank)]
-    private async ValueTask KillRank(CommandArgs args)
+    public static async ValueTask KillRank(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1708,7 +1716,7 @@ public class OneBotCommand
 
     #region 在线排行
     [CommandMatch("在线排行", OneBotPermissions.OnlineRank)]
-    private async ValueTask OnlineRank(CommandArgs args)
+    public static async ValueTask OnlineRank(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1755,7 +1763,7 @@ public class OneBotCommand
 
     #region 死亡排行
     [CommandMatch("死亡排行", OneBotPermissions.DeathRank)]
-    private async ValueTask DeathRank(CommandArgs args)
+    public static async ValueTask DeathRank(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1791,7 +1799,7 @@ public class OneBotCommand
 
     #region 消息转发
     [CommandMatch("消息转发", OneBotPermissions.ForwardMsg)]
-    private async ValueTask MessageForward(CommandArgs args)
+    public static async ValueTask MessageForward(CommandArgs args)
     {
         if (args.Parameters.Count == 1)
         {
@@ -1829,7 +1837,7 @@ public class OneBotCommand
 
     #region 查询他人信息
     [CommandMatch("查", OneBotPermissions.SelfInfo)]
-    private async ValueTask AcountInfo(CommandArgs args)
+    public static async ValueTask AcountInfo(CommandArgs args)
     {
         var at = args.EventArgs.MessageContext.GetAts();
         if (at.Any())
@@ -1851,7 +1859,7 @@ public class OneBotCommand
 
     #region 我的信息
     [CommandMatch("我的信息", OneBotPermissions.SelfInfo)]
-    private async ValueTask SelfInfo(CommandArgs args)
+    public static async ValueTask SelfInfo(CommandArgs args)
     {
         await args.EventArgs.Reply(CommandUtils.GetAccountInfo(args.EventArgs.Group.Id, args.EventArgs.Sender.Id, args.Account.Group.Name));
     }
@@ -1859,7 +1867,7 @@ public class OneBotCommand
 
     #region Wiki
     [CommandMatch("wiki", OneBotPermissions.TerrariaWiki)]
-    private async ValueTask Wiki(CommandArgs args)
+    public static async ValueTask Wiki(CommandArgs args)
     {
         string url = "https://terraria.wiki.gg/zh/index.php?search=";
         var msg = args.Parameters.Count > 0 ? url += HttpUtility.UrlEncode(args.Parameters[0]) : url.Split("?")[0];
@@ -1869,7 +1877,7 @@ public class OneBotCommand
 
     #region 启动服务器
     [CommandMatch("启动", OneBotPermissions.StartTShock)]
-    private async ValueTask StartTShock(CommandArgs args)
+    public static async ValueTask StartTShock(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1889,7 +1897,7 @@ public class OneBotCommand
 
     #region 重置服务器
     [CommandMatch("泰拉服务器重置", OneBotPermissions.StartTShock)]
-    private async ValueTask ResetTShock(CommandArgs args)
+    public static async ValueTask ResetTShock(CommandArgs args)
     {
         if (MorMorAPI.UserLocation.TryGetServer(args.EventArgs.Sender.Id, args.EventArgs.Group.Id, out var server) && server != null)
         {
@@ -1935,7 +1943,7 @@ public class OneBotCommand
 
     #region 随机视频
     [CommandMatch("randv", "")]
-    private async ValueTask RandVideo(CommandArgs args)
+    public static async ValueTask RandVideo(CommandArgs args)
     {
         var body = new MessageBody()
         {

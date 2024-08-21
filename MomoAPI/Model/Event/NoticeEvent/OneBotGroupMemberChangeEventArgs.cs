@@ -1,18 +1,18 @@
-﻿using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+﻿using MomoAPI.Converter;
+using MomoAPI.Enumeration.EventParamType;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.NoticeEvent;
 
-internal class OneBotGroupMemberChangeEventArgs : BaseObNoticeEventArgs
+public class OneBotGroupMemberChangeEventArgs : BaseObNoticeEventArgs
 {
-    [JsonProperty("group_id")]
+    [JsonPropertyName("group_id")]
     public long GroupId { get; set; }
 
-    [JsonProperty("operator_id")]
+    [JsonPropertyName("operator_id")]
     public long OperatorId { get; set; }
 
-    [JsonProperty("sub_type")]
-    [JsonConverter(typeof(EnumConverter))]
+    [JsonPropertyName("sub_type")]
+    [JsonConverter(typeof(EnumConverter<MemberChangeType>))]
     public MemberChangeType ChangeType { get; set; }
 }

@@ -1,28 +1,30 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
 public record Music : BaseMessage
 {
-    [JsonProperty("type")]
+    [JsonPropertyName("type")]
     public string Type { get; set; } = "custom";
 
-    [JsonProperty("url")]
-    public string Url { get; set; }
+    [JsonPropertyName("url")]
+    public string Url { get; set; } = string.Empty;
 
-    [JsonProperty("audio")]
-    public string Audio { get; set; }
+    [JsonPropertyName("audio")]
+    public string Audio { get; set; } = string.Empty;
 
-    [JsonProperty("title")]
-    public string Title { get; set; }
+    [JsonPropertyName("title")]
+    public string Title { get; set; } = string.Empty;
 
-    [JsonProperty("content")]
-    public string Content { get; set; }
+    [JsonPropertyName("content")]
+    public string Content { get; set; } = string.Empty;
 
-    [JsonProperty("image")]
-    public string Image { get; set; }
+    [JsonPropertyName("image")]
+    public string Image { get; set; } = string.Empty;
 
-    [JsonProperty("singer")]
-    public string Singer { get; set; }
+    [JsonPropertyName("singer")]
+    public string Singer { get; set; } = string.Empty;
 
 }

@@ -1,18 +1,18 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
 public struct GroupInfo
 {
-    [JsonProperty("group_name")]
+    [JsonPropertyName("group_name")]
     public string Name { get; init; }
 
-    [JsonProperty("group_id")]
+    [JsonPropertyName("group_id")]
     public long ID { get; init; }
 
-    [JsonProperty("member_count")]
+    [JsonPropertyName("member_count")]
     public int MemberCount { get; init; }
 
-    [JsonProperty("max_member_count")]
+    [JsonPropertyName("max_member_count")]
     public int MaxMemberCount { get; init; }
 }

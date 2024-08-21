@@ -4,14 +4,9 @@ using MomoAPI.Entities.Segment.DataModel;
 
 namespace MomoAPI.Entities;
 
-public class Group
+public class Group(long id)
 {
-    public long Id { get; }
-
-    public Group(long id)
-    {
-        Id = id;
-    }
+    public long Id { get; } = id;
 
     public ValueTask<(ApiStatus, long)> SendMessage(MessageBody body, TimeSpan? timeout = null)
     {

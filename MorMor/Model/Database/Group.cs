@@ -6,9 +6,9 @@ public class Group
 {
     public string Name { get; set; }
 
-    private List<string> negatedpermissions { get; set; } = new();
+    private List<string> negatedpermissions { get; set; } = [];
 
-    public List<string> permissions { get; set; } = new();
+    public List<string> permissions { get; set; } = [];
 
     public Group Parent { get; set; }
 
@@ -28,7 +28,7 @@ public class Group
         }
     }
 
-    public Group(string groupname, Group parentgroup = null, string permissions = null)
+    public Group(string groupname, Group parentgroup = null, string permissions = "")
     {
         Name = groupname;
         Parent = parentgroup;

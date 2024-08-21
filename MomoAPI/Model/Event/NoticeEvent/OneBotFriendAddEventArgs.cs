@@ -1,6 +1,6 @@
 ﻿namespace MomoAPI.Model.Event.NoticeEvent
 {
-    internal class OneBotFriendAddEventArgs : BaseObNoticeEventArgs
+    public class OneBotFriendAddEventArgs : BaseObNoticeEventArgs
     {
     }
 }

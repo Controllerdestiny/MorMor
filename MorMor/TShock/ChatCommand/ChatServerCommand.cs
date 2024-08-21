@@ -8,8 +8,7 @@ namespace MorMor.TShock.ChatCommand;
 [CommandSeries]
 public class ChatServerCommand
 {
-    [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop
-        )]
+    [CommandMatch("泰拉商店", OneBotPermissions.TerrariaShop)]
     public static async ValueTask ShopList(PlayerCommandArgs args)
     {
         if (args.Server == null) return;

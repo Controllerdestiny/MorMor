@@ -1,40 +1,38 @@
-﻿using Newtonsoft.Json;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
-namespace MomoAPI.Utils;
+namespace MomoAPI.Converter;
 
-public class EnumConverter : JsonConverter
+public class EnumConverter<T> : JsonConverter<T> where T : Enum
 {
-    public override bool CanConvert(Type objectType)
-    {
-        return objectType == typeof(Enum);
-    }
 
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+    public override T? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var fields = objectType.GetFields();
-        string readValue = reader.Value?.ToString() ?? string.Empty;
+        var fields = typeToConvert.GetFields();
+        string readValue = reader.GetString() ?? string.Empty;
         foreach (var field in fields)
         {
             var obj = field.GetCustomAttributes<DescriptionAttribute>();
             if (obj.Any(item => item?.Description == readValue))
-                return Convert.ChangeType(field.GetValue(-1), objectType);
+                return (T)Convert.ChangeType(field.GetValue(-1), typeToConvert)!;
         }
-        return objectType.IsEnum ? Activator.CreateInstance(objectType) : null;
+        return typeToConvert.IsEnum ? (T)Activator.CreateInstance(typeToConvert)! : default;
     }
 
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
     {
         if (string.IsNullOrEmpty(value?.ToString()))
         {
-            writer.WriteValue("");
+            writer.WriteStringValue("");
             return;
         }
-        writer.WriteValue(GetFieldDesc(value));
+        writer.WriteStringValue(GetFieldDesc(value));
     }
 
-    public static string GetFieldDesc<T>(T value)
+
+    public static string GetFieldDesc(T value)
     {
         if (value == null)
             return string.Empty;
@@ -46,7 +44,7 @@ public class EnumConverter : JsonConverter
         return attributes.Length > 0 ? attributes[0].Description : string.Empty;
     }
 
-    public static T GetFieldByDesc<T>(string value) where T : Enum
+    public static T GetFieldByDesc(string value)
     {
         var fields = typeof(T).GetFields();
         foreach (var field in fields)
@@ -55,6 +53,6 @@ public class EnumConverter : JsonConverter
             if (obj?.Description == value)
                 return (T)field.GetValue(null)!;
         }
-        return default(T)!;
+        return default!;
     }
 }

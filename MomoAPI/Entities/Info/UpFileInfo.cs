@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
@@ -7,132 +7,132 @@ public struct UpFileInfo
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("fileModelId")]
-    public string FileModelId { get; set; }
+    [JsonPropertyName("fileModelId")]
+    public string FileModelId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("fileId")]
-    public string FileId { get; set; }
+    [JsonPropertyName("fileId")]
+    public string FileId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("fileName")]
-    public string FileName { get; set; }
+    [JsonPropertyName("fileName")]
+    public string FileName { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("fileSize")]
-    public string FileSize { get; set; }
+    [JsonPropertyName("fileSize")]
+    public string FileSize { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("busId")]
-    public int BusId { get; set; }
+    [JsonPropertyName("busId")]
+    public int BusId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("uploadedSize")]
-    public string UploadedSize { get; set; }
+    [JsonPropertyName("uploadedSize")]
+    public string UploadedSize { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("uploadTime")]
-    public int UploadTime { get; set; }
+    [JsonPropertyName("uploadTime")]
+    public int UploadTime { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("deadTime")]
-    public int DeadTime { get; set; }
+    [JsonPropertyName("deadTime")]
+    public int DeadTime { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("modifyTime")]
-    public int ModifyTime { get; set; }
+    [JsonPropertyName("modifyTime")]
+    public int ModifyTime { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("downloadTimes")]
-    public int DownloadTimes { get; set; }
+    [JsonPropertyName("downloadTimes")]
+    public int DownloadTimes { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("sha")]
-    public string Sha { get; set; }
+    [JsonPropertyName("sha")]
+    public string Sha { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("sha3")]
-    public string Sha3 { get; set; }
+    [JsonPropertyName("sha3")]
+    public string Sha3 { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("md5")]
-    public string Md5 { get; set; }
+    [JsonPropertyName("md5")]
+    public string Md5 { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("uploaderLocalPath")]
-    public string UploaderLocalPath { get; set; }
+    [JsonPropertyName("uploaderLocalPath")]
+    public string UploaderLocalPath { get; init; }
 
     /// <summary>
     /// 沫沫
     /// </summary>
-    [JsonProperty("uploaderName")]
-    public string UploaderName { get; set; }
+    [JsonPropertyName("uploaderName")]
+    public string UploaderName { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("uploaderUin")]
-    public string UploaderUin { get; set; }
+    [JsonPropertyName("uploaderUin")]
+    public string UploaderUin { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("parentFolderId")]
-    public string ParentFolderId { get; set; }
+    [JsonPropertyName("parentFolderId")]
+    public string ParentFolderId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("localPath")]
-    public string LocalPath { get; set; }
+    [JsonPropertyName("localPath")]
+    public string LocalPath { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("transStatus")]
-    public int TransStatus { get; set; }
+    [JsonPropertyName("transStatus")]
+    public int TransStatus { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("transType")]
-    public int TransType { get; set; }
+    [JsonPropertyName("transType")]
+    public int TransType { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("elementId")]
-    public string ElementId { get; set; }
+    [JsonPropertyName("elementId")]
+    public string ElementId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("isFolder")]
-    public bool IsFolder { get; set; }
+    [JsonPropertyName("isFolder")]
+    public bool IsFolder { get; init; }
 }

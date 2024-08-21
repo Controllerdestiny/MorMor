@@ -142,7 +142,7 @@ public class Utility
         var stream = assembly.GetManifestResourceStream(file)!;
         using var reader = new StreamReader(stream);
         var jobj = JsonConvert.DeserializeObject<JObject>(reader.ReadToEnd());
-        var array = jobj?.Value<JArray>("物品");
+        var array = jobj?.Value<JArray>("物品")!;
         foreach (var item in array)
         {
             if (item.Value<int>("ID") == id)

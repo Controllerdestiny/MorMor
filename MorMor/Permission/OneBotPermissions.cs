@@ -51,7 +51,7 @@ public class OneBotPermissions
 
     public const string QueryInventory = "onebot.tshock.inventory";
 
-    public const string ChangeServer = "onebot.change,server";
+    public const string ChangeServer = "onebot.change.server";
 
     public const string QueryProgress = "onebot.tshock.progress";
 

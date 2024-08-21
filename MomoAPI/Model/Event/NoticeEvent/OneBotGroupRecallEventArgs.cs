@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.NoticeEvent;
 
-internal class OneBotGroupRecallEventArgs : BaseObNoticeEventArgs
+public class OneBotGroupRecallEventArgs : BaseObNoticeEventArgs
 {
-    [JsonProperty("operator_id")]
+    [JsonPropertyName("operator_id")]
     public long OperatorId { get; set; }
 
-    [JsonProperty("message_id")]
+    [JsonPropertyName("message_id")]
     public long MessageId { get; set; }
 
-    [JsonProperty("group_id")]
+    [JsonPropertyName("group_id")]
     public long GroupId { get; set; }
 }

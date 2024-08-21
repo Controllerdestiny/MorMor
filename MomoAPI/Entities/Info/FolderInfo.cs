@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
@@ -12,66 +7,66 @@ public struct FolderInfo
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("folderId")]
-    public string FolderId { get; set; }
+    [JsonPropertyName("folderId")]
+    public string FolderId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("parentFolderId")]
-    public string ParentFolderId { get; set; }
+    [JsonPropertyName("parentFolderId")]
+    public string ParentFolderId { get; init; }
 
     /// <summary>
     /// 解析
     /// </summary>
-    [JsonProperty("folderName")]
-    public string FolderName { get; set; }
+    [JsonPropertyName("folderName")]
+    public string FolderName { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("createTime")]
-    public int CreateTime { get; set; }
+    [JsonPropertyName("createTime")]
+    public int CreateTime { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("modifyTime")]
-    public int ModifyTime { get; set; }
+    [JsonPropertyName("modifyTime")]
+    public int ModifyTime { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("createUin")]
-    public string CreateUin { get; set; }
+    [JsonPropertyName("createUin")]
+    public string CreateUin { get; init; }
 
     /// <summary>
     /// 无终lsp
     /// </summary>
-    [JsonProperty("creatorName")]
-    public string CreatorName { get; set; }
+    [JsonPropertyName("creatorName")]
+    public string CreatorName { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("totalFileCount")]
-    public int TotalFileCount { get; set; }
+    [JsonPropertyName("totalFileCount")]
+    public int TotalFileCount { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("modifyUin")]
-    public string ModifyUin { get; set; }
+    [JsonPropertyName("modifyUin")]
+    public string ModifyUin { get; init; }
 
     /// <summary>
     /// 无终lsp
     /// </summary>
-    [JsonProperty("modifyName")]
-    public string ModifyName { get; set; }
+    [JsonPropertyName("modifyName")]
+    public string ModifyName { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("usedSpace")]
-    public string UsedSpace { get; set; }
+    [JsonPropertyName("usedSpace")]
+    public string UsedSpace { get; init; }
 }

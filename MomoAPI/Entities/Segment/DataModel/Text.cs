@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
 public record Text : BaseMessage
 {
-    [JsonProperty("text")]
-    public string Content { get; init; }
+    [JsonPropertyName("text")]
+    public string Content { get; init; } = string.Empty;
 }

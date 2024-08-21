@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
@@ -7,36 +7,41 @@ public record Record : BaseMessage
     /// <summary>
     /// 文件/URL/base64
     /// </summary>
-    [JsonProperty("file")]
-    public string File { get; init; }
+    [JsonPropertyName("file")]
+    public string File { get; init; } = string.Empty;
 
     /// <summary>
     /// 文件ID
     /// </summary>
-    [JsonProperty("file_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string FileId { get; init; }
+    [JsonPropertyName("file_id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string FileId { get; init; } = string.Empty;
 
     /// <summary>
     /// 语音URL
     /// </summary>
-    [JsonProperty("url", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string Url { get; init; }
+    [JsonPropertyName("url")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Url { get; init; } = string.Empty;
 
     /// <summary>
     /// 变声
     /// </summary>
-    [JsonProperty("magic", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string Magic { get; init; }
+    [JsonPropertyName("magic")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Magic { get; init; } = string.Empty;
 
     /// <summary>
     /// 缓存
     /// </summary>
-    [JsonProperty("cache", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [JsonPropertyName("cache")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Cache { get; internal set; }
 
     /// <summary>
     /// 代理
     /// </summary>
-    [JsonProperty("proxy", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [JsonPropertyName("proxy")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Proxy { get; internal set; }
 }

@@ -1,27 +1,31 @@
-using Newtonsoft.Json;
+
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event;
 
 /// <summary>
 /// OneBot事件基类
 /// </summary>
-internal abstract class BaseObApiEventArgs : System.EventArgs
+public abstract class BaseObApiEventArgs : System.EventArgs
 {
     /// <summary>
     /// 事件发生的时间戳
     /// </summary>
-    [JsonProperty(PropertyName = "time", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("time")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     internal long Time { get; set; }
 
     /// <summary>
     /// 收到事件的机器人 QQ 号
     /// </summary>
-    [JsonProperty(PropertyName = "self_id", NullValueHandling = NullValueHandling.Ignore)]
+    [JsonPropertyName("self_id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     internal long SelfId { get; set; }
 
     /// <summary>
     /// 事件类型
     /// </summary>
-    [JsonProperty(PropertyName = "post_type", NullValueHandling = NullValueHandling.Ignore)]
-    internal string PostType { get; set; }
+    [JsonPropertyName("post_type")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    internal string PostType { get; set; } = string.Empty;
 }

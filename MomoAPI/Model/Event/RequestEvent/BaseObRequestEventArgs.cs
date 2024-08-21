@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.RequestEvent;
 
-internal class BaseObRequestEventArgs : BaseObApiEventArgs
+public class BaseObRequestEventArgs : BaseObApiEventArgs
 {
-    [JsonProperty("user_id")]
+    [JsonPropertyName("user_id")]
     public long UID { get; set; }
 
-    [JsonProperty("comment")]
-    public string Comment { get; set; }
+    [JsonPropertyName("comment")]
+    public string Comment { get; set; } = string.Empty;
 
-    [JsonProperty("flag")]
-    public string Flag { get; set; }
+    [JsonPropertyName("flag")]
+    public string Flag { get; set; } = string.Empty;
 }

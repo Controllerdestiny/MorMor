@@ -1,12 +1,13 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
 public record Video : BaseMessage
 {
-    [JsonProperty("file")]
-    public string Data { get; set; }
+    [JsonPropertyName("file")]
+    public string Data { get; set; } = string.Empty;
 
-    [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string Name { get; set; }
+    [JsonPropertyName("name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Name { get; set; } = string.Empty;
 }

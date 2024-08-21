@@ -4,10 +4,10 @@ namespace MorMor.EventArgs.Sockets;
 
 public class ServerMsgArgs
 {
-    public BaseMessage BaseMessage { get; set; }
+    public required BaseMessage BaseMessage { get; set; }
 
-    public byte[] Buffer { get; set; }
+    public required MemoryStream Stream { get; set; }
 
-    public string id { get; set; }
+    public required string id { get; set; }
 
 }

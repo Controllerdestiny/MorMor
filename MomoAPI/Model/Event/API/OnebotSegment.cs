@@ -1,25 +1,25 @@
+using MomoAPI.Converter;
 using MomoAPI.Enumeration;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.API;
 
 /// <summary>
 /// Onebot消息段
 /// </summary>
-internal struct OnebotSegment
+public struct OnebotSegment
 {
     /// <summary>
     /// 消息段类型
     /// </summary>
-    [JsonConverter(typeof(EnumConverter))]
-    [JsonProperty("type")]
-    internal SegmentType MsgType { get; set; }
+    [JsonConverter(typeof(EnumConverter<SegmentType>))]
+    [JsonPropertyName("type")]
+    public SegmentType MsgType { get; init; }
 
     /// <summary>
     /// 消息段JSON
     /// </summary>
-    [JsonProperty("data")]
-    internal JToken RawData { get; set; }
+    [JsonPropertyName("data")]
+    public JsonObject RawData { get; init; }
 }

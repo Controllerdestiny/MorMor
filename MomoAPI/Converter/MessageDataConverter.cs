@@ -2,8 +2,8 @@ using MomoAPI.Entities;
 using MomoAPI.Entities.Segment;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration;
+using MomoAPI.Extensions;
 using MomoAPI.Model.API;
-using Newtonsoft.Json.Linq;
 using File = MomoAPI.Entities.Segment.DataModel.File;
 
 namespace MomoAPI.Converter;
@@ -22,21 +22,20 @@ internal static class MessageConverter
         if (onebotSegment.RawData == null)
             return new MomoSegment(SegmentType.Unknown, new());
         try
-        {
-            JObject jsonObj = JObject.FromObject(onebotSegment.RawData);
-            if (jsonObj.Count == 0)
+        {   
+            if (onebotSegment.RawData.Count == 0)
                 return new MomoSegment(SegmentType.Unknown, new());
             return onebotSegment.MsgType switch
             {
-                SegmentType.Text => new MomoSegment(SegmentType.Text, jsonObj.ToObject<Text>()!),
-                SegmentType.Face => new MomoSegment(SegmentType.Face, jsonObj.ToObject<Face>()!),
-                SegmentType.Image => new MomoSegment(SegmentType.Image, jsonObj.ToObject<Image>()!),
-                SegmentType.Record => new MomoSegment(SegmentType.Record, jsonObj.ToObject<Record>()!),
-                SegmentType.At => new MomoSegment(SegmentType.At, jsonObj.ToObject<At>()!),
-                SegmentType.Reply => new MomoSegment(SegmentType.Reply, jsonObj.ToObject<Reply>()!),
-                SegmentType.Json => new MomoSegment(SegmentType.Json, jsonObj.ToObject<Json>()!),
-                SegmentType.File => new MomoSegment(SegmentType.File, jsonObj.ToObject<File>()!),
-                SegmentType.Video => new MomoSegment(SegmentType.Video, jsonObj.ToObject<Video>()!),
+                SegmentType.Text => new MomoSegment(SegmentType.Text, onebotSegment.RawData.ToObject<Text>()!),
+                SegmentType.Face => new MomoSegment(SegmentType.Face, onebotSegment.RawData.ToObject<Face>()!),
+                SegmentType.Image => new MomoSegment(SegmentType.Image, onebotSegment.RawData.ToObject<Image>()!),
+                SegmentType.Record => new MomoSegment(SegmentType.Record, onebotSegment.RawData.ToObject<Record>()!),
+                SegmentType.At => new MomoSegment(SegmentType.At, onebotSegment.RawData.ToObject<At>()!),
+                SegmentType.Reply => new MomoSegment(SegmentType.Reply, onebotSegment.RawData.ToObject<Reply>()!),
+                SegmentType.Json => new MomoSegment(SegmentType.Json, onebotSegment.RawData.ToObject<Json>()!),
+                SegmentType.File => new MomoSegment(SegmentType.File, onebotSegment.RawData.ToObject<File>()!),
+                SegmentType.Video => new MomoSegment(SegmentType.Video, onebotSegment.RawData.ToObject<Video>()!),
                 _ => new MomoSegment(SegmentType.Unknown, new())
             };
         }

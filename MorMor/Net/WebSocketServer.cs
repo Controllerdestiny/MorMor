@@ -107,12 +107,11 @@ public class WebSocketServer
 
                     if (result.EndOfMessage) break;
 
-                    if (received == buffer.Length) System.Array.Resize(ref buffer, buffer.Length << 1);
+                    if (received == buffer.Length) Array.Resize(ref buffer, buffer.Length << 1);
 
                     token.ThrowIfCancellationRequested();
                 }
                 OnMessage?.Invoke(identifier, buffer.AsSpan(0, received).ToArray());
-
                 token.ThrowIfCancellationRequested();
             }
         }

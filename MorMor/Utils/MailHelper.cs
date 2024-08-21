@@ -7,7 +7,7 @@ namespace MorMor.Utils;
 
 public class MailHelper
 {
-    public static void SendMail(string targerAddress, string subject, string body, string[] filePath = null)
+    public static void SendMail(string targerAddress, string subject, string body, string[]? filePath = null)
     {
         SendMail(MorMorAPI.Setting.MailHost, MorMorAPI.Setting.SenderMail, MorMorAPI.Setting.SenderPwd, targerAddress, subject, body, filePath);
     }

@@ -6,16 +6,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PublishSingleFile>true</PublishSingleFile>
-	<Version>2.1.1</Version>
+	<Version>2.1.2</Version>
 	<Authors>Controllerdestiny</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\TerrariaID.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\MomoAPI\MomoAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,6 +23,10 @@
     <PackageReference Include="PuppeteerSharp" Version="18.1.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="2.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MomoAPI\MomoAPI.csproj" />
   </ItemGroup>
 
 	

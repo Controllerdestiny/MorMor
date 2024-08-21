@@ -1,13 +1,13 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.MetaEvent;
 
-internal class OnebotHeartBeatEventArgs : BaseObMetaEventArgs
+public class OnebotHeartBeatEventArgs : BaseObMetaEventArgs
 {
-    [JsonProperty("status")]
-    public JObject Status { get; set; }
+    [JsonPropertyName("status")]
+    public JsonObject Status { get; set; } = [];
 
-    [JsonProperty("interval")]
+    [JsonPropertyName("interval")]
     public int Interval { get; set; }
 }

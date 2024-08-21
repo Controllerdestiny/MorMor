@@ -1,11 +1,12 @@
 ﻿using MomoAPI.Enumeration.EventParamType;
 using MomoAPI.EventArgs;
+using MomoAPI.Extensions;
 using MomoAPI.Model.Event.MessageEvent;
 using MomoAPI.Model.Event.MetaEvent;
 using MomoAPI.Model.Event.NoticeEvent;
 using MomoAPI.Model.Event.RequestEvent;
 using MomoAPI.Net;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace MomoAPI.Adapter;
 
@@ -73,12 +74,17 @@ public class EventAdapter
     /// </summary>
     public event EventCallBackHandler<GroupUnMuteEventArgs>? OnGroupUnMute;
 
-    internal async ValueTask Adapter(JObject messageObj)
+    /// <summary>
+    /// 群上传文件
+    /// </summary>
+    public event EventCallBackHandler<GroupUpLoadFileEventArgs>? OnGroupUpLoadFile;
+
+    internal async ValueTask Adapter(JsonObject messageObj)
     {
-        if (messageObj.TryGetValue("post_type", out var message) && message != null)
+        if (messageObj.TryGetPropertyValue("post_type",out var message))
         {
-            OneBotAPI.Instance.BotId = messageObj.Value<long>("self_id");
-            switch (message.ToString())
+            OneBotAPI.Instance.BotId = messageObj["self_id"]!.GetValue<long>();
+            switch (message?.ToString())
             {
                 case "message":
                     await MessageAdapter(messageObj);
@@ -96,16 +102,16 @@ public class EventAdapter
         }
         else
         {
-            if (messageObj.TryGetValue("echo", out var id) && id != null && Guid.TryParse(id.ToString(), out var echo))
+            if (messageObj.TryGetPropertyValue("echo", out var id) && id != null && Guid.TryParse(id.GetValue<string>(), out var echo))
             {
                 ReactiveApiManager.GetResponse(echo, messageObj);
             }
         }
     }
 
-    private async ValueTask MetaAdapter(JObject messageObj)
+    private async ValueTask MetaAdapter(JsonObject messageObj)
     {
-        if (messageObj.TryGetValue("meta_event_type", out var type) && type != null)
+        if (messageObj.TryGetPropertyValue("meta_event_type", out var type) && type != null)
         {
             switch (type.ToString())
             {
@@ -137,45 +143,45 @@ public class EventAdapter
         }
     }
 
-    private async ValueTask RequestAdapter(JObject messageObj)
+    private async ValueTask RequestAdapter(JsonObject messageObj)
     {
-        if (messageObj.TryGetValue("notice_type", out var type) && type != null)
+        if (messageObj.TryGetPropertyValue("request_type", out var type) && type != null)
         {
             switch (type.ToString())
             {
                 case "group":
-                    {
-                        var obj = messageObj.ToObject<OneBotGroupRequestAddEventArgs>();
-                        if (obj == null)
-                            break;
-                        var args = new GroupRequestAddEventArgs(obj);
-                        if (args != null)
-                        {
-                            Log.ConsoleInfo($"群请求: group:{args.Group.Id} {args.User.Id} 请求入群");
-                            if(OnGroupRequestAdd != null) await OnGroupRequestAdd(args);
-                        }
+                {
+                    var obj = messageObj.ToObject<OneBotGroupRequestAddEventArgs>();
+                    if (obj == null)
                         break;
+                    var args = new GroupRequestAddEventArgs(obj);
+                    if (args != null)
+                    {
+                        Log.ConsoleInfo($"群请求: group:{args.Group.Id} {args.User.Id} 请求入群");
+                        if(OnGroupRequestAdd != null) await OnGroupRequestAdd(args);
                     }
+                    break;
+                }
                 case "friend":
-                    {
-                        var obj = messageObj.ToObject<OneBotFriendRequestAddEventArgs>();
-                        if (obj == null)
-                            break;
-                        var args = new FriendRequestAddEventArgs(obj);
-                        if (args != null)
-                        {
-                            Log.ConsoleInfo($"好友请求: {args.User.Id} 请求添加为好友");
-                            if(OnFriendRequestAdd != null) await OnFriendRequestAdd(args);
-                        }
+                {
+                    var obj = messageObj.ToObject<OneBotFriendRequestAddEventArgs>();
+                    if (obj == null)
                         break;
+                    var args = new FriendRequestAddEventArgs(obj);
+                    if (args != null)
+                    {
+                        Log.ConsoleInfo($"好友请求: {args.User.Id} 请求添加为好友");
+                        if(OnFriendRequestAdd != null) await OnFriendRequestAdd(args);
                     }
+                    break;
+                }
             }
         }
     }
 
-    private async ValueTask NoticeAdapter(JObject messageObj)
+    private async ValueTask NoticeAdapter(JsonObject messageObj)
     {
-        if (messageObj.TryGetValue("notice_type", out var type) && type != null)
+        if (messageObj.TryGetPropertyValue("notice_type", out var type) && type != null)
         {
             switch (type.ToString())
             {
@@ -194,7 +200,7 @@ public class EventAdapter
                     }
                 case "friend_recall":
                     {
-                        var obj = messageObj.ToObject<OneBotFriendRecallEventArgs>();
+                        var obj =messageObj.ToObject<OneBotFriendRecallEventArgs>();
                         if (obj == null)
                             break;
                         var args = new FriendRecallEventArgs(obj);
@@ -227,7 +233,7 @@ public class EventAdapter
                         var args = new GroupMemberChangeEventArgs(obj);
                         if (args != null)
                         {
-                            Log.ConsoleInfo($"群成员变动: group:{args.Group.Id} 成员({args.ChangeUser.Id}) {(args.ChangeType == MemberChangeType.Leave ? "离开" : "加入")}群聊");
+                            Log.ConsoleInfo($"群成员变动: group:{args.Group.Id} 成员({args.ChangeUser.Id}) {((args.ChangeType is MemberChangeType.Invite or MemberChangeType.Approve) ? "加入" : "离开")}群聊");
                             if(OnGroupMemberChange != null) await OnGroupMemberChange(args);
                         }
                         break;
@@ -262,15 +268,24 @@ public class EventAdapter
                         }
                         break;
                     }
+                case "group_upload":
+                    {
+                        var obj = messageObj.ToObject<OneBotGroupUpLoadFileEventArgs>();
+                        if (obj == null)
+                            break;
+                        var args = new GroupUpLoadFileEventArgs(obj);
+                        Log.ConsoleInfo($"群文件上传事件: {args.UserId} 上传文件 {args.UpLoad.Name}");
+                        if (OnGroupUpLoadFile != null) await OnGroupUpLoadFile(args);
+                        break;
+                    }
             }
         }
     }
 
-    private async ValueTask MessageAdapter(JObject messageObj)
+    private async ValueTask MessageAdapter(JsonObject messageObj)
     {
-        if (messageObj.TryGetValue("message_type", out var type) && type != null)
+        if (messageObj.TryGetPropertyValue("message_type", out var type) && type != null)
         {
-            //MomoServiceFactory.Log.ConsoleInfo(messageObj?["raw_message"]?.ToString());
             switch (type.ToString())
             {
                 case "group":
@@ -281,7 +296,7 @@ public class EventAdapter
                         var args = new GroupMessageEventArgs(obj);
                         if (args != null)
                         {
-                            if(OnGroupMessage != null) await OnGroupMessage(args);
+                            if (OnGroupMessage != null) await OnGroupMessage(args);
                         }
                         break;
                     }

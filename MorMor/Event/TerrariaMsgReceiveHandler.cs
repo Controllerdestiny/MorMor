@@ -34,9 +34,9 @@ public class TerrariaMsgReceiveHandler
 
     public static event EventCallBack<BaseMessage, ValueTask>? OnHeartBeat;
 
-    private static readonly Subject<(BaseAction, byte[])> ApiSubject = new();
+    private static readonly ReplaySubject<(BaseAction, byte[])> ApiSubject = new(2);
 
-    private static readonly Dictionary<PostMessageType, EventCallBack<ServerMsgArgs, ValueTask>> _action = new()
+    private static readonly Dictionary<PostMessageType, EventCallBack<ServerMsgArgs, ValueTask>> _action = _action = new()
     {
         { PostMessageType.Action, ActionHandler },
         { PostMessageType.PlayerJoin, PlayerJoinHandler },
@@ -50,8 +50,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask PlayerMessageHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<PlayerChatMessage>(Stream);
+        var data = Serializer.Deserialize<PlayerChatMessage>(args.Stream);
         if(OnPlayerChat != null)
             await OnPlayerChat(data);
         if (!data.Handler && data.TerrariaServer != null && !data.Mute)
@@ -67,8 +66,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask HeartBeatHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<BaseMessage>(Stream);
+        var data = Serializer.Deserialize<BaseMessage>(args.Stream);
         WebSocketConnectManager.Add(data.ServerName, args.id);
         if(OnHeartBeat != null)
             await OnHeartBeat(data);
@@ -77,8 +75,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask ConnectHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<BaseMessage>(Stream);
+        var data = Serializer.Deserialize<BaseMessage>(args.Stream);
         WebSocketConnectManager.Add(data.ServerName, args.id);
         if(OnConnect != null) await OnConnect(data);
         Log.ConsoleInfo($"Terraria Server {data.ServerName} {args.id} 已连接...", ConsoleColor.Green);
@@ -87,8 +84,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask GamePostInitHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<GameInitMessage>(Stream);
+        var data = Serializer.Deserialize<GameInitMessage>(args.Stream);
         if(OnGameInit != null) await OnGameInit(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
@@ -101,8 +97,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask PlayerCommandHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<PlayerCommandMessage>(Stream);
+        var data = Serializer.Deserialize<PlayerCommandMessage>(args.Stream);
         if(OnPlayerCommand != null) await OnPlayerCommand(data);
         if (!data.Handler)
         {
@@ -112,8 +107,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask PlayerLeaveHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<PlayerLeaveMessage>(Stream);
+        var data = Serializer.Deserialize<PlayerLeaveMessage>(args.Stream);
         if(OnPlayerLeave != null) await OnPlayerLeave(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
@@ -126,8 +120,7 @@ public class TerrariaMsgReceiveHandler
 
     private static async ValueTask PlayerJoinHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var data = Serializer.Deserialize<PlayerJoinMessage>(Stream);
+        var data = Serializer.Deserialize<PlayerJoinMessage>(args.Stream);
         if(OnPlayerJoin != null) await OnPlayerJoin(data);
         if (!data.Handler && data.TerrariaServer != null)
         {
@@ -138,12 +131,11 @@ public class TerrariaMsgReceiveHandler
         }
     }
 
-    private static async ValueTask ActionHandler(ServerMsgArgs args)
+    private static ValueTask ActionHandler(ServerMsgArgs args)
     {
-        using var Stream = new MemoryStream(args.Buffer);
-        var msg = Serializer.Deserialize<BaseAction>(Stream);
-        ApiSubject.OnNext((msg, args.Buffer));
-        await ValueTask.CompletedTask;
+        var msg = Serializer.Deserialize<BaseAction>(args.Stream);
+        ApiSubject.OnNext((msg, args.Stream.ToArray()));
+        return ValueTask.CompletedTask;
     }
 
     internal static async ValueTask<T?> GetResponse<T>(string echo, TimeSpan? timeout = null) where T : Model.Socket.Action.Response.BaseActionResponse, new()
@@ -159,7 +151,7 @@ public class TerrariaMsgReceiveHandler
                 .ToTask();
             var buffer = await task;
             using var Stream = new MemoryStream(buffer);
-            return Serializer.Deserialize<T>(Stream);
+            return Serializer.Deserialize<T>(Stream);    
         }
         catch (Exception ex)
         {
@@ -175,20 +167,19 @@ public class TerrariaMsgReceiveHandler
     {
         try
         {
-            using var Stream = new MemoryStream(args.Buffer);
-            var baseMsg = Serializer.Deserialize<BaseMessage>(Stream);
+            var baseMsg = Serializer.Deserialize<BaseMessage>(args.Stream);
             if (baseMsg.TerrariaServer != null
                 && baseMsg.Token == baseMsg.TerrariaServer.Token
                 && _action.TryGetValue(baseMsg.MessageType, out var action))
             {
-                Stream.Position = 0;
+                args.Stream.Position = 0;
                 await action(new()
                 {
                     id = args.ConnectId,
-                    Buffer = args.Buffer,
+                    Stream = args.Stream,
                     BaseMessage = baseMsg
                 });
-                Stream.Dispose();
+                args.Stream.Dispose();
             }
             else
             {
@@ -220,6 +211,7 @@ public class TerrariaMsgReceiveHandler
                 Serializer.Serialize(ms, response);
                 await TShockReceive.Send(ms.ToArray(), args.ConnectId);
                 await TShockReceive.Close(args.ConnectId, System.Net.WebSockets.WebSocketCloseStatus.NormalClosure);
+                ms.Dispose();
             }
         }
         catch (Exception ex)
@@ -231,36 +223,6 @@ public class TerrariaMsgReceiveHandler
 
     internal static async ValueTask GroupMessageForwardAdapter(GroupMessageEventArgs args)
     {
-        if (args.MessageContext.Messages.Any(x => x.Type == MomoAPI.Enumeration.SegmentType.File))
-        {
-            try
-            {
-                var fileid = args.MessageContext.GetFileId();
-                if (fileid != null)
-                {
-                    var (status, fileinfo) = await args.OneBotAPI.GetFile(fileid);
-                    if (string.IsNullOrEmpty(fileinfo.Base64) || fileinfo.FileSize > 1024 * 1024 * 30)
-                        return;
-                    var buffer = Convert.FromBase64String(fileinfo.Base64);
-
-                    foreach (var server in MorMorAPI.Setting.Servers)
-                    {
-                        if (server != null && server.WaitFile != null)
-                        {
-                            if (server.Groups.Contains(args.Group.Id))
-                            {
-                                server.WaitFile.TrySetResult(buffer);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                await args.Reply("[GetFile] Error" + e.Message);
-            }
-
-        }
         var text = args.MessageContext.GetText();
         if (string.IsNullOrEmpty(text))
             return;
@@ -285,5 +247,32 @@ public class TerrariaMsgReceiveHandler
             }
         }
 
+    }
+
+    internal static async ValueTask GroupFile(GroupUpLoadFileEventArgs args)
+    {
+        try
+        {
+            if (args.UpLoad.Size > 1024 * 1024 * 30)
+                return;
+            var (status, fileinfo) = await args.OneBotAPI.GetFile(args.UpLoad.ID);
+            if (string.IsNullOrEmpty(fileinfo.Base64))
+                return;
+            var buffer = Convert.FromBase64String(fileinfo.Base64);
+            foreach (var server in MorMorAPI.Setting.Servers)
+            {
+                if (server != null && server.WaitFile != null)
+                {
+                    if (server.Groups.Contains(args.GroupId))
+                    {
+                        server.WaitFile.TrySetResult(buffer);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            await args.OneBotAPI.SendGroupMessage(args.GroupId,"[GetFile] Error" + e.Message);
+        }
     }
 }

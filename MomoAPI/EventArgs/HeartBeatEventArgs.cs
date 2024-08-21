@@ -1,11 +1,12 @@
 ﻿using MomoAPI.Model.Event.MetaEvent;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace MomoAPI.EventArgs;
 
 public class HeartBeatEventArgs : BaseMomoEventArgs
 {
-    public JObject Status { get; }
+    public JsonObject Status { get; }
 
     public int Interval { get; }
 

@@ -1,11 +1,6 @@
 ﻿namespace MomoAPI.Entities;
 
-public class Sender
+public class Sender(long id)
 {
-    public long Id { get; init; }
-
-    public Sender(long id)
-    {
-        Id = id;
-    }
+    public long Id { get; init; } = id;
 }

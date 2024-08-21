@@ -1,14 +1,17 @@
 ﻿using MomoAPI.Adapter;
+using MomoAPI.Extensions;
 using MomoAPI.Interface;
 using MomoAPI.Net.Config;
-using Newtonsoft.Json.Linq;
+using MomoAPI.Resolver;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Websocket.Client;
 
 namespace MomoAPI.Net;
 
 internal class MomoReceive : IMomoService
 {
-    private WebsocketClient Client { get; set; }
+    private WebsocketClient Client { get; }
 
     public EventAdapter Event { get; }
 
@@ -21,13 +24,20 @@ internal class MomoReceive : IMomoService
 
     public async ValueTask<IMomoService> Start()
     {
-        Client.MessageReceived.Subscribe(msg => Task.Run(async () =>
+        Client.MessageReceived.Subscribe(msg =>
         {
-            if (!string.IsNullOrEmpty(msg.Text))
+            var token = new CancellationToken();
+            Task.Run(async () =>
             {
-                await Event.Adapter(JObject.Parse(msg.Text));
-            }
-        }));
+                if (!string.IsNullOrEmpty(msg.Text))
+                {
+                    var node = msg.Text.ToObject<JsonObject>();
+                    if (node != null)
+                        await Event.Adapter(node);
+                }
+            }, token);
+            token.ThrowIfCancellationRequested();
+        });
         ConnectMananger.OpenConnect(Client);
         await Client.Start();
         if (!Client.IsRunning || !Client.IsStarted)

@@ -5,7 +5,7 @@ namespace MomoAPI.Net;
 
 internal class ConnectMananger
 {
-    public static WebsocketClient Client { get; private set; }
+    public static WebsocketClient? Client { get; private set; }
 
     public static void OpenConnect(WebsocketClient client)
     {
@@ -14,12 +14,12 @@ internal class ConnectMananger
 
     public static void SendMessage(string msg)
     {
-        Client.Send(msg);
+        Client?.Send(msg);
     }
 
     public static void StopService()
     {
-        Client.Stop(WebSocketCloseStatus.NormalClosure, "");
-        Client.Dispose();
+        Client?.Stop(WebSocketCloseStatus.NormalClosure, "");
+        Client?.Dispose();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
@@ -7,41 +8,46 @@ public record Image : BaseMessage
     /// <summary>
     /// 文件/URL/base64
     /// </summary>
-    [JsonProperty("file")]
-    public string File { get; init; }
+    [JsonPropertyName("file")]
+    public string File { get; set; } = string.Empty;
 
     /// <summary>
     /// 图片URL
     /// </summary>
-    [JsonProperty("url")]
-    public string Url { get; init; }
+    [JsonPropertyName("url")]
+    public string Url { get; init; } = string.Empty;
 
     /// <summary>
     /// 外显
     /// </summary>
-    [JsonProperty("summary", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string Summary { get; init; }
+    [JsonPropertyName("summary")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string Summary { get; init; } = string.Empty;
 
     /// <summary>
     /// ID
     /// </summary>
-    [JsonProperty("file_id", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string FileId { get; init; }
+    [JsonPropertyName("file_id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string FileId { get; init; } = string.Empty;
     /// <summary>
     /// 类型
     /// </summary>
-    [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
-    public string Type { get; init; }
+    [JsonPropertyName("type")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string Type { get; init; } = string.Empty;
 
     /// <summary>
     /// 缓存
     /// </summary>
-    [JsonProperty("cache", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [JsonPropertyName("cache")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Cache { get; internal set; }
 
     /// <summary>
     /// 代理
     /// </summary>
-    [JsonProperty("proxy", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [JsonPropertyName("proxy")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public int Proxy { get; internal set; }
 }

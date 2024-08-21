@@ -1,9 +1,4 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
@@ -12,24 +7,24 @@ public struct PeerInfo
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("peerId")]
-    public string PeerId { get; set; }
+    [JsonPropertyName("peerId")]
+    public string PeerId { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("type")]
-    public int Type { get; set; }
+    [JsonPropertyName("type")]
+    public int Type { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("folderInfo")]
-    public FolderInfo? FolderInfo { get; set; }
+    [JsonPropertyName("folderInfo")]
+    public FolderInfo? FolderInfo { get; init; }
 
     /// <summary>
     /// 
     /// </summary>
-    [JsonProperty("fileInfo")]
+    [JsonPropertyName("fileInfo")]
     public UpFileInfo? FileInfo { get; set; }
 }

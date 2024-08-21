@@ -1,26 +1,17 @@
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;   
 
 namespace MomoAPI.Converter;
 
-internal class StringConverter : JsonConverter
+internal class StringConverter : JsonConverter<long>
 {
-    public override bool CanRead => false;
-
-    public override bool CanWrite => true;
-
-    public override bool CanConvert(Type objectType)
+    public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        return true;
+        return reader.GetInt64();
     }
 
-    public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, long value, JsonSerializerOptions options)
     {
-        writer.WriteValue(value?.ToString());
-    }
-
-    public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-    {
-        //此方法不可能调用，不做实现
-        return null;
+        writer.WriteStringValue(value.ToString());
     }
 }

@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.MetaEvent;
 
-internal class OneBotLifeCycleEventArgs : BaseObMetaEventArgs
+public class OneBotLifeCycleEventArgs : BaseObMetaEventArgs
 {
-    [JsonProperty("sub_type")]
-    public string SubType { get; set; }
+    [JsonPropertyName("sub_type")]
+    public string SubType { get; set; } = string.Empty;
 }

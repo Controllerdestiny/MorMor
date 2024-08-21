@@ -1,43 +1,45 @@
+using MomoAPI.Converter;
 using MomoAPI.Entities;
 using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.API;
 
 /// <summary>
 /// 发送消息调用参数
 /// </summary>
-internal struct SendMessageParams
+public struct SendMessageParams
 {
     /// <summary>
     /// 消息类型 群/私聊
     /// </summary>
-    [JsonConverter(typeof(EnumConverter))]
-    [JsonProperty(PropertyName = "message_type")]
-    internal MessageType MessageType { get; set; }
+    [JsonConverter(typeof(EnumConverter<MessageType>))]
+    [JsonPropertyName("message_type")]
+    public MessageType MessageType { get; set; }
 
     /// <summary>
     /// 用户id
     /// </summary>
-    [JsonProperty(PropertyName = "user_id", NullValueHandling = NullValueHandling.Ignore)]
-    internal long? UserId { get; set; }
+    [JsonPropertyName("user_id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public long? UserId { get; set; }
 
     /// <summary>
     /// 群号
     /// </summary>
-    [JsonProperty(PropertyName = "group_id", NullValueHandling = NullValueHandling.Ignore)]
-    internal long? GroupId { get; set; }
+    [JsonPropertyName("group_id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public long? GroupId { get; set; }
 
     /// <summary>
     /// 消息段数组
     /// </summary>
-    [JsonProperty(PropertyName = "message")]
-    internal MessageBody Message { get; set; }
+    [JsonPropertyName("message")]
+    public MessageBody Message { get; set; }
 
     /// <summary>
     /// 是否忽略消息段
     /// </summary>
-    [JsonProperty(PropertyName = "auto_escape")]
-    internal bool AutoEscape { get; set; }
+    [JsonPropertyName("auto_escape")]
+    public bool AutoEscape { get; set; }
 }

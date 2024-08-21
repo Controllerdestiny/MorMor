@@ -1,15 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
 public readonly struct FriendInfo
 {
-    [JsonProperty("nickname")]
-    public string Name { get; }
+    [JsonPropertyName("nickname")]
+    public string Name { get; init; }
 
-    [JsonProperty("user_id")]
-    public long UID { get; }
+    [JsonPropertyName("user_id")]
+    public long UID { get; init; }
 
-    [JsonProperty("remark")]
-    public string Remark { get; }
+    [JsonPropertyName("remark")]
+    public string Remark { get; init; }
 }

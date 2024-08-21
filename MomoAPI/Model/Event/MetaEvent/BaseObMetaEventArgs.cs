@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.MetaEvent;
 
-internal class BaseObMetaEventArgs : BaseObApiEventArgs
+public class BaseObMetaEventArgs : BaseObApiEventArgs
 {
-    [JsonProperty("meta_event_type")]
-    public string MeatEventType { get; set; }
+    [JsonPropertyName("meta_event_type")]
+    public string MeatEventType { get; set; } = string.Empty;
 }

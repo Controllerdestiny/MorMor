@@ -1,19 +1,20 @@
+using MomoAPI.Converter;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration;
 using MomoAPI.Model.API;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment;
 
 public class MomoSegment
 {
-    [JsonProperty("type")]
-    [JsonConverter(typeof(EnumConverter))]
+    [JsonPropertyName("type")]
+    [JsonConverter(typeof(EnumConverter<SegmentType>))]
     public SegmentType Type { get; set; }
 
-    [JsonProperty("data")]
+    [JsonPropertyName("data")]
     public BaseMessage MessageData { get; set; }
 
     public MomoSegment(SegmentType type, BaseMessage messageData)
@@ -27,7 +28,7 @@ public class MomoSegment
         return new OnebotSegment
         {
             MsgType = Type,
-            RawData = JObject.FromObject(MessageData)
+            //RawData = JsonSerializer.Deserialize<JsonObject>(MessageData)
         };
     }
 
@@ -41,21 +42,22 @@ public class MomoSegment
 
     public static MomoSegment Image(string file)
     {
-        return new MomoSegment(SegmentType.Image, new DataModel.Image()
+        return new MomoSegment(SegmentType.Image, new Image()
         {
             File = file
         });
     }
 
+    public static MomoSegment Image(byte[] buffer)
+    {
+        return Image("base64://" + Convert.ToBase64String(buffer));
+    }
+
     public static MomoSegment Image(Stream stream)
     {
-        byte[] bytes = new byte[stream.Length];
-        stream.Read(bytes, 0, bytes.Length);
-        var base64 = Convert.ToBase64String(bytes);
-        return new MomoSegment(SegmentType.Image, new DataModel.Image()
-        {
-            File = "base64://" + base64
-        });
+        byte[] buffer = new byte[stream.Length];
+        stream.Read(buffer, 0, buffer.Length);
+        return Image(buffer);
     }
 
     public static MomoSegment At(long qq)
@@ -90,7 +92,7 @@ public class MomoSegment
         });
     }
 
-    public static MomoSegment File(string data, string name = null)
+    public static MomoSegment File(string data, string name = "")
     {
         return new MomoSegment(SegmentType.File, new DataModel.File()
         {

@@ -156,8 +156,7 @@ namespace MorMor.DB
         /// <returns>The string representation</returns>
         public string DbTypeToString(MySqlDbType type, int? length)
         {
-            string ret;
-            if (TypesAsStrings.TryGetValue(type, out ret))
+            if (TypesAsStrings.TryGetValue(type, out var ret))
                 return ret;
             throw new NotImplementedException(Enum.GetName(typeof(MySqlDbType), type));
         }
@@ -235,8 +234,7 @@ namespace MorMor.DB
         /// <returns>The string representation</returns>
         public string DbTypeToString(MySqlDbType type, int? length)
         {
-            string ret;
-            if (TypesAsStrings.TryGetValue(type, out ret))
+            if (TypesAsStrings.TryGetValue(type, out var ret))
                 return ret + (length != null ? "({0})".SFormat((int)length) : "");
             throw new NotImplementedException(Enum.GetName(typeof(MySqlDbType), type));
         }

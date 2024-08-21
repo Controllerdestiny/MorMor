@@ -12,7 +12,7 @@ public static class TaskExtension
     /// <param name="this">需要被捕捉错误的方法</param>
     /// <param name="block">错误处理动作</param>
     /// <returns>T</returns>
-    public static async ValueTask<T> RunCatch<T>(this ValueTask<T> @this, Func<Exception, T> block)
+    public static async ValueTask<T?> RunCatch<T>(this ValueTask<T> @this, Func<Exception, T> block)
     {
         try
         {
@@ -49,7 +49,7 @@ public static class TaskExtension
     /// <param name="this">需要被捕捉错误的方法</param>
     /// <param name="block">错误处理动作</param>
     /// <returns>T</returns>
-    public static async Task<T> RunCatch<T>(this Task<T> @this, Func<Exception, T> block)
+    public static async Task<T?> RunCatch<T>(this Task<T> @this, Func<Exception, T> block)
     {
         try
         {

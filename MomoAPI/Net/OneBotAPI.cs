@@ -3,7 +3,7 @@ using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration.ApiType;
-using Newtonsoft.Json.Linq;
+using System.Text.Json.Nodes;
 
 namespace MomoAPI.Net;
 
@@ -148,12 +148,12 @@ public class OneBotAPI
         return await ApiAdapter.SetGroupName(groupid, name);
     }
 
-    public async ValueTask<(ApiStatus, JObject)> GetVersion()
+    public async ValueTask<(ApiStatus, JsonObject)> GetVersion()
     {
         return await ApiAdapter.GetVersion();
     }
 
-    public async ValueTask<(ApiStatus, JObject)> GetStatus()
+    public async ValueTask<(ApiStatus, JsonObject)> GetStatus()
     {
         return await ApiAdapter.GetStatus();
     }

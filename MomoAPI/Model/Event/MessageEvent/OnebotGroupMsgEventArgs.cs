@@ -1,24 +1,24 @@
 using MomoAPI.Entities.Info;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.MessageEvent;
 
 /// <summary>
 /// 群组消息事件
 /// </summary>
-internal sealed class OnebotGroupMsgEventArgs : BaseObMessageEventArgs
+public sealed class OnebotGroupMsgEventArgs : BaseObMessageEventArgs
 {
     /// <summary>
     /// 群号
     /// </summary>
-    [JsonProperty(PropertyName = "group_id")]
-    internal long GroupId { get; set; }
+    [JsonPropertyName( "group_id")]
+    public long GroupId { get; set; }
 
 
     /// <summary>
     /// 发送人信息
     /// </summary>
-    [JsonProperty(PropertyName = "sender")]
-    internal GroupSenderInfo SenderInfo { get; set; }
+    [JsonPropertyName("sender")]
+    public required GroupSenderInfo SenderInfo { get; set; }
 
 }

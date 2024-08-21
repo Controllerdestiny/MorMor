@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
@@ -7,12 +7,12 @@ public class PrivateSenderInfo
     /// <summary>
     /// 昵称
     /// </summary>
-    [JsonProperty("nickname")]
-    public string Name { get; internal set; }
+    [JsonPropertyName("nickname")]
+    public string Name { get; init; } = string.Empty;
 
-    [JsonProperty("user_id")]
-    public long QQ { get; internal set; }
+    [JsonPropertyName("user_id")]
+    public long QQ { get; init; }
 
-    [JsonProperty("card")]
-    public string Card { get; internal set; }
+    [JsonPropertyName("card")]
+    public string Card { get; init; } = string.Empty;
 }

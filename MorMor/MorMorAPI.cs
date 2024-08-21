@@ -83,6 +83,8 @@ public class MorMorAPI
         TShockReceive.SocketMessage += TerrariaMsgReceiveHandler.Adapter;
         //群消息转发适配器
         Service.Event.OnGroupMessage += TerrariaMsgReceiveHandler.GroupMessageForwardAdapter;
+        //文件事件
+        Service.Event.OnGroupUpLoadFile += TerrariaMsgReceiveHandler.GroupFile;
         //监听指令
         Service.Event.OnGroupMessage += e => CommandManager.Hook.CommandAdapter(e);
         //socket服务器启动

@@ -1,11 +1,6 @@
 ﻿namespace MorMor.EventArgs.Sockets;
 
-public class SocketReceiveMessageArgs : BaseSocketArgs
+public class SocketReceiveMessageArgs(string id, MemoryStream stream) : BaseSocketArgs(id)
 {
-    public byte[] Buffer { get; init; }
-
-    public SocketReceiveMessageArgs(string id, byte[] buffer) : base(id)
-    {
-        Buffer = buffer;
-    }
+    public MemoryStream Stream { get; init; } = stream;
 }

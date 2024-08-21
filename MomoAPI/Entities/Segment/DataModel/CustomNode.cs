@@ -1,7 +1,7 @@
 using MomoAPI.Converter;
 using MomoAPI.Enumeration;
 using MomoAPI.Model.API;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
@@ -14,32 +14,37 @@ public sealed record CustomNode
     /// <summary>
     /// 转发消息Id
     /// </summary>
-    [JsonProperty(PropertyName = "id", NullValueHandling = NullValueHandling.Ignore)]
-    public string MessageId { get; internal set; }
+    [JsonPropertyName("id")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string? MessageId { get; internal set; }
 
     /// <summary>
     /// 发送者显示名字
     /// </summary>
-    [JsonProperty(PropertyName = "name", NullValueHandling = NullValueHandling.Ignore)]
-    public string Name { get; internal set; }
+    [JsonPropertyName("name")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string? Name { get; internal set; }
 
     /// <summary>
     /// 发送者QQ号
     /// </summary>
-    [JsonProperty(PropertyName = "uin", NullValueHandling = NullValueHandling.Ignore)]
-    public string UserId { get; internal set; }
+    [JsonPropertyName("uin")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    public string? UserId { get; internal set; }
 
     /// <summary>
     /// 具体消息
     /// </summary>
-    [JsonProperty(PropertyName = "content", NullValueHandling = NullValueHandling.Ignore)]
-    internal dynamic Messages { get; set; }
+    [JsonPropertyName("content")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    internal dynamic? Messages { get; set; }
 
     /// <summary>
     /// 转发时间
     /// </summary>
-    [JsonProperty(PropertyName = "time", NullValueHandling = NullValueHandling.Ignore)]
-    internal string Time { get; set; }
+    [JsonPropertyName("time")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    internal string? Time { get; set; }
 
     /// <summary>
     /// 构造自定义节点
@@ -90,7 +95,7 @@ public sealed record CustomNode
     /// <summary>
     /// 从CustomNode获取消息内容
     /// </summary>
-    public MessageBody GetMessageBody()
+    public MessageBody? GetMessageBody()
     {
         return Messages switch
         {

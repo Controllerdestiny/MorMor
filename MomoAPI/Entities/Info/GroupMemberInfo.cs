@@ -1,8 +1,8 @@
+using MomoAPI.Converter;
 using MomoAPI.Enumeration;
 using MomoAPI.Enumeration.EventParamType;
 using MomoAPI.Extensions;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
@@ -14,54 +14,54 @@ public sealed record GroupMemberInfo
     /// <summary>
     /// 群号
     /// </summary>
-    [JsonProperty(PropertyName = "group_id")]
-    public long GroupId { get; internal init; }
+    [JsonPropertyName("group_id")]
+    public long GroupId { get; init; }
 
     /// <summary>
     /// 成员UID
     /// </summary>
-    [JsonProperty(PropertyName = "user_id")]
-    public long UserId { get; internal init; }
+    [JsonPropertyName("user_id")]
+    public long UserId { get; init; }
 
     /// <summary>
     /// 昵称
     /// </summary>
-    [JsonProperty(PropertyName = "nickname")]
-    public string Nick { get; internal init; }
+    [JsonPropertyName("nickname")]
+    public string Nick { get; init; } = string.Empty;
 
     /// <summary>
     /// 群名片／备注
     /// </summary>
-    [JsonProperty(PropertyName = "card")]
-    public string Card { get; internal init; }
+    [JsonPropertyName("card")]
+    public string Card { get; init; } = string.Empty;
 
     /// <summary>
     /// 性别
     /// </summary>
-    [JsonProperty(PropertyName = "sex")]
-    [JsonConverter(typeof(EnumConverter))]
+    [JsonPropertyName("sex")]
+    [JsonConverter(typeof(EnumConverter<SexType>))]
     private SexType Sex { get; init; }
 
 
     /// <summary>
     /// 年龄
     /// </summary>
-    [JsonProperty(PropertyName = "age")]
-    public int Age { get; internal init; }
+    [JsonPropertyName("age")]
+    public int Age { get; init; }
 
     /// <summary>
     /// 地区
     /// </summary>
-    [JsonProperty(PropertyName = "area")]
-    public string Area { get; internal init; }
+    [JsonPropertyName("area")]
+    public string Area { get; init; } = string.Empty;
 
     /// <summary>
     /// 加群时间戳
     /// </summary>
     [JsonIgnore]
-    public DateTime JoinTime { get; internal init; }
+    public DateTime JoinTime { get; init; }
 
-    [JsonProperty(PropertyName = "join_time")]
+    [JsonPropertyName("join_time")]
     private long JoinTimeStamp
     {
         init => JoinTime = value.ToDateTime();
@@ -71,9 +71,9 @@ public sealed record GroupMemberInfo
     /// 最后发言时间戳
     /// </summary>
     [JsonIgnore]
-    public DateTime LastSentTime { get; internal init; }
+    public DateTime LastSentTime { get; init; }
 
-    [JsonProperty(PropertyName = "last_sent_time")]
+    [JsonPropertyName("last_sent_time")]
     private long LastSentTimeStamp
     {
         init => LastSentTime = value.ToDateTime();
@@ -82,15 +82,15 @@ public sealed record GroupMemberInfo
     /// <summary>
     /// 成员等级
     /// </summary>
-    [JsonProperty(PropertyName = "level")]
-    public string Level { get; internal init; }
+    [JsonPropertyName("level")]
+    public string Level { get; init; } = string.Empty;
 
     /// <summary>
     /// 角色(权限等级)
     /// </summary>
-    [JsonConverter(typeof(EnumConverter))]
-    [JsonProperty(PropertyName = "role")]
-    public MemberRoleType Role { get; internal init; }
+    [JsonConverter(typeof(EnumConverter<MemberRoleType>))]
+    [JsonPropertyName("role")]
+    public MemberRoleType Role { get; init; }
 
     /// <summary>
     /// 是否为机器人管理员
@@ -101,33 +101,26 @@ public sealed record GroupMemberInfo
     /// <summary>
     /// 是否不良记录成员
     /// </summary>
-    [JsonProperty(PropertyName = "unfriendly")]
-    public bool Unfriendly { get; internal init; }
+    [JsonPropertyName("unfriendly")]
+    public bool Unfriendly { get; init; }
 
     /// <summary>
     /// 专属头衔
     /// </summary>
-    [JsonProperty(PropertyName = "title")]
-    public string Title { get; internal init; }
+    [JsonPropertyName("title")]
+    public string Title { get; init; } = string.Empty;
 
     /// <summary>
     /// <para>专属头衔过期时间</para>
     /// <para>在<see cref="Title"/>不为空时有效</para>
     /// </summary>
     [JsonIgnore]
-    public DateTime? TitleExpireTime { get; internal init; }
+    public DateTime? TitleExpireTime { get; init; }
 
-    [JsonProperty(PropertyName = "title_expire_time",
-                  NullValueHandling = NullValueHandling.Ignore,
-                  DefaultValueHandling = DefaultValueHandling.Ignore)]
-    private long? TitleExpireTimeStamp
-    {
-        init => TitleExpireTime = value == 0 ? null : value?.ToDateTime() ?? null;
-    }
 
     /// <summary>
     /// 是否允许修改群名片
     /// </summary>
-    [JsonProperty(PropertyName = "card_changeable")]
-    public bool CardChangeable { get; internal init; }
+    [JsonPropertyName("card_changeable")]
+    public bool CardChangeable { get; init; }
 }

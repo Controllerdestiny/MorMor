@@ -1,8 +1,5 @@
 using MomoAPI.Enumeration;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Net.Http.Json;
-using System.Text.Json.Nodes;
+using System.Text.Json;
 using System.Web;
 
 namespace MomoAPI.Utils;
@@ -24,14 +21,14 @@ public static class Utils
 
     public static async Task<string> HttpPost(string url, Dictionary<string, string>? args = null)
     {
-        FormUrlEncodedContent form = new(args);
+        FormUrlEncodedContent form = new(args ?? []);
         var content = await HttpClient.PostAsync(url, form);
         return await content.Content.ReadAsStringAsync();
     }
 
     public static async Task<string> HttpPostContent(string url, Dictionary<string, string> args)
     {
-        StringContent payload = new(JsonConvert.SerializeObject(args));
+        StringContent payload = new(JsonSerializer.Serialize(args));
         var content = await HttpClient.PostAsync(url,payload);
         return await content.Content.ReadAsStringAsync();
     }

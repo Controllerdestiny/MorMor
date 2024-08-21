@@ -37,7 +37,7 @@ namespace MorMor.Extensions
         /// <param name="index"></param>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static bool TryGetValue<T>(this IEnumerable<T> enumerable, int index, out T value)
+        public static bool TryGetValue<T>(this IEnumerable<T> enumerable, int index, out T? value)
         {
             if (index < enumerable.Count())
             {

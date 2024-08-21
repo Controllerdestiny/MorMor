@@ -1,9 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿
+
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment.DataModel;
 
 public record Json : BaseMessage
 {
-    [JsonProperty("data")]
-    public string Connect { get; set; }
+    [JsonPropertyName("data")]
+    public string Connect { get; set; } = string.Empty;
 }

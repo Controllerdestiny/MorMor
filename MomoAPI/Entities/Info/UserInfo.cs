@@ -1,6 +1,6 @@
+using MomoAPI.Converter;
 using MomoAPI.Enumeration;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Info;
 
@@ -14,51 +14,51 @@ public struct UserInfo
     /// <summary>
     /// 用户id
     /// </summary>
-    [JsonProperty(PropertyName = "user_id")]
-    public long UserId { get; internal init; }
+    [JsonPropertyName("user_id")]
+    public long UserId { get; init; }
 
     /// <summary>
     /// 权限等级
     /// </summary>
     [JsonIgnore]
-    public bool IsSuperUser { get; internal set; }
+    public bool IsSuperUser { get; init; }
 
     /// <summary>
     /// 昵称
     /// </summary>
-    [JsonProperty(PropertyName = "nickname")]
-    public string Nick { get; internal init; }
+    [JsonPropertyName("nickname")]
+    public string Nick { get; init; }
 
     /// <summary>
     /// 年龄
     /// </summary>
-    [JsonProperty(PropertyName = "age")]
-    public int Age { get; internal init; }
+    [JsonPropertyName("age")]
+    public int Age { get; init; }
 
     /// <summary>
     /// 性别
     /// </summary>
-    [JsonConverter(typeof(EnumConverter))]
-    [JsonProperty(PropertyName = "sex")]
-    public SexType Sex { get; internal init; }
+    [JsonConverter(typeof(EnumConverter<SexType>))]
+    [JsonPropertyName("sex")]
+    public SexType Sex { get; init; }
 
     /// <summary>
     /// 等级
     /// </summary>
-    [JsonProperty(PropertyName = "level")]
-    public int Level { get; internal init; }
+    [JsonPropertyName("level")]
+    public int Level { get; init; }
 
     /// <summary>
     /// 登陆天数
     /// </summary>
-    [JsonProperty(PropertyName = "login_days")]
-    public int LoginDays { get; internal init; }
+    [JsonPropertyName("login_days")]
+    public int LoginDays { get; init; }
 
     /// <summary>
     /// 会员等级
     /// </summary>
-    [JsonProperty(PropertyName = "vip_level")]
-    public string VipLevel { get; internal init; }
+    [JsonPropertyName("vip_level")]
+    public string VipLevel { get; init; }
 
     #endregion
 }

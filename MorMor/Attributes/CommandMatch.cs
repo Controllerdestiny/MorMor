@@ -3,7 +3,7 @@
 [AttributeUsage(AttributeTargets.Method)]
 public class CommandMatch : Attribute
 {
-    public List<string> Name { get; }
+    public List<string> Name { get; init; }
 
     public string[] Permission { get; }
 

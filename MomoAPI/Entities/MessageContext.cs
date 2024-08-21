@@ -42,17 +42,17 @@ public class MessageContext
 
     public List<Reply> GetReply()
     {
-        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.Reply).Select(reply => reply.MessageData as Reply).ToList() ?? new();
+        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.Reply).Select(reply => (Reply)reply.MessageData).ToList();
     }
 
     public List<Image> GetImages()
     {
-        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.Image).Select(img => img.MessageData as Image).ToList();
+        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.Image).Select(img => (Image)img.MessageData).ToList();
     }
 
     public List<At> GetAts()
     {
-        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.At).Select(img => img.MessageData as At).ToList();
+        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.At).Select(img => (At)img.MessageData).ToList();
     }
 
     public string? GetFileId()

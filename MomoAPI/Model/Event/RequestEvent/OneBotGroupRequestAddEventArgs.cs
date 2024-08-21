@@ -1,15 +1,15 @@
-﻿using MomoAPI.Enumeration.EventParamType;
-using MomoAPI.Utils;
-using Newtonsoft.Json;
+﻿using MomoAPI.Converter;
+using MomoAPI.Enumeration.EventParamType;
+using System.Text.Json.Serialization;
 
 namespace MomoAPI.Model.Event.RequestEvent;
 
-internal class OneBotGroupRequestAddEventArgs : BaseObRequestEventArgs
+public class OneBotGroupRequestAddEventArgs : BaseObRequestEventArgs
 {
-    [JsonProperty("sub_type")]
-    [JsonConverter(typeof(EnumConverter))]
+    [JsonPropertyName("sub_type")]
+    [JsonConverter(typeof(EnumConverter<GroupRequestType>))]
     public GroupRequestType RequestType { get; set; }
 
-    [JsonProperty("group_id")]
+    [JsonPropertyName("group_id")]
     public long GroupId { get; set; }
 }
