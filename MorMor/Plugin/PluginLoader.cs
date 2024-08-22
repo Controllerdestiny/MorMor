@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using MorMor.TShock.ChatCommand;
 
 namespace MorMor.Plugin;
 
@@ -19,10 +18,7 @@ public class PluginLoader
             directoryInfo.Create();
         PluginContext.LoadPlugins(directoryInfo);
         Commands.CommandManager.Hook.MappingCommands(Assembly.GetExecutingAssembly());
-        ChatCommandMananger.Hook.MappingCommands(Assembly.GetExecutingAssembly());
-        PluginContext.LoadAssemblys.ForEach(Commands.CommandManager.Hook.MappingCommands);
-        PluginContext.LoadAssemblys.ForEach(ChatCommandMananger.Hook.MappingCommands);
-    }
+        PluginContext.LoadAssemblys.ForEach(Commands.CommandManager.Hook.MappingCommands);    }
 
     public static void UnLoad()
     {

@@ -431,7 +431,7 @@ public class OneBotCommand
                 });
             }
         }
-        var commands = CommandManager.Hook.CommandDelegate.Select(x => args.CommamdPrefix + x.Name.First()).ToList();
+        var commands = CommandManager.Hook.GroupCommandDelegate.Select(x => args.CommamdPrefix + x.Name.First()).ToList();
         Show(commands);
         await ValueTask.CompletedTask;
     }
@@ -949,7 +949,7 @@ public class OneBotCommand
         if (args.Parameters.Count == 1)
         {
             var banName = args.Parameters[0];
-            var comm = CommandManager.Hook.CommandDelegate.Where(x => x.Name.Contains(banName)).SelectMany(x => x.Permission).ToList();
+            var comm = CommandManager.Hook.GroupCommandDelegate.Where(x => x.Name.Contains(banName)).SelectMany(x => x.Permission).ToList();
             if (comm == null || comm.Count == 0)
             {
                 await args.EventArgs.Reply("没有找到该指令，无法查询！");

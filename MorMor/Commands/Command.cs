@@ -1,8 +1,8 @@
 ﻿namespace MorMor.Commands;
 
-public class Command
+public class Command<T> where T: BaseCommandArgs
 {
-    public delegate ValueTask CommandCallBack(CommandArgs args);
+    public delegate ValueTask CommandCallBack(T args);
 
     public List<string> Name { get; }
 

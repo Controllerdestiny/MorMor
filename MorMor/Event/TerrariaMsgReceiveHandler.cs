@@ -2,6 +2,7 @@
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using MomoAPI.EventArgs;
+using MorMor.Commands;
 using MorMor.Enumeration;
 using MorMor.EventArgs;
 using MorMor.EventArgs.Sockets;
@@ -11,7 +12,6 @@ using MorMor.Model.Socket.Action.Receive;
 using MorMor.Model.Socket.PlayerMessage;
 using MorMor.Model.Socket.ServerMessage;
 using MorMor.Net;
-using MorMor.TShock.ChatCommand;
 using ProtoBuf;
 
 namespace MorMor.Event;
@@ -101,7 +101,7 @@ public class TerrariaMsgReceiveHandler
         if(OnPlayerCommand != null) await OnPlayerCommand(data);
         if (!data.Handler)
         {
-            await ChatCommandMananger.Hook.CommandAdapter(data);
+            await CommandManager.Hook.CommandAdapter(data);
         }
     }
 
@@ -256,7 +256,7 @@ public class TerrariaMsgReceiveHandler
             if (args.UpLoad.Size > 1024 * 1024 * 30)
                 return;
             var (status, fileinfo) = await args.OneBotAPI.GetFile(args.UpLoad.ID);
-            if (string.IsNullOrEmpty(fileinfo.Base64))
+            if (status.RetCode != MomoAPI.Enumeration.ApiType.ApiStatusType.Ok || string.IsNullOrEmpty(fileinfo.Base64))
                 return;
             var buffer = Convert.FromBase64String(fileinfo.Base64);
             foreach (var server in MorMorAPI.Setting.Servers)

@@ -1,8 +1,10 @@
-﻿using System.Reflection;
+﻿using System.Drawing;
+using System.Reflection;
 using System.Text;
 using MomoAPI.EventArgs;
 using MorMor.Attributes;
 using MorMor.Event;
+using MorMor.Model.Socket.PlayerMessage;
 
 namespace MorMor.Commands;
 
@@ -10,15 +12,23 @@ public class CommandManager
 {
     public static readonly CommandManager Hook = new();
 
-    public readonly List<Command> CommandDelegate = new();
+    public readonly List<Command<CommandArgs>> GroupCommandDelegate = [];
+
+    public readonly List<Command<ServerCommandArgs>> ServerCommandDelegate = [];
+
     private CommandManager()
     {
 
     }
 
-    public void Add(Command command)
+    public void AddGroupCommand(Command<CommandArgs> command)
     {
-        CommandDelegate.Add(command);
+        GroupCommandDelegate.Add(command);
+    }
+
+    public void AddServerCommand(Command<ServerCommandArgs> command)
+    {
+        ServerCommandDelegate.Add(command);
     }
 
     public List<string> ParseParameters(string str)
@@ -114,7 +124,7 @@ public class CommandManager
                 var cmdName = cmdParam[0];
                 cmdParam.RemoveAt(0);
                 var account = MorMorAPI.AccountManager.GetAccountNullDefault(args.Sender.Id);
-                foreach (var command in CommandDelegate)
+                foreach (var command in GroupCommandDelegate)
                 {
                     if (command.Name.Contains(cmdName))
                     {
@@ -133,7 +143,7 @@ public class CommandManager
         }
     }
 
-    private async ValueTask RunCommandCallback(CommandArgs args, Command command)
+    private async ValueTask RunCommandCallback(CommandArgs args, Command<CommandArgs> command)
     {
         foreach (var perm in command.Permission)
         {
@@ -151,6 +161,49 @@ public class CommandManager
         await args.EventArgs.Reply("你无权使用此命令！");
     }
 
+    public async ValueTask CommandAdapter(PlayerCommandMessage args)
+    {
+        var text = args.Command;
+        var cmdParam = ParseParameters(text[args.CommandPrefix.Length..]);
+        if (cmdParam.Count > 0)
+        {
+            var cmdName = cmdParam[0];
+            cmdParam.RemoveAt(0);
+            foreach (var command in ServerCommandDelegate)
+            {
+                if (command.Name.Contains(cmdName))
+                {
+                    try
+                    {
+                        await RunCommandCallback(new ServerCommandArgs(args.ServerName, args.Name, cmdName,args.CommandPrefix,cmdParam, ParseCommandLine(cmdParam)), command);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.ConsoleError(ex.ToString());
+                        if (args.TerrariaServer != null)
+                            await args.TerrariaServer.PrivateMsg(args.Name, ex.Message, Color.DarkRed);
+                    }
+                }
+            }
+        }
+    }
+
+    private async ValueTask RunCommandCallback(ServerCommandArgs args, Command<ServerCommandArgs> command)
+    {
+        foreach (var perm in command.Permission)
+        {
+            if (args.Account.HasPermission(perm))
+            {
+                if (!await OperatHandler.ServerUserCommand(args))
+                {
+                    await command.CallBack(args);
+                    Log.ConsoleInfo($"Server:{args.ServerName} {args.UserName} 使用命令: {command.Name.First()}", ConsoleColor.Cyan);
+                }
+                return;
+            }
+        }
+    }
+
 
     public void MappingCommands(Assembly assembly)
     {
@@ -158,7 +211,7 @@ public class CommandManager
         Dictionary<Type, MethodInfo[]> mapping = assembly.GetExportedTypes()
             .Where(x => x.IsDefined(typeof(CommandSeries)))
             .Select(type => (type, type.GetMethods(flag)
-            .Where(m => m.IsDefined(typeof(CommandMatch)) && m.CommandParamPares(typeof(CommandArgs)))
+            .Where(m => m.IsDefined(typeof(CommandMatch)) && (m.CommandParamPares(typeof(CommandArgs)) || m.CommandParamPares(typeof(ServerCommandArgs))))
             .ToArray()))
             .ToDictionary(method => method.type, method => method.Item2);
         foreach (var (cls, methods) in mapping)
@@ -171,11 +224,18 @@ public class CommandManager
                 var attr = method.GetCustomAttribute<CommandMatch>()!;
                 if (method.IsStatic)
                 {
-                    Add(new(attr.Name, method.CreateDelegate<Command.CommandCallBack>(), attr.Permission));
+                    if(method.CommandParamPares(typeof(CommandArgs)))
+                        AddGroupCommand(new(attr.Name, method.CreateDelegate<Command<CommandArgs>.CommandCallBack>(), attr.Permission));
+                    else
+                        AddServerCommand(new(attr.Name, method.CreateDelegate<Command<ServerCommandArgs>.CommandCallBack>(), attr.Permission));
                     continue;
                 }
                 var _method = instance.GetType().GetMethod(method.Name, flag)!;
-                Add(new(attr.Name, _method.CreateDelegate<Command.CommandCallBack>(instance), attr.Permission));
+                if (method.CommandParamPares(typeof(CommandArgs)))
+                    AddGroupCommand(new (attr.Name, _method.CreateDelegate<Command<CommandArgs>.CommandCallBack>(instance), attr.Permission));
+                else
+                    AddServerCommand(new(attr.Name, _method.CreateDelegate<Command<ServerCommandArgs>.CommandCallBack>(instance), attr.Permission));
+
             }
         }
     }

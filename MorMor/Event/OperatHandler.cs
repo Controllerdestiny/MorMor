@@ -2,7 +2,6 @@
 using MorMor.DB.Manager;
 using MorMor.Enumeration;
 using MorMor.EventArgs;
-using MorMor.TShock.ChatCommand;
 
 namespace MorMor.Event;
 
@@ -18,7 +17,7 @@ public static class OperatHandler
 
     public static event EventCallBack<GroupMessageForwardArgs, ValueTask>? OnGroupMessageForward;
 
-    public static event EventCallBack<PlayerCommandArgs, ValueTask>? OnServerCommand;
+    public static event EventCallBack<ServerCommandArgs, ValueTask>? OnServerCommand;
 
     public static UserPermissionType UserPermission(AccountManager.Account account, string prem)
     {
@@ -52,7 +51,7 @@ public static class OperatHandler
             await OnReload(args);
     }
 
-    internal static async ValueTask<bool> ServerUserCommand(PlayerCommandArgs args)
+    internal static async ValueTask<bool> ServerUserCommand(ServerCommandArgs args)
     {
         if (OnServerCommand == null)
             return false;
