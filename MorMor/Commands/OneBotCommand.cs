@@ -22,6 +22,7 @@ namespace MorMor.Commands;
 [CommandSeries]
 public class OneBotCommand
 {
+    #region 导出存档
     [CommandMatch("导出存档", OneBotPermissions.ExportFile)]
     public static async ValueTask Test(CommandArgs args)
     {
@@ -73,6 +74,8 @@ public class OneBotCommand
         }
 
     }
+    #endregion
+
     #region 捣药
     [CommandMatch("捣药", OneBotPermissions.ImageEmoji)]
     public static async ValueTask ImageEmojiOne(CommandArgs args)
@@ -406,7 +409,7 @@ public class OneBotCommand
     public static async ValueTask VersionInfo(CommandArgs args)
     {
         var info = "名称: MorMor" +
-            "\n版本: V2.0.2.2" +
+            "\n版本: V2.0.3.2" +
             $"\n运行时长: {DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime:dd\\.hh\\:mm\\:ss}" +
             "\nMorMor是基于LLOneBot开发的 .NET平台机器人，主要功能为群管理以及TShock服务器管理" +
             "\n开源地址: https://github.com/Controllerdestiny/MorMor";
