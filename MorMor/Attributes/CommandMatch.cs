@@ -7,19 +7,15 @@ public class CommandMatch : Attribute
 
     public string[] Permission { get; }
 
-    public CommandMatch(string name, params string[] permission) : this(permission)
+    public CommandMatch(string name, params string[] permission)
     {
         Name = new() { name };
+        Permission = permission;
     }
 
     public CommandMatch(List<string> name, params string[] permission)
     {
         Name = name;
-        Permission = permission;
-    }
-
-    private CommandMatch(params string[] permission)
-    {
         Permission = permission;
     }
 }

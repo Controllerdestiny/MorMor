@@ -1,6 +1,6 @@
 ﻿namespace MorMor.Plugin;
 
-public abstract class MorMorPlugin
+public abstract class MorMorPlugin :IDisposable
 {
     public virtual string Name
     {
