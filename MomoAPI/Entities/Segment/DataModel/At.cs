@@ -5,8 +5,8 @@ namespace MomoAPI.Entities.Segment.DataModel;
 
 public record At : BaseMessage
 {
-    [JsonConverter(typeof(StringConverter))]
     [JsonPropertyName("qq")]
+    [JsonInclude]
     internal string Target { get; set; } = string.Empty;
 
     [JsonIgnore]

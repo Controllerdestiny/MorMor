@@ -5,6 +5,7 @@ using System.Web;
 using MomoAPI.Entities;
 using MomoAPI.Entities.Info;
 using MomoAPI.Entities.Segment;
+using MomoAPI.Extensions;
 using MorMor.Attributes;
 using MorMor.Configuration;
 using MorMor.Enumeration;
@@ -1843,7 +1844,7 @@ public class OneBotCommand
     public static async ValueTask AcountInfo(CommandArgs args)
     {
         var at = args.EventArgs.MessageContext.GetAts();
-        if (at.Any())
+        if (at.Count != 0)
         {
             var group = MorMorAPI.AccountManager.GetAccountNullDefault(at.First().UserId);
             await args.EventArgs.Reply(CommandUtils.GetAccountInfo(args.EventArgs.Group.Id, at.First().UserId, group.Group.Name));

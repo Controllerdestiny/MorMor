@@ -52,7 +52,7 @@ public class MessageContext
 
     public List<At> GetAts()
     {
-        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.At).Select(img => (At)img.MessageData).ToList();
+        return Messages.Where(msg => msg.Type == Enumeration.SegmentType.At).Select(at => (At)at.MessageData).ToList();
     }
 
     public string? GetFileId()

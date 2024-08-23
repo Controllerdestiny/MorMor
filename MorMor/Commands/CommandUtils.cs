@@ -62,8 +62,6 @@ internal static class CommandUtils
         var sign = signInfo != null ? signInfo.Date : 0;
         var currencyInfo = MorMorAPI.CurrencyManager.Query(groupid, userid);
         var currency = currencyInfo != null ? currencyInfo.num : 0;
-        //var exp = api == null || !api.IsSuccess ? 0 : api.CurrentNum;
-        var exp = 0;
         MessageBody body = new()
         {
             MomoSegment.Image($"http://q.qlogo.cn/headimg_dl?dst_uin={uin}&spec=640&img_type=png"),
@@ -72,7 +70,6 @@ internal static class CommandUtils
             MomoSegment.Text($"[星币数量]:{currency}\n"),
             MomoSegment.Text($"[拥有权限]:{groupName}\n"),
             MomoSegment.Text($"[绑定角色]:{bindName}\n"),
-            MomoSegment.Text($"[经验数量]:{exp}\n"),
             MomoSegment.Text($"[所在服务器]:{serverName}")
         };
         return body;

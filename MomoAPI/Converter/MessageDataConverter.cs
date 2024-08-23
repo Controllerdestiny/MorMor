@@ -56,8 +56,6 @@ internal static class MessageConverter
         if (messages == null || messages.Count == 0)
             return [];
         List<MomoSegment> retMsg = messages.Select(ParseMessageElement).ToList();
-
-
         return new MessageBody(retMsg);
     }
 
