@@ -29,6 +29,11 @@ public static class JsonExtension
         return JsonSerializer.Deserialize<T>(json, JsonSerializerOptions);
     }
 
+    public static JsonObject? ToJsonObject<T>(this T obj)
+    { 
+        return obj.ToJson().ToObject<JsonObject>();
+    }
+
     public static string ToJson<T>(this T obj)
     { 
         return JsonSerializer.Serialize(obj, JsonSerializerOptions);

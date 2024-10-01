@@ -4,7 +4,7 @@ using MorMor.EventArgs.Sockets;
 
 namespace MorMor.Net;
 
-public class TShockReceive(int port)
+public class TShockReceive
 {
     public delegate ValueTask SocketCallBack<in T>(T args) where T : BaseSocketArgs;
 
@@ -34,7 +34,6 @@ public class TShockReceive(int port)
 
         Server.OnMessage += (context, buffer) =>
         {
-            var token = new CancellationToken();
             Task.Run(async () =>
             {
                 if (SocketMessage != null)
@@ -43,8 +42,7 @@ public class TShockReceive(int port)
                     await SocketMessage(new(context, stream));
                     stream.Dispose();
                 }
-            }, token);  
-            token.ThrowIfCancellationRequested();
+            });  
         };
 
         Server.OnClose += (id) =>

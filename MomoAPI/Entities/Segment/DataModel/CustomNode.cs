@@ -15,35 +15,37 @@ public sealed record CustomNode
     /// 转发消息Id
     /// </summary>
     [JsonPropertyName("id")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? MessageId { get; internal set; }
 
     /// <summary>
     /// 发送者显示名字
     /// </summary>
     [JsonPropertyName("name")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? Name { get; internal set; }
 
     /// <summary>
     /// 发送者QQ号
     /// </summary>
     [JsonPropertyName("uin")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? UserId { get; internal set; }
 
     /// <summary>
     /// 具体消息
     /// </summary>
     [JsonPropertyName("content")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonInclude]
     internal dynamic? Messages { get; set; }
 
     /// <summary>
     /// 转发时间
     /// </summary>
     [JsonPropertyName("time")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonInclude]
     internal string? Time { get; set; }
 
     /// <summary>

@@ -1,9 +1,8 @@
 using MomoAPI.Converter;
 using MomoAPI.Entities.Segment.DataModel;
 using MomoAPI.Enumeration;
+using MomoAPI.Extensions;
 using MomoAPI.Model.API;
-using System.Text.Json;
-using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 
 namespace MomoAPI.Entities.Segment;
@@ -28,7 +27,7 @@ public class MomoSegment
         return new OnebotSegment
         {
             MsgType = Type,
-            //RawData = JsonSerializer.Deserialize<JsonObject>(MessageData)
+            RawData = MessageData.ToJsonObject()!
         };
     }
 

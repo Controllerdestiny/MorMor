@@ -2,8 +2,6 @@
 using MomoAPI.Extensions;
 using MomoAPI.Interface;
 using MomoAPI.Net.Config;
-using MomoAPI.Resolver;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 using Websocket.Client;
 
@@ -26,7 +24,6 @@ internal class MomoReceive : IMomoService
     {
         Client.MessageReceived.Subscribe(msg =>
         {
-            var token = new CancellationToken();
             Task.Run(async () =>
             {
                 if (!string.IsNullOrEmpty(msg.Text))
@@ -35,9 +32,9 @@ internal class MomoReceive : IMomoService
                     if (node != null)
                         await Event.Adapter(node);
                 }
-            }, token);
-            token.ThrowIfCancellationRequested();
+            });
         });
+
         ConnectMananger.OpenConnect(Client);
         await Client.Start();
         if (!Client.IsRunning || !Client.IsStarted)

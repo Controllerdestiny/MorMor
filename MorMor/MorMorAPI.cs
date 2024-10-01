@@ -63,6 +63,7 @@ public class MorMorAPI
         if (!Directory.Exists(SAVE_PATH))
             Directory.CreateDirectory(SAVE_PATH);
         Log.ConsoleInfo(ConsoleInfo, ConsoleColor.Green);
+        Console.Title = "MorMor";
         Utils.Utility.KillChrome();
         //读取Config
         LoadConfig();

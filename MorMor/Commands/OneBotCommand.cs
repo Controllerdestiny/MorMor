@@ -1621,6 +1621,7 @@ public class OneBotCommand
                 var body = new MessageBody();
                 if (api.Status)
                 {
+    
                     var ms = DrawInventory.Start(api.PlayerData!, api.PlayerData!.Username, api.ServerName);
                     var base64 = Convert.ToBase64String(ms.ToArray());
                     body.Add(MomoSegment.Image($"base64://{base64}"));
